@@ -1,4 +1,6 @@
 <!-- index.php: fait par Q, acceuil avec dashboard, lien vers historique.php -->
+ <!-- -- Vider la table donnees et repartir à 1
+TRUNCATE TABLE donnees; -->
 <!DOCTYPE html>
 <html lang="en">
 <head>

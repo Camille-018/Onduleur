@@ -2,6 +2,53 @@
  <?php
 require_once '../config.php';
 
+//envoyer une alerte par mail
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
+require __DIR__ . '/../PHPMailer/src/SMTP.php';
+require __DIR__ . '/../PHPMailer/src/Exception.php';
+envoyerMailAlerte('TEST', 'Ceci est un mail de test');
+exit;
+
+
+function envoyerMailAlerte($type, $messageAlerte) {
+    $sujet = "Alerte Ondulateur: $type";
+    $message = "$messageAlerte\nHeure: " . date('Y-m-d H:i:s');
+
+    if (!MAIL_ENABLED) {
+        // Mode simulation (tests)
+        echo "MAIL SIMULÉ : $sujet - $messageAlerte<br>";
+        return;
+    }
+
+    $mail = new PHPMailer(true);
+
+    try {
+        // Utilisation du SMTP Gmail (voir config.php)
+        $mail->isSMTP();
+        $mail->Host       = MAIL_HOST;
+        $mail->SMTPAuth   = true;
+        $mail->Username   = MAIL_USERNAME;
+        $mail->Password   = MAIL_PASSWORD;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = MAIL_PORT;
+
+        $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
+        $mail->addAddress(MAIL_TO);
+
+        $mail->Subject = $sujet;
+        $mail->Body    = $message;
+
+        $mail->send();
+        echo "Mail envoyé : $sujet<br>";
+    } catch (Exception $e) {
+        echo "Erreur mail : {$mail->ErrorInfo}<br>";
+    }
+}
+
+
 // Récupérer toutes les collectes qui n'ont pas encore généré d'alerte
 $stmt = $pdo->query("
     SELECT d.idCollecte, d.autonomieRestante, d.etatBatterie, d.santeBatterie, d.tensionEntree, d.tensionSortie, d.heureCollecte
@@ -48,8 +95,13 @@ foreach ($donnees as $d) {
             ':message' => $a['Message']
         ]);
         $nbAlertes++;
+
+        // Envoi du mail via PHPMailer
+        envoyerMailAlerte($a['Type'], $a['Message']);
     }
 }
+
+
 
 echo "Vérification terminée. $nbAlertes alerte(s) créée(s).";
 echo '<br><a href="alerte.php">Retour aux alertes</a>';
