@@ -9,13 +9,15 @@ use PHPMailer\PHPMailer\Exception;
 require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require __DIR__ . '/../PHPMailer/src/SMTP.php';
 require __DIR__ . '/../PHPMailer/src/Exception.php';
-envoyerMailAlerte('TEST', 'Ceci est un mail de test');
-exit;
 
 
-function envoyerMailAlerte($type, $messageAlerte) {
+function envoyerMailAlerte($type, $messageAlerte, $idCollecte, $heureCollecte) {
     $sujet = "Alerte Ondulateur: $type";
-    $message = "$messageAlerte\nHeure: " . date('Y-m-d H:i:s');
+    $message = "ALERTE Ondulateur : $type\n\n";
+    $message .= "Message : $messageAlerte\n";
+    $message .= "ID Collecte : $idCollecte\n";
+    $message .= "Heure de la collecte : $heureCollecte\n\n";
+    $message .= "Pour plus de détails, consultez l'historique : http://ondulateur/historique/historique.php";
 
     if (!MAIL_ENABLED) {
         // Mode simulation (tests)
@@ -96,9 +98,10 @@ foreach ($donnees as $d) {
         ]);
         $nbAlertes++;
 
-        // Envoi du mail via PHPMailer
-        envoyerMailAlerte($a['Type'], $a['Message']);
+        // passer l'ID et l'heure à la fonction
+        envoyerMailAlerte($a['Type'], $a['Message'], $d['idCollecte'], $d['heureCollecte']);
     }
+
 }
 
 

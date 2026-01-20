@@ -1,14 +1,13 @@
-===== Infos Compte Gmail pour Alertes Ondulateur =====
+===== Infos Compte Gmail pour Alertes Onduleur =====
 
 Compte Gmail utilisé : ondulateur.alertes@gmail.com
 MDP gmail: ondulateurcereep18?
 MDP d’application pour PHP/PHPMailer: cshy fwzk wnis rfid
 
+PHP Mailer: https://github.com/PHPMailer/PHPMailer
+
 Destinataire des alertes : villemin.camille@gmail.com
-Le mail n’est envoyé que lorsqu’une erreur est détectée dans la table 'donnees' :
-- batterie faible
-- surcharge
-- coupure
+Le mail n’est envoyé que lorsqu’une erreur est détectée dans la table 'donnees' 
 
 Configuration dans config.php :
 MAIL_ENABLED = true
