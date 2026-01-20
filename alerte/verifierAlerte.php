@@ -63,6 +63,8 @@ $stmt = $pdo->query("
 $donnees = $stmt->fetchAll();
 
 // Seuils pour les alertes
+
+
 $seuils = [
     'batterieFaible' => 15,
     'surcharge'      => 5.0,

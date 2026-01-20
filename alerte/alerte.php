@@ -2,8 +2,7 @@
 require_once '../config.php';
 // alerte.php: affiche les alertes depuis la base de données
 
-
-// récupérer toutes les alertes (les 100 dernières par exemple)
+// récupérer toutes les alertes (les 100 dernières)
 $stmt = $pdo->query("SELECT * FROM Alertes ORDER BY heureAlerte DESC LIMIT 100");
 $alertes = $stmt->fetchAll();
 ?>
@@ -17,8 +16,10 @@ $alertes = $stmt->fetchAll();
 </head>
 <body>
     <h1>Alertes</h1>
-    <a href="../index.php">Accueil</a>
+    <a href="../index.php">Accueil</a><br>
+    <a href="../historique/historique.php">Historique</a><br>
     <a href="verifierAlerte.php">Vérifier les alertes</a><br><br>
+    <a href="changerSeuils.php">Changer les seuils d'alerte</a>
     <br><br>
 
     <?php if (!empty($alertes)): ?>

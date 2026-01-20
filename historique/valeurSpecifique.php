@@ -5,7 +5,7 @@ require_once '../config.php';
 $colonne = $_GET['colonne'] ?? '';
 $valeur  = $_GET['valeur'] ?? '';
 
-$colonnes_valides = ['autonomieRestante','etatBatterie','santeBatterie','tensionEntree','tensionSortie','heureCollecte'];
+$colonnes_valides = ['idCollecte','autonomieRestante','etatBatterie','santeBatterie','tensionEntree','tensionSortie','heureCollecte'];
 
 if (!in_array($colonne, $colonnes_valides)) {
     die('Colonne invalide');
@@ -52,7 +52,7 @@ $historique = $stmt->fetchAll();
             <?php foreach($historique as $row): ?>
             <tr>
                 <td><?= $row['idCollecte'] ?></td>
-                <td><?= $row['autonomieRestante'] ?></td>
+                <td><?= $row['autonomieRestante'] ?>%</td>
                 <td><?= $row['etatBatterie'] ?></td>
                 <td><?= $row['santeBatterie'] ?></td>
                 <td><?= $row['tensionEntree'] ?></td>

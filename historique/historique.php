@@ -23,6 +23,7 @@ $historique = $stmt->fetchAll();
     <form action="valeurSpecifique.php" method="GET">
         <label for="colonne">Choisir la colonne :</label>
         <select name="colonne" id="colonne" required>
+            <option value="idCollecte">ID Collecte</option>
             <option value="autonomieRestante">Autonomie</option>
             <option value="etatBatterie">État Batterie</option>
             <option value="santeBatterie">Santé Batterie</option>
