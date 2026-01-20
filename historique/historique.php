@@ -11,7 +11,7 @@ $historique = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ondulateur - Historique</title>
+    <title>Onduleur - Historique</title>
 </head>
 <body>
     <h1>Historique des Collectes</h1>

@@ -12,12 +12,12 @@ require __DIR__ . '/../PHPMailer/src/Exception.php';
 
 
 function envoyerMailAlerte($type, $messageAlerte, $idCollecte, $heureCollecte) {
-    $sujet = "Alerte Ondulateur: $type";
-    $message = "ALERTE Ondulateur : $type\n\n";
+    $sujet = "Alerte Onduleur: $type";
+    $message = "ALERTE Onduleur : $type\n\n";
     $message .= "Message : $messageAlerte\n";
     $message .= "ID Collecte : $idCollecte\n";
     $message .= "Heure de la collecte : $heureCollecte\n\n";
-    $message .= "Pour plus de détails, consultez l'historique : http://ondulateur/historique/historique.php";
+    $message .= "Pour plus de détails, consultez l'historique : http://onduleur/historique/historique.php";
 
     if (!MAIL_ENABLED) {
         // Mode simulation (tests)
@@ -103,8 +103,6 @@ foreach ($donnees as $d) {
     }
 
 }
-
-
 
 echo "Vérification terminée. $nbAlertes alerte(s) créée(s).";
 echo '<br><a href="alerte.php">Retour aux alertes</a>';

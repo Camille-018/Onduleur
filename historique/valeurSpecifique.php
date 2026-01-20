@@ -28,10 +28,10 @@ $historique = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ondulateur - Résultat Filtre</title>
+    <title>Onduleur - Résultat Filtre</title>
 </head>
 <body>
-    <h1>Ondulateur - Résultat Filtre</h1>
+    <h1>Onduleur - Résultat Filtre</h1>
     <a href="historique.php">Retour à l'historique</a><br>
     <a href="../index.php">Retour à l'accueil</a><br><br>
      <h3>Filtre : <?= htmlspecialchars($colonne) ?> = <?= htmlspecialchars($valeur) ?></h3> <!--appel du filtre -->
