@@ -5,18 +5,18 @@ require_once '../config.php';
 $colonne = $_GET['colonne'] ?? '';
 $valeur  = $_GET['valeur'] ?? '';
 
-$colonnes_valides = ['idCollecte','autonomieRestante','etatBatterie','santeBatterie','tensionEntree','tensionSortie','heureCollecte'];
+$colonnes_valides = ['id','ups_id','battery_charge','battery_runtime', 'input_voltage', 'output_voltage', 'ups_load', 'ups_status','timestamp'];
 
 if (!in_array($colonne, $colonnes_valides)) {
     die('Colonne invalide');
 }
 
 // requête préparée
-if (in_array($colonne, ['autonomieRestante','santeBatterie','tensionEntree','tensionSortie'])) {
-    $stmt = $pdo->prepare("SELECT * FROM donnees WHERE $colonne = :valeur ORDER BY heureCollecte DESC");
+if (in_array($colonne, ['battery_charge','ups_load', 'input_voltage', 'output_voltage'])) {
+    $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE $colonne = :valeur ORDER BY timestamp DESC");
     $stmt->execute([':valeur' => $valeur]);
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM donnees WHERE $colonne LIKE :valeur ORDER BY heureCollecte DESC");
+    $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE $colonne LIKE :valeur ORDER BY timestamp DESC");
     $stmt->execute([':valeur' => "%$valeur%"]);
 }
 
@@ -40,25 +40,30 @@ $historique = $stmt->fetchAll();
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Autonomie</th>
-                <th>État Batterie</th>
-                <th>Santé Batterie</th>
+                <th>UPS ID</th>
+                <th>Charge Batterie</th>
+                <th>Autonomie Restante Batterie</th>
                 <th>Tension Entrée</th>
                 <th>Tension Sortie</th>
+                <th>Charge Travail Onduleur</th>
+                <th>État Onduleur</th>
                 <th>Heure</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach($historique as $row): ?>
             <tr>
-                <td><?= $row['idCollecte'] ?></td>
-                <td><?= $row['autonomieRestante'] ?>%</td>
-                <td><?= $row['etatBatterie'] ?></td>
-                <td><?= $row['santeBatterie'] ?></td>
-                <td><?= $row['tensionEntree'] ?></td>
-                <td><?= $row['tensionSortie'] ?? 'N/A' ?></td>
-                <td><?= $row['heureCollecte'] ?></td>
+                <td><?= $row['id'] ?></td>
+                <td><?= $row['ups_id'] ?></td>
+                <td><?= $row['battery_charge'] ?>%</td>
+                <td><?= $row['battery_runtime'] ?>s</td>
+                <td><?= $row['input_voltage'] ?></td>
+                <td><?= $row['output_voltage'] ?></td>
+                <td><?= $row['ups_load'] ?></td>
+                <td><?= $row['ups_status'] ?></td>
+                <td><?= $row['timestamp'] ?></td>
             </tr>
+
             <?php endforeach; ?>
         </tbody>
     </table>

@@ -1,20 +1,20 @@
-<!-- changerSeuils.php: admin (3) seulement
-1) vérifier que l'utilisateur est admin (3)
+<!-- changerSeuils.php: admin seulement
+1) vérifier que l'utilisateur est admin (niveau=3)
 2) formulaire pour changer les seuils
-3) sauvegarde -->
+3) sauvegarde - json --> 
 
 <?php
 require_once '../config.php'; //dans la table "authentification", l'utilisateur admin a le niveau 3
-session_start();
+session_start();//en theorie pas besoin: conencter sur index.php
 if (!isset($_SESSION['user_id'])) {
      die('Accès refusé. Veuillez vous connecter.');
  }
 
 // vérifier le niveau d'accès
-$stmt = $pdo->prepare("SELECT niveau FROM authentication WHERE id = :id");
+$stmt = $pdo->prepare("SELECT droit FROM authentication WHERE id = :id");
 $stmt->execute([':id' => $_SESSION['user_id']]);
 $user = $stmt->fetch();
-if (!$user || $user['niveau'] < 3) {
+if (!$user || $user['droit'] < 3) {
     die('Accès refusé. Niveau d\'accès insuffisant.');
 }
 

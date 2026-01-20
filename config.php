@@ -1,7 +1,7 @@
 <?php
 // config.php: configuration de la connexion à la base de données
 $host = 'localhost';
-$db   = 'Onduleur';
+$db   = 'ups_onduleur';
 $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';

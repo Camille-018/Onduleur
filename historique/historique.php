@@ -2,7 +2,7 @@
 require_once '../config.php';
 
 // récupérer 100 dernières collectes
-$stmt = $pdo->query("SELECT * FROM donnees ORDER BY heureCollecte DESC LIMIT 100");
+$stmt = $pdo->query("SELECT * FROM ups_history ORDER BY timestamp DESC LIMIT 100");
 $historique = $stmt->fetchAll();
 ?>
 
@@ -23,13 +23,15 @@ $historique = $stmt->fetchAll();
     <form action="valeurSpecifique.php" method="GET">
         <label for="colonne">Choisir la colonne :</label>
         <select name="colonne" id="colonne" required>
-            <option value="idCollecte">ID Collecte</option>
-            <option value="autonomieRestante">Autonomie</option>
-            <option value="etatBatterie">État Batterie</option>
-            <option value="santeBatterie">Santé Batterie</option>
-            <option value="tensionEntree">Tension Entrée</option>
-            <option value="tensionSortie">Tension Sortie</option>
-            <option value="heureCollecte">Heure Collecte</option>
+            <option value="id">ID</option>
+            <option value="ups_id">UPS ID</option>
+            <option value="battery_charge">Charge Batterie</option>
+            <option value="battery_runtime">Autonomie Restante Batterie</option>
+            <option value="input_voltage">Tension Entrée</option>
+            <option value="output_voltage">Tension Sortie</option>
+            <option value="ups_load">Charge Travail Onduleur</option>
+            <option value="ups_status">État Onduleur</option>
+            <option value="timestamp">Heure Collecte</option>
         </select>
 
         <label for="valeur">Valeur :</label>
@@ -46,27 +48,32 @@ $historique = $stmt->fetchAll();
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Autonomie</th>
-                <th>État Batterie</th>
-                <th>Santé Batterie</th>
+                <th>UPS ID</th>
+                <th>Charge Batterie</th>
+                <th>Autonomie Restante Batterie</th>
                 <th>Tension Entrée</th>
                 <th>Tension Sortie</th>
+                <th>Charge Travail Onduleur</th>
+                <th>État Onduleur</th>
                 <th>Heure</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach($historique as $row): ?>
             <tr>
-                <td><?= $row['idCollecte'] ?></td>
-                <td><?= $row['autonomieRestante'] ?></td>
-                <td><?= $row['etatBatterie'] ?></td>
-                <td><?= $row['santeBatterie'] ?></td>
-                <td><?= $row['tensionEntree'] ?></td>
-                <td><?= $row['tensionSortie'] ?? 'N/A' ?></td>
-                <td><?= $row['heureCollecte'] ?></td>
+                <td><?= $row['id'] ?></td>
+                <td><?= $row['ups_id'] ?></td>
+                <td><?= $row['battery_charge'] ?>%</td>
+                <td><?= $row['battery_runtime'] ?>s</td>
+                <td><?= $row['input_voltage'] ?></td>
+                <td><?= $row['output_voltage'] ?></td>
+                <td><?= $row['ups_load'] ?></td>
+                <td><?= $row['ups_status'] ?></td>
+                <td><?= $row['timestamp'] ?></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
 </body>
 </html>
+

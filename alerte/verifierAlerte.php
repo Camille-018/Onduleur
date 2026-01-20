@@ -11,12 +11,12 @@ require __DIR__ . '/../PHPMailer/src/SMTP.php';
 require __DIR__ . '/../PHPMailer/src/Exception.php';
 
 
-function envoyerMailAlerte($type, $messageAlerte, $idCollecte, $heureCollecte) {
+function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at) {
     $sujet = "Alerte Onduleur: $type";
     $message = "ALERTE Onduleur : $type\n\n";
     $message .= "Message : $messageAlerte\n";
-    $message .= "ID Collecte : $idCollecte\n";
-    $message .= "Heure de la collecte : $heureCollecte\n\n";
+    $message .= "ID Collecte : $id\n";
+    $message .= "Heure de la collecte : $recorded_at\n\n";
     $message .= "Pour plus de détails, consultez l'historique : http://onduleur/historique/historique.php";
 
     if (!MAIL_ENABLED) {
@@ -52,19 +52,19 @@ function envoyerMailAlerte($type, $messageAlerte, $idCollecte, $heureCollecte) {
 
 
 // Récupérer toutes les collectes qui n'ont pas encore généré d'alerte
+
 $stmt = $pdo->query("
-    SELECT d.idCollecte, d.autonomieRestante, d.etatBatterie, d.santeBatterie, d.tensionEntree, d.tensionSortie, d.heureCollecte
-    FROM donnees d
-    LEFT JOIN Alertes a ON d.idCollecte = a.idCollecte
-    WHERE a.idCollecte IS NULL
-    ORDER BY d.heureCollecte ASC
+    SELECT * FROM ups_history dh
+    WHERE NOT EXISTS (
+        SELECT 1 FROM Alertes a
+        WHERE a.idCollecte = dh.id
+    )
+
 ");
 
 $donnees = $stmt->fetchAll();
 
 // Seuils pour les alertes
-
-
 $seuils = [
     'batterieFaible' => 15,
     'surcharge'      => 5.0,
@@ -76,16 +76,16 @@ $nbAlertes = 0;
 foreach ($donnees as $d) {
     $alertes_a_creer = [];
 
-    if ($d['autonomieRestante'] < $seuils['batterieFaible']) {
-        $alertes_a_creer[] = ['Type'=>'batterieFaible','Message'=>"Autonomie critique : {$d['autonomieRestante']}%"];
+    if ($d['battery_charge'] < $seuils['batterieFaible']) {
+        $alertes_a_creer[] = ['Type'=>'batterieFaible','Message'=>"Autonomie critique : {$d['battery_charge']}%"];
     }
 
-    if ($d['tensionEntree'] > $seuils['surcharge']) {
-        $alertes_a_creer[] = ['Type'=>'surcharge','Message'=>"Tension entrée trop élevée : {$d['tensionEntree']}V"];
+    if ($d['input_voltage'] > $seuils['surcharge']) {
+        $alertes_a_creer[] = ['Type'=>'surcharge','Message'=>"Tension entrée trop élevée : {$d['input_voltage']}V"];
     }
 
-    if ($d['tensionSortie'] < $seuils['coupure']) {
-        $alertes_a_creer[] = ['Type'=>'coupure','Message'=>"Tension sortie trop basse : {$d['tensionSortie']}V"];
+    if ($d['output_voltage'] < $seuils['coupure']) {
+        $alertes_a_creer[] = ['Type'=>'coupure','Message'=>"Tension sortie trop basse : {$d['output_voltage']}V"];
     }
 
     foreach ($alertes_a_creer as $a) {
@@ -94,14 +94,14 @@ foreach ($donnees as $d) {
             VALUES (:idCollecte, :type, :message, NOW())
         ");
         $stmt->execute([
-            ':idCollecte' => $d['idCollecte'],
+            ':idCollecte' => $d['id'],
             ':type' => $a['Type'],
             ':message' => $a['Message']
         ]);
         $nbAlertes++;
 
         // passer l'ID et l'heure à la fonction
-        envoyerMailAlerte($a['Type'], $a['Message'], $d['idCollecte'], $d['heureCollecte']);
+        envoyerMailAlerte($a['Type'], $a['Message'], $d['id'], $d['timestamp']);
     }
 
 }
