@@ -1,51 +1,53 @@
 <!-- changerSeuils.php: admin seulement
-1) vérifier que l'utilisateur est admin (niveau=3)
+1) vérifier que l'utilisateur est admin (niveau=3) //verra apres
 2) formulaire pour changer les seuils
 3) sauvegarde - json --> 
 
 <?php
-require_once '../config.php'; //dans la table "authentification", l'utilisateur admin a le niveau 3
-session_start();//en theorie pas besoin: conencter sur index.php
-if (!isset($_SESSION['user_id'])) {
-     die('Accès refusé. Veuillez vous connecter.');
- }
-
-// vérifier le niveau d'accès
-$stmt = $pdo->prepare("SELECT droit FROM authentication WHERE id = :id");
-$stmt->execute([':id' => $_SESSION['user_id']]);
-$user = $stmt->fetch();
-if (!$user || $user['droit'] < 3) {
-    die('Accès refusé. Niveau d\'accès insuffisant.');
-}
+require_once '../config.php';
+session_start();
 
 // gérer le formulaire
-$message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $batterieFaible = floatval($_POST['batterieFaible']);
     $surcharge      = floatval($_POST['surcharge']);
     $coupure        = floatval($_POST['coupure']);
 
-    // sauvegarder les seuils dans un fichier ou une table (ici fichier pour simplicité)
     $seuils = [
         'batterieFaible' => $batterieFaible,
         'surcharge'      => $surcharge,
         'coupure'        => $coupure
     ];
     file_put_contents('../config_seuils.json', json_encode($seuils));
-    $message = 'Seuils mis à jour avec succès.';
+
+    // créer un message avec les nouvelles valeurs
+    $_SESSION['message_seuils'] = "Seuils mis à jour : Batterie faible = {$batterieFaible}%, Surcharge = {$surcharge}V, Coupure = {$coupure}V";
+    
+    // rediriger pour afficher le message
+    header('Location: changerSeuils.php');
+    exit;
+}
+
+// charger les seuils existants
+if (file_exists('../config_seuils.json')) {
+    $seuils = json_decode(file_get_contents('../config_seuils.json'), true);
 } else {
-    // charger les seuils existants
-    if (file_exists('../config_seuils.json')) {
-        $seuils = json_decode(file_get_contents('../config_seuils.json'), true);
-    } else {
-        $seuils = [
-            'batterieFaible' => 15,
-            'surcharge'      => 5.0,
-            'coupure'        => 0.5
-        ];
-    }
+    $seuils = [
+        'batterieFaible' => 15,
+        'surcharge'      => 5.0,
+        'coupure'        => 0.5
+    ];
+}
+
+// récupérer le message éventuel
+$message = '';
+if (!empty($_SESSION['message_seuils'])) {
+    $message = $_SESSION['message_seuils'];
+    unset($_SESSION['message_seuils']);
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,14 +66,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="post">
-        <label for="batterieFaible">Batterie faible (en %):</label>
-        <input type="number" id="batterieFaible" name="batterieFaible" value="<?= $seuils['batterieFaible'] ?>" step="0.1"><br><br>
+         <label for="batterieFaible">Batterie faible <i>(% trop faible)</i>:</label>
+        <input type="number" id="batterieFaible" name="batterieFaible" value="<?= $seuils['batterieFaible'] ?>" step="0.1" style="width:60px; font-size:13px;">%<br><br>
 
-        <label for="surcharge">Surcharge (en A):</label>
-        <input type="number" id="surcharge" name="surcharge" value="<?= $seuils['surcharge'] ?>" step="0.1"><br><br>
+        <label for="surcharge">Surcharge <i> (= Tension entree trop forte)</i>:</label>
+        <input type="number" id="surcharge" name="surcharge" value="<?= $seuils['surcharge'] ?>" step="0.1" style="width:60px; font-size:13px;">V<br><br>
 
-        <label for="coupure">Coupure (en A):</label>
-        <input type="number" id="coupure" name="coupure" value="<?= $seuils['coupure'] ?>" step="0.1"><br><br>
+        <label for="coupure">Coupure <i> (= Tension sortie trop faible)</i>:</label>
+        <input type="number" id="coupure" name="coupure" value="<?= $seuils['coupure'] ?>" step="0.1" style="width:60px; font-size:13px;">V<br><br>
 
         <input type="submit" value="Mettre à jour les seuils">
     </form>
