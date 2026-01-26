@@ -11,11 +11,12 @@ require __DIR__ . '/../PHPMailer/src/SMTP.php';
 require __DIR__ . '/../PHPMailer/src/Exception.php';
 
 
-function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at) {
+function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id) {
     $sujet = "Alerte Onduleur: $type";
     $message = "ALERTE Onduleur : $type\n\n";
     $message .= "Message : $messageAlerte\n";
     $message .= "ID Collecte : $id\n";
+    $message .= "UPS ID: {$ups_id}\n";
     $message .= "Heure de la collecte : $recorded_at\n\n";
     $message .= "Pour plus de détails, consultez l'historique : http://onduleur/historique/historique.php";
 
@@ -64,12 +65,17 @@ $stmt = $pdo->query("
 
 $donnees = $stmt->fetchAll();
 
-// Seuils pour les alertes
-$seuils = [
-    'batterieFaible' => 15,
-    'surcharge'      => 5.0,
-    'coupure'        => 0.5 //differentielles
-];
+// Charger les seuils depuis config_seuils.json
+$configSeuilsFile = __DIR__ . '/../config_seuils.json';
+if (file_exists($configSeuilsFile)) {
+    $seuils = json_decode(file_get_contents($configSeuilsFile), true);
+} else {
+    $seuils = [
+        'batterieFaible' => 15,
+        'surcharge'      => 5.0,
+        'coupure'        => 0.5
+    ];
+}
 
 // Vérifier chaque collecte et créer des alertes si nécessaire
 $nbAlertes = 0;
@@ -101,7 +107,7 @@ foreach ($donnees as $d) {
         $nbAlertes++;
 
         // passer l'ID et l'heure à la fonction
-        envoyerMailAlerte($a['Type'], $a['Message'], $d['id'], $d['timestamp']);
+        envoyerMailAlerte($a['Type'], $a['Message'], $d['id'], $d['timestamp'], $d['ups_id']);
     }
 
 }
