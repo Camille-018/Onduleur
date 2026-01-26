@@ -68,7 +68,7 @@ $donnees = $stmt->fetchAll();
 $seuils = [
     'batterieFaible' => 15,
     'surcharge'      => 5.0,
-    'coupure'        => 0.5
+    'coupure'        => 0.5 //differentielles
 ];
 
 // Vérifier chaque collecte et créer des alertes si nécessaire

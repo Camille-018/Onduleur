@@ -4,6 +4,7 @@ require_once '../config.php';
 // récupérer 100 dernières collectes
 $stmt = $pdo->query("SELECT * FROM ups_history ORDER BY timestamp DESC LIMIT 100");
 $historique = $stmt->fetchAll();
+
 ?>
 
 <!DOCTYPE html>
@@ -31,11 +32,12 @@ $historique = $stmt->fetchAll();
             <option value="output_voltage">Tension Sortie</option>
             <option value="ups_load">Charge Travail Onduleur</option>
             <option value="ups_status">État Onduleur</option>
-            <option value="timestamp">Heure Collecte</option>
+            
         </select>
 
         <label for="valeur">Valeur :</label>
         <input type="text" name="valeur" id="valeur" required>
+
 
         <button type="submit">Filtrer</button>
     </form>

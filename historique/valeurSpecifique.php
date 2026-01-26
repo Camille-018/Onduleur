@@ -2,23 +2,30 @@
 require_once '../config.php';
 
 // récupération des paramètres GET
-$colonne = $_GET['colonne'] ?? '';
+$colonne = $_GET['colonne'] ?? ''; 
 $valeur  = $_GET['valeur'] ?? '';
 
-$colonnes_valides = ['id','ups_id','battery_charge','battery_runtime', 'input_voltage', 'output_voltage', 'ups_load', 'ups_status','timestamp'];
+$colonnes_float = ['input_voltage','output_voltage'];
+$colonnes_int   = ['id','ups_id','battery_runtime','battery_charge','ups_load'];
+$colonnes_text  = ['ups_status'];
 
-if (!in_array($colonne, $colonnes_valides)) {
-    die('Colonne invalide');
-}
-
-// requête préparée
-if (in_array($colonne, ['battery_charge','ups_load', 'input_voltage', 'output_voltage'])) {
+if (in_array($colonne, $colonnes_float)) {
+    $valeur = (float)$valeur;
+    $epsilon = 0.01;
+    $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE $colonne BETWEEN :min AND :max ORDER BY timestamp DESC");
+    $stmt->execute([
+        ':min' => $valeur - $epsilon,
+        ':max' => $valeur + $epsilon
+    ]);
+} elseif (in_array($colonne, $colonnes_int)) {
+    $valeur = (int)$valeur;
     $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE $colonne = :valeur ORDER BY timestamp DESC");
     $stmt->execute([':valeur' => $valeur]);
-} else {
+} else { // texte
     $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE $colonne LIKE :valeur ORDER BY timestamp DESC");
     $stmt->execute([':valeur' => "%$valeur%"]);
 }
+
 
 $historique = $stmt->fetchAll();
 ?>
