@@ -111,11 +111,23 @@ foreach ($donnees as $d) {
     }
 
 }
-
-echo "Vérification terminée. $nbAlertes alerte(s) créée(s).";
-echo '<br><a href="alerte.php">Retour aux alertes</a>';
-echo '<br><a href="../historique/historique.php">Aller à l\'Historique</a>';
-echo '<br><a href="../index.php">Retour à l\'accueil</a>';
-
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel=stylesheet href="../style/style.css"></link>
+    <title>Document</title>
+</head>
+<body>
+    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
+    <?php
+        echo "Vérification terminée. $nbAlertes alerte(s) créée(s).";
+        echo '<br><a href="alerte.php">Retour aux alertes</a>';
+        echo '<br><a href="../historique/historique.php">Aller à l\'Historique</a>';
+        echo '<br><a href="../index.php">Retour à l\'accueil</a>';
+    ?>
+</body>
+</html>

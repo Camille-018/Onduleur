@@ -35,15 +35,17 @@ $historique = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel=stylesheet href="../style/style.css"></link>
     <title>Onduleur - Résultat Filtre</title>
 </head>
 <body>
     <h1>Onduleur - Résultat Filtre</h1>
+    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <a href="historique.php">Retour à l'historique</a><br>
     <a href="../index.php">Retour à l'accueil</a><br><br>
      <h3>Filtre : <?= htmlspecialchars($colonne) ?> = <?= htmlspecialchars($valeur) ?></h3> <!--appel du filtre -->
     <?php if (!empty($historique)): ?>
-    <table border="1" cellpadding="5" cellspacing="0">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>

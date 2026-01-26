@@ -53,9 +53,11 @@ if (!empty($_SESSION['message_seuils'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel=stylesheet href="../style/style.css"></link>
     <title>Changer les seuils</title>
 </head>
 <body>
+    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <h1>Changer les seuils d'alerte</h1>
     <a href="../index.php">Accueil</a><br>
     <a href="../alerte/alerte.php">Alertes</a><br>

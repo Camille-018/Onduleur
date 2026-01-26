@@ -6,10 +6,13 @@ TRUNCATE TABLE donnees; -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel=stylesheet href="../style/style.css"></link>
     <title>Onduleur</title>
 </head>
 <body>
-DASHBOARD
+<img src="style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
+<h1>DASHBOARD</h1>
+
 <!-- Redirection vers historique -->
  <br>
 <a href="historique/historique.php">Aller a l'Historique</a><br>

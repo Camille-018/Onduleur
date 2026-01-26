@@ -12,9 +12,11 @@ $historique = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel=stylesheet href="../style/style.css"></link>
     <title>Onduleur - Historique</title>
 </head>
 <body>
+    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <h1>Historique des Collectes</h1>
     <a href="../index.php">Retour à l'accueil</a>
     <br><br>
@@ -46,7 +48,7 @@ $historique = $stmt->fetchAll();
 
 <!-- les 100 dernières collectes en tableau -->
  <h2>Les 100 dernieres collectes</h2>
-    <table border="1" cellpadding="5" cellspacing="0">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>

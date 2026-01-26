@@ -12,10 +12,12 @@ $alertes = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel=stylesheet href="../style/style.css"></link>
     <title>Onduleur - Alertes</title>
 </head>
 <body>
     <h1>Alertes</h1>
+    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <a href="../index.php">Accueil</a><br>
     <a href="../historique/historique.php">Historique</a><br>
     <a href="verifierAlerte.php">Vérifier les alertes</a><br><br>
@@ -23,7 +25,7 @@ $alertes = $stmt->fetchAll();
     <br><br>
 
     <?php if (!empty($alertes)): ?>
-    <table border="1" cellpadding="5" cellspacing="0">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>
