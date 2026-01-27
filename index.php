@@ -15,7 +15,8 @@ TRUNCATE TABLE donnees; -->
 
 <!-- Redirection vers historique -->
  <br>
-<a href="historique/historique.php">Aller a l'Historique</a><br>
-<a href="alerte/alerte.php">Aller aux Alertes</a>
+ <a href="alerte/alerte.php">Aller aux Alertes</a><br>
+<a href="historique/historique.php">Aller à l'Historique</a><br>
+
 </body>
 </html>

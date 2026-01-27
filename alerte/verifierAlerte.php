@@ -124,10 +124,13 @@ foreach ($donnees as $d) {
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <?php
-        echo "Vérification terminée. $nbAlertes alerte(s) créée(s).";
+        echo "<h1>Vérification des alertes</h1>";
+        echo "Vérification terminée. $nbAlertes alerte(s) créée(s).<br>";
+        echo "<br><hr>";
+        echo '<br><a href="../index.php">Aller à l\'accueil</a>';
         echo '<br><a href="alerte.php">Retour aux alertes</a>';
         echo '<br><a href="../historique/historique.php">Aller à l\'Historique</a>';
-        echo '<br><a href="../index.php">Retour à l\'accueil</a>';
+        
     ?>
 </body>
 </html>

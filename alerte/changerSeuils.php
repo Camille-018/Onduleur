@@ -59,25 +59,27 @@ if (!empty($_SESSION['message_seuils'])) {
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <h1>Changer les seuils d'alerte</h1>
-    <a href="../index.php">Accueil</a><br>
-    <a href="../alerte/alerte.php">Alertes</a><br>
-    <a href="../historique/historique.php">Historique</a><br><br>
+    <a href="../index.php">Aller à l'accueil</a><br>
+    <a href="../alerte/alerte.php">Retour aux Alertes</a><br>
+    <a href="../historique/historique.php">Aller à l'Historique</a><br><br>
+    <hr>
 
-    <?php if ($message): ?>
-        <p><?= $message ?></p>
-    <?php endif; ?>
 
+    <h2>Changer les seuils</h2>
     <form method="post">
          <label for="batterieFaible">Batterie faible <i>(% trop faible)</i>:</label>
-        <input type="number" id="batterieFaible" name="batterieFaible" value="<?= $seuils['batterieFaible'] ?>" step="0.1" style="width:60px; font-size:13px;">%<br><br>
+        <input type="number" id="batterieFaible" name="batterieFaible" value="<?= $seuils['batterieFaible'] ?>" step="0.1" style="width:60px; font-size:13px;">%<br>
 
         <label for="surcharge">Surcharge <i> (= Tension entree trop forte)</i>:</label>
-        <input type="number" id="surcharge" name="surcharge" value="<?= $seuils['surcharge'] ?>" step="0.1" style="width:60px; font-size:13px;">V<br><br>
+        <input type="number" id="surcharge" name="surcharge" value="<?= $seuils['surcharge'] ?>" step="0.1" style="width:60px; font-size:13px;">V<br>
 
         <label for="coupure">Coupure <i> (= Tension sortie trop faible)</i>:</label>
-        <input type="number" id="coupure" name="coupure" value="<?= $seuils['coupure'] ?>" step="0.1" style="width:60px; font-size:13px;">V<br><br>
+        <input type="number" id="coupure" name="coupure" value="<?= $seuils['coupure'] ?>" step="0.1" style="width:60px; font-size:13px;">V<br>
 
         <input type="submit" value="Mettre à jour les seuils">
     </form>
+    <?php if ($message): ?>
+        <p><?= $message ?></p>
+    <?php endif; ?>
 </body>
 </html>

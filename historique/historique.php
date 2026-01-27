@@ -18,7 +18,8 @@ $historique = $stmt->fetchAll();
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <h1>Historique des Collectes</h1>
-    <a href="../index.php">Retour à l'accueil</a>
+    <a href="../index.php">Retour à l'accueil</a><br>
+    <a href="../alerte/alerte.php">Aller aux Alertes</a>
     <br><br>
 
         <!-- Formulaire pour filtrer par valeur spécifique -->
@@ -69,8 +70,8 @@ $historique = $stmt->fetchAll();
                 <td><?= $row['ups_id'] ?></td>
                 <td><?= $row['battery_charge'] ?>%</td>
                 <td><?= $row['battery_runtime'] ?>s</td>
-                <td><?= $row['input_voltage'] ?></td>
-                <td><?= $row['output_voltage'] ?></td>
+                <td><?= $row['input_voltage'] ?>V</td>
+                <td><?= $row['output_voltage'] ?>V</td>
                 <td><?= $row['ups_load'] ?></td>
                 <td><?= $row['ups_status'] ?></td>
                 <td><?= $row['timestamp'] ?></td>

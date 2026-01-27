@@ -19,10 +19,11 @@ $alertes = $stmt->fetchAll();
     <h1>Alertes</h1>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <a href="../index.php">Accueil</a><br>
-    <a href="../historique/historique.php">Historique</a><br>
-    <a href="verifierAlerte.php">Vérifier les alertes</a><br><br>
-    <a href="changerSeuils.php">Changer les seuils d'alerte</a>
-    <br><br>
+    <a href="../historique/historique.php">Historique</a><br><br>
+    <a href="verifierAlerte.php">Vérifier les alertes</a><br>
+    <a href="changerSeuils.php">Changer les seuils d'alerte</a><br>
+    <hr>
+    <h2>Les 100 dernières alertes</h2>
 
     <?php if (!empty($alertes)): ?>
     <table>
