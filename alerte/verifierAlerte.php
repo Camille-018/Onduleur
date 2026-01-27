@@ -9,27 +9,37 @@ use PHPMailer\PHPMailer\Exception;
 require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require __DIR__ . '/../PHPMailer/src/SMTP.php';
 require __DIR__ . '/../PHPMailer/src/Exception.php';
+$mailMessages = [];
 
+//recupérer les mails des admins
+function getMailsAdmins(PDO $pdo) {
+    $stmt = $pdo->prepare("
+        SELECT mail 
+        FROM users 
+        WHERE role = 'admin'
+          AND mail IS NOT NULL
+          AND mail != ''
+    ");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
 
-function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id) {
-    $sujet = "Alerte Onduleur: $type";
-    $message = "ALERTE Onduleur : $type\n\n";
+function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $pdo) {
+    if (!MAIL_ENABLED) {
+        return "MAIL SIMULÉ : Alerte Onduleur : $type";
+    }
+
+    $sujet = "Alerte Onduleur : $type";
+    $message  = "ALERTE Onduleur : $type\n\n";
     $message .= "Message : $messageAlerte\n";
     $message .= "ID Collecte : $id\n";
-    $message .= "UPS ID: {$ups_id}\n";
-    $message .= "Heure de la collecte : $recorded_at\n\n";
-    $message .= "Pour plus de détails, consultez l'historique : http://onduleur/historique/historique.php";
-
-    if (!MAIL_ENABLED) {
-        // Mode simulation (tests)
-        echo "MAIL SIMULÉ : $sujet - $messageAlerte<br>";
-        return;
-    }
+    $message .= "UPS ID : $ups_id\n";
+    $message .= "Heure : $recorded_at\n\n";
+    $message .= "Historique : http://onduleur/historique/historique.php";
 
     $mail = new PHPMailer(true);
 
     try {
-        // Utilisation du SMTP Gmail (voir config.php)
         $mail->isSMTP();
         $mail->Host       = MAIL_HOST;
         $mail->SMTPAuth   = true;
@@ -39,21 +49,31 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id) {
         $mail->Port       = MAIL_PORT;
 
         $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
-        $mail->addAddress(MAIL_TO);
+        $mail->addAddress(MAIL_FROM);
+
+        $admins = getMailsAdmins($pdo);
+        if (empty($admins)) {
+            return "Aucun admin à notifier!!! (mail non envoyé)  <br>--> Table users, aucun role 'admin' avec mail renseigné.";
+        }
+
+        foreach ($admins as $email) {
+            $mail->addBCC($email);
+        }
 
         $mail->Subject = $sujet;
         $mail->Body    = $message;
 
         $mail->send();
-        echo "Mail envoyé : $sujet<br>";
+        return "Mail envoyé : $sujet";
+
     } catch (Exception $e) {
-        echo "Erreur mail : {$mail->ErrorInfo}<br>";
+        return "Erreur mail : {$mail->ErrorInfo}";
     }
 }
 
 
-// Récupérer toutes les collectes qui n'ont pas encore généré d'alerte
 
+// Récupérer toutes les collectes qui n'ont pas encore généré d'alerte
 $stmt = $pdo->query("
     SELECT * FROM ups_history dh
     WHERE NOT EXISTS (
@@ -106,10 +126,10 @@ foreach ($donnees as $d) {
         ]);
         $nbAlertes++;
 
-        // passer l'ID et l'heure à la fonction
-        envoyerMailAlerte($a['Type'], $a['Message'], $d['id'], $d['timestamp'], $d['ups_id']);
-    }
 
+        $msg = envoyerMailAlerte($a['Type'],$a['Message'],$d['id'],$d['timestamp'],$d['ups_id'],$pdo);
+        if ($msg) {$mailMessages[] = $msg;}
+    }
 }
 ?>
 
@@ -126,11 +146,12 @@ foreach ($donnees as $d) {
     <?php
         echo "<h1>Vérification des alertes</h1>";
         echo "Vérification terminée. $nbAlertes alerte(s) créée(s).<br>";
+        foreach ($mailMessages as $msg) 
+            {echo "<div class='mail-info'>$msg</div>";}
         echo "<br><hr>";
         echo '<br><a href="../index.php">Aller à l\'accueil</a>';
         echo '<br><a href="alerte.php">Retour aux alertes</a>';
         echo '<br><a href="../historique/historique.php">Aller à l\'Historique</a>';
-        
     ?>
 </body>
 </html>
