@@ -1,5 +1,6 @@
 *{
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+     box-sizing: border-box;
 }
 
 body{
@@ -15,8 +16,6 @@ body{
     padding: 1%;
 }
 
-
-
 .logo {
     position: fixed;    
     top: 10px;
@@ -31,13 +30,17 @@ h1{
 
 a{
     text-decoration: none;
-    color:slategrey
+    color:rgb(68, 189, 20);
 }
 
 a:hover{
     text-decoration: underline;
     color: darkslategray;
 }
+
+
+
+
 
 table {
     border: 2px solid #1b1f23; /* bord plus sobre que noir pur */

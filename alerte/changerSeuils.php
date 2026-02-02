@@ -11,7 +11,7 @@ session_start();
 if (!isset($_SESSION['user_id'])) {
     echo "<script>
             alert('Accès refusé : utilisateur non connecté.');
-            window.location.href = '../alerte/login.php';
+            window.location.href = '../auth/login.php';
           </script>";
     exit;
 }
