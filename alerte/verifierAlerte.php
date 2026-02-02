@@ -30,12 +30,14 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
     }
 
     $sujet = "Alerte Onduleur : $type";
-    $message  = "ALERTE Onduleur : $type\n\n";
-    $message .= "Message : $messageAlerte\n";
-    $message .= "ID Collecte : $id\n";
-    $message .= "UPS ID : $ups_id\n";
-    $message .= "Heure : $recorded_at\n\n";
-    $message .= "Historique : http://onduleur/historique/historique.php";
+    $message = "<strong>ALERTE Onduleur : $type</strong><br><br>";
+    $message .= $messageAlerte; // ton texte déjà formaté en HTML avec <br> et <i>
+    $message .= "<br><br>ID Collecte : $id<br>";
+    $message .= "UPS ID : $ups_id<br>";
+    $message .= "Heure : $recorded_at<br><br>";
+    $message .= "Historique : <a href='http://onduleur/historique/historique.php'>lien historique</a><br>";
+    $message .= "Collecte avec l'erreur : <a href='http://onduleur/historique/valeurSpecifique.php?colonne=id&valeur=$id'>lien spécifique</a>";
+
 
     $mail = new PHPMailer(true);
 
@@ -61,6 +63,7 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         }
 
         $mail->Subject = $sujet;
+        $mail->isHTML(true);  
         $mail->Body    = $message;
 
         $mail->send();
@@ -114,44 +117,75 @@ foreach ($donnees as $d) {
         $alertes_a_creer[] = ['Type'=>'coupure','Message'=>"Tension sortie trop basse : {$d['output_voltage']}V"];
     }
 
-    foreach ($alertes_a_creer as $a) {
-        $stmt = $pdo->prepare("
-            INSERT INTO Alertes (idCollecte, Type, Message, heureAlerte)
-            VALUES (:idCollecte, :type, :message, NOW())
-        ");
-        $stmt->execute([
-            ':idCollecte' => $d['id'],
-            ':type' => $a['Type'],
-            ':message' => $a['Message']
-        ]);
-        $nbAlertes++;
+    if (!empty($alertes_a_creer)) 
+    {
+        // 1) Insert toutes les alertes dans la BDD
+        foreach ($alertes_a_creer as $a) {
+            $stmt = $pdo->prepare("
+                INSERT INTO Alertes (idCollecte, Type, Message, heureAlerte)
+                VALUES (:idCollecte, :type, :message, NOW())
+            ");
+            $stmt->execute([
+                ':idCollecte' => $d['id'],
+                ':type' => $a['Type'],
+                ':message' => $a['Message']
+            ]);
+            $nbAlertes++;
+        }
 
+        // 2) Préparer le mail unique avec toutes les alertes de cette collecte
+        $typeList = implode(", ", array_column($alertes_a_creer, 'Type'));
 
-        $msg = envoyerMailAlerte($a['Type'],$a['Message'],$d['id'],$d['timestamp'],$d['ups_id'],$pdo);
-        if ($msg) {$mailMessages[] = $msg;}
+        $messageList = "";
+        foreach ($alertes_a_creer as $a) {
+            switch ($a['Type']) {
+                case 'batterieFaible':
+                    $messageList .= "- batterieFaible -> {$a['Message']} (<i>{$seuils['batterieFaible']}% = seuil batterieFaible</i>)<br>";
+                    break;
+
+                case 'surcharge':
+                    $messageList .= "- surcharge -> {$a['Message']} (<i>{$seuils['surcharge']}V = seuil surcharge</i>)<br>";
+                    break;
+
+                case 'coupure':
+                    $messageList .= "- coupure -> {$a['Message']} (<i>{$seuils['coupure']}V = seuil coupure</i>)<br>";
+                    break;
+            }
+        }
+
+        // 3) Envoyer le mail
+        $msg = envoyerMailAlerte(
+            $typeList,
+            $messageList,
+            $d['id'],
+            $d['timestamp'],
+            $d['ups_id'],
+            $pdo);
+        $mailMessages[] = $msg;
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Document</title>
+    <title>Onduleur - Vérifier alertes</title>
 </head>
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <?php
         echo "<h1>Vérification des alertes</h1>";
+        echo '<br><a href="../index.php">Aller à l\'accueil</a>';
+        echo '<br><a href="../historique/historique.php">Aller à l\'Historique</a>';
+        echo '<br><a href="alerte.php">Retour aux alertes</a>';
+        echo "<br><hr>";
         echo "Vérification terminée. $nbAlertes alerte(s) créée(s).<br>";
         foreach ($mailMessages as $msg) 
             {echo "<div class='mail-info'>$msg</div>";}
-        echo "<br><hr>";
-        echo '<br><a href="../index.php">Aller à l\'accueil</a>';
-        echo '<br><a href="alerte.php">Retour aux alertes</a>';
-        echo '<br><a href="../historique/historique.php">Aller à l\'Historique</a>';
+
     ?>
 </body>
 </html>

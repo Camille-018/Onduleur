@@ -9,24 +9,46 @@ session_start();
 
 // gérer le formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $batterieFaible = floatval($_POST['batterieFaible']);
-    $surcharge      = floatval($_POST['surcharge']);
-    $coupure        = floatval($_POST['coupure']);
 
-    $seuils = [
-        'batterieFaible' => $batterieFaible,
-        'surcharge'      => $surcharge,
-        'coupure'        => $coupure
+    // anciens seuils
+    $anciensSeuils = file_exists('../config_seuils.json')
+        ? json_decode(file_get_contents('../config_seuils.json'), true)
+        : [
+            'batterieFaible' => 15,
+            'surcharge' => 5.0,
+            'coupure' => 0.5
+        ];
+
+    // nouveaux seuils
+    $nouveauxSeuils = [
+        'batterieFaible' => floatval($_POST['batterieFaible']),
+        'surcharge'      => floatval($_POST['surcharge']),
+        'coupure'        => floatval($_POST['coupure'])
     ];
-    file_put_contents('../config_seuils.json', json_encode($seuils));
 
-    // créer un message avec les nouvelles valeurs
-    $_SESSION['message_seuils'] = "Seuils mis à jour : Batterie faible = {$batterieFaible}%, Surcharge = {$surcharge}V, Coupure = {$coupure}V";
-    
-    // rediriger pour afficher le message
+    // sauvegarde
+    file_put_contents('../config_seuils.json', json_encode($nouveauxSeuils));
+
+    // comparaison
+    $changements = [];
+
+    foreach ($nouveauxSeuils as $cle => $valeur) {
+        if ($anciensSeuils[$cle] != $valeur) {
+            $changements[] = "- " . ucfirst($cle) . " : {$anciensSeuils[$cle]} → {$valeur}";
+        }
+    }
+
+    // message propre
+    if ($changements) {
+        $_SESSION['message_seuils'] = "<u>Seuils modifiés :</u><br>" . implode('<br>', $changements);
+    } else {
+        $_SESSION['message_seuils'] = "Aucun seuil n’a été modifié.";
+    }
+
     header('Location: changerSeuils.php');
     exit;
 }
+
 
 // charger les seuils existants
 if (file_exists('../config_seuils.json')) {
@@ -49,12 +71,12 @@ if (!empty($_SESSION['message_seuils'])) {
 
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Changer les seuils</title>
+    <title>Onduleur - Changer les seuils</title>
 </head>
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">

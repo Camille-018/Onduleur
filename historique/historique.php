@@ -8,7 +8,7 @@ $historique = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,6 +21,7 @@ $historique = $stmt->fetchAll();
     <a href="../index.php">Retour à l'accueil</a><br>
     <a href="../alerte/alerte.php">Aller aux Alertes</a>
     <br><br>
+    <hr>
 
         <!-- Formulaire pour filtrer par valeur spécifique -->
     <h2>Filtrer par valeur spécifique</h2>
@@ -44,11 +45,12 @@ $historique = $stmt->fetchAll();
 
         <button type="submit">Filtrer</button>
     </form>
+    <br>
     <hr>
-    <br><br>
 
 <!-- les 100 dernières collectes en tableau -->
  <h2>Les 100 dernieres collectes</h2>
+ <p>Voici le tableau des 100 dernières collectes enregistrées par l'onduleur, classées de la plus récente à la plus ancienne.</p>
     <table>
         <thead>
             <tr>
