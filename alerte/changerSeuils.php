@@ -9,7 +9,11 @@ session_start();
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
-    die("Accès refusé : utilisateur non connecté.");
+    echo "<script>
+            alert('Accès refusé : utilisateur non connecté.');
+            window.location.href = '../alerte/login.php';
+          </script>";
+    exit;
 }
 
 // Vérifier si l'utilisateur est admin via la table users
@@ -18,7 +22,11 @@ $stmt->execute([':id' => $_SESSION['user_id']]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC); // <--- important !
 
 if (!$user || $user['role'] !== 'admin') {
-    die("Accès refusé : seuls les admins peuvent changer les seuils.");
+    echo "<script>
+            alert('Accès refusé : seuls les admins peuvent changer les seuils.');
+            window.location.href = '../index.php';
+          </script>";
+    exit;
 }
 
 // 2 -gérer le formulaire

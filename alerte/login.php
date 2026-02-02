@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
-        header('Location: ../alerte/changerSeuils.php'); // redirige vers ton formulaire
+        header('Location: ../index.php'); // redirige vers l'accueil
         exit;
     } else {
         $message = "Identifiant ou mot de passe incorrect.";
@@ -42,5 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="password" name="password" required><br><br>
         <button type="submit">Se connecter</button>
     </form>
+    <br>
+    <a href="../index.php">Retour à l'accueil</a>
 </body>
 </html>

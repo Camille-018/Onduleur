@@ -15,9 +15,10 @@ TRUNCATE TABLE donnees; -->
 
 <!-- Redirections -->
  <br>
- <a href="alerte/login.php">Se connecter</a><br>
  <a href="alerte/alerte.php">Aller aux Alertes</a><br>
 <a href="historique/historique.php">Aller à l'Historique</a><br>
+<hr>
+ <a href="alerte/login.php">Se connecter</a><br>
 
 </body>
 </html>
