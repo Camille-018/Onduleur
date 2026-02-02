@@ -67,7 +67,7 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         $mail->Body    = $message;
 
         $mail->send();
-        return "Mail envoyé : $sujet";
+        return "Mail envoyé - $sujet";
 
     } catch (Exception $e) {
         return "Erreur mail : {$mail->ErrorInfo}";

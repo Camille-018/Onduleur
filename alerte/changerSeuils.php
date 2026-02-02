@@ -7,7 +7,21 @@
 require_once '../config.php';
 session_start();
 
-// gérer le formulaire
+// Vérifier si l'utilisateur est connecté
+if (!isset($_SESSION['user_id'])) {
+    die("Accès refusé : utilisateur non connecté.");
+}
+
+// Vérifier si l'utilisateur est admin via la table users
+$stmt = $pdo->prepare("SELECT role FROM users WHERE id = :id LIMIT 1");
+$stmt->execute([':id' => $_SESSION['user_id']]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC); // <--- important !
+
+if (!$user || $user['role'] !== 'admin') {
+    die("Accès refusé : seuls les admins peuvent changer les seuils.");
+}
+
+// 2 -gérer le formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // anciens seuils
@@ -62,11 +76,8 @@ if (file_exists('../config_seuils.json')) {
 }
 
 // récupérer le message éventuel
-$message = '';
-if (!empty($_SESSION['message_seuils'])) {
-    $message = $_SESSION['message_seuils'];
-    unset($_SESSION['message_seuils']);
-}
+$message = $_SESSION['message_seuils'] ?? '';
+unset($_SESSION['message_seuils']);
 ?>
 
 

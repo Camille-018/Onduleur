@@ -13,8 +13,9 @@ TRUNCATE TABLE donnees; -->
 <img src="style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
 <h1>DASHBOARD</h1>
 
-<!-- Redirection vers historique -->
+<!-- Redirections -->
  <br>
+ <a href="alerte/login.php">Se connecter</a><br>
  <a href="alerte/alerte.php">Aller aux Alertes</a><br>
 <a href="historique/historique.php">Aller à l'Historique</a><br>
 
