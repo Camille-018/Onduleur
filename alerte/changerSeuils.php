@@ -29,8 +29,8 @@ if ($_SESSION['role'] !== 'admin') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // anciens seuils
-    $anciensSeuils = file_exists('../config_seuils.json')
-        ? json_decode(file_get_contents('../config_seuils.json'), true)
+    $anciensSeuils = file_exists('../config/config_seuils.json')
+        ? json_decode(file_get_contents('../config/config_seuils.json'), true)
         : [
             'batterieFaible' => 15,
             'surcharge' => 5.0,
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ];
 
     // sauvegarde
-    file_put_contents('../config_seuils.json', json_encode($nouveauxSeuils));
+    file_put_contents('../config/config_seuils.json', json_encode($nouveauxSeuils));
 
     // comparaison
     $changements = [];
