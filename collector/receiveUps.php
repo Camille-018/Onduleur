@@ -33,7 +33,7 @@ $model = $data['device.model']
 if ($serial === null) {
     http_response_code(202);
     echo "<script>
-        UPS non connecté (aucun identifiant)
+        alert('UPS non connecté (aucun identifiant)');
         window.location.href = '../index.php';
         </script>";
     exit;
