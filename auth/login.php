@@ -11,16 +11,24 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $stmt->execute([$username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($user && $password === $user["password"]) {
-        $_SESSION["user"] = $user["username"];
-        $_SESSION["role"] = $user["role"];
-        $_SESSION["mail"] = $user["mail"];
-
-        header("Location: ../index.php");
-        exit;
-    } else {
-        $error = "Identifiants incorrects";
+if ($user && password_verify($password, $user["password"])) 
+    {
+    if ($user['status'] !== 'active') {
+        die("Compte non validé.");
     }
+    $_SESSION["user"] = $user["username"];
+    $_SESSION["role"] = $user["role"];
+    $_SESSION["mail"] = $user["mail"];
+
+    header("Location: ../index.php");
+    exit;
+    } 
+    
+else {
+    $error = "Identifiants incorrects";
+    }
+
+
 }
 ?>
 
@@ -38,6 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <input type="text" name="username" placeholder="Nom d'utilisateur" required><br>
         <input type="password" name="password" placeholder="Mot de passe" required><br>
         <button type="submit">Se connecter</button>
+        <br><br>
+        <a href="sInscrire.php">S'inscrire</a>
     </form>
 
     <p style="color:red"><?= $error ?></p>

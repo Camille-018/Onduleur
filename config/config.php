@@ -27,3 +27,7 @@ define('MAIL_USERNAME', 'ondulateur.alertes@gmail.com');
 define('MAIL_PASSWORD', 'cshy fwzk wnis rfid'); // mdp de lapp
 define('MAIL_FROM', 'ondulateur.alertes@gmail.com');
 define('MAIL_FROM_NAME', 'Onduleur - Alertes');
+
+//authentification des requêtes API
+define('SIGNATURE_SECRET', 'une_cle_ultra_secrete_a_ne_pas_commit');
+
