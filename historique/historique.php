@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../config/config.php';
 
 // récupérer 100 dernières collectes

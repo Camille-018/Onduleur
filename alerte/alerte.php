@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../config/config.php';
 // alerte.php: affiche les alertes depuis la base de données
 

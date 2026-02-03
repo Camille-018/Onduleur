@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once "../config/config.php";
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

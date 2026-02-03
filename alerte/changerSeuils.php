@@ -4,10 +4,11 @@
 3) sauvegarde - json --> 
 
 <?php
+session_start();
 require_once '../config/config.php';
 
 // Vérifier si l'utilisateur est connecté
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user'])) {
     echo "<script>
             alert('Accès refusé : utilisateur non connecté.');
             window.location.href = '../auth/login.php';
@@ -15,18 +16,14 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Vérifier si l'utilisateur est admin via la table users
-$stmt = $pdo->prepare("SELECT role FROM users WHERE id = :id LIMIT 1");
-$stmt->execute([':id' => $_SESSION['user_id']]);
-$user = $stmt->fetch(PDO::FETCH_ASSOC); // <--- important !
-
-if (!$user || $user['role'] !== 'admin') {
+if ($_SESSION['role'] !== 'admin') {
     echo "<script>
             alert('Accès refusé : seuls les admins peuvent changer les seuils.');
             window.location.href = '../index.php';
           </script>";
     exit;
 }
+
 
 // 2 -gérer le formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -73,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // charger les seuils existants
 if (file_exists('../config/config_seuils.json')) {
-    $seuils = json_decode(file_get_contents('../config_seuils.json'), true);
+    $seuils = json_decode(file_get_contents('../config/config_seuils.json'), true);
 } else {
     $seuils = [
         'batterieFaible' => 15,

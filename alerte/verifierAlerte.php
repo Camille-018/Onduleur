@@ -1,5 +1,6 @@
 <!-- verifierAlerte.php: regarder la table donnees, inserer les problemes dans alertes, envoyer une notif (mail/sms) -->
  <?php
+ session_start();
 require_once '../config/config.php';
 
 //envoyer une alerte par mail
