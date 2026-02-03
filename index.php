@@ -7,7 +7,7 @@ if (!isset($_SESSION["user"])) {
 }
 
 // 🔌 Connexion BDD
-require_once "config.php";
+require_once "config/config.php";
 
 // 📊 Récupération de la dernière mesure UPS
 $stmt = $pdo->query("
@@ -34,7 +34,7 @@ $data = $stmt->fetch(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <link rel=stylesheet href="style/style.css"></link>
-    <title>Dashboard UPS</title>
+    <title>Onduleur - Dashboard UPS</title>
     <style>
         .card {
             background: white;
@@ -60,7 +60,8 @@ $data = $stmt->fetch(PDO::FETCH_ASSOC);
     </style>
 </head>
 <body>
-
+<img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
+<h1>Acceuil - Dashboard</h1>
 <div class="card">
 
     <div class="top">
@@ -100,6 +101,6 @@ $data = $stmt->fetch(PDO::FETCH_ASSOC);
 </div>
 <a href="historique/historique.php">Voir l'historique</a><br>
 <a href="alerte/alerte.php">Voir les alertes</a><br>
-<a href= "api/receiveUps.php">Recevoir les données UPS</a>
+<a href= "collector/receiveUps.php">Recevoir les données UPS</a>
 </body>
 </html>

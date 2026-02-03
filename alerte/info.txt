@@ -6,7 +6,7 @@ MDP d’application pour PHP/PHPMailer: cshy fwzk wnis rfid
 
 PHP Mailer: https://github.com/PHPMailer/PHPMailer
 
-Destinataire des alertes : villemin.camille@gmail.com
+Destinataire des alertes : tout les mails des admins dans la table users
 Le mail n’est envoyé que lorsqu’une erreur est détectée dans la table 'donnees' 
 
 Configuration dans config.php :
@@ -17,7 +17,6 @@ MAIL_USERNAME = ondulateur.alertes@gmail.com
 MAIL_PASSWORD = ondulateurcereep18?
 MAIL_FROM = ondulateur.alertes@gmail.com
 MAIL_FROM_NAME = Ondulateur - Alertes
-MAIL_TO = villemin.camille@gmail.com
 
 Usage :
 - Ce fichier est uniquement pour tests locaux.

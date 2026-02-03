@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php';
+require_once '../config/config.php';
 
 // récupérer 100 dernières collectes
 $stmt = $pdo->query("SELECT * FROM ups_history ORDER BY timestamp DESC LIMIT 100");

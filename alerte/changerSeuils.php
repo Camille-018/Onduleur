@@ -4,8 +4,7 @@
 3) sauvegarde - json --> 
 
 <?php
-require_once '../config.php';
-session_start();
+require_once '../config/config.php';
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
@@ -73,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 // charger les seuils existants
-if (file_exists('../config_seuils.json')) {
+if (file_exists('../config/config_seuils.json')) {
     $seuils = json_decode(file_get_contents('../config_seuils.json'), true);
 } else {
     $seuils = [

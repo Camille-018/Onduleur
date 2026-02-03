@@ -1,5 +1,5 @@
 <?php
-require_once '../config.php';
+require_once '../config/config.php';
 // alerte.php: affiche les alertes depuis la base de données
 
 // récupérer toutes les alertes (les 100 dernières)

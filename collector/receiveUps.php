@@ -1,5 +1,5 @@
 <?php
-require_once "../config.php";
+require_once "../config/config.php";
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // 2️⃣ URL de l’API Flask
@@ -12,7 +12,11 @@ $data = json_decode($json, true);
 // ❌ API inaccessible ou JSON vide
 if (!$data || !is_array($data)) {
     http_response_code(202);
-    exit("UPS non connecté ou API indisponible");
+    echo "<script>
+        alert('UPS non connecté ou API indisponible');
+        window.location.href = '../index.php';
+        </script>";
+    exit;
 }
 
 // 4️⃣ Récupération sécurisée des infos UPS
@@ -27,7 +31,11 @@ $model = $data['device.model']
 // ❌ Pas d’onduleur détecté → on STOP proprement
 if ($serial === null) {
     http_response_code(202);
-    exit("UPS non connecté (aucun identifiant)");
+    echo "<script>
+        UPS non connecté (aucun identifiant)
+        window.location.href = '../index.php';
+        </script>";
+    exit;
 }
 
 // 5️⃣ Vérifier si l’UPS existe déjà
@@ -73,4 +81,8 @@ $stmt->execute([
     $timestamp
 ]);
 
-echo "Collecte OK";
+echo "<script>
+        alert('Collecte OK');
+        window.location.href = '../index.php';
+        </script>";
+    exit;

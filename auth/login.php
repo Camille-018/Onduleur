@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "../config.php";
+require_once "../config/config.php";
 
 $error = "";
 
@@ -28,11 +28,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <html>
 <head>
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Connexion</title>
+    <title>Onduleur - Connexion</title>
 </head>
 <body>
-    <h2>Connexion</h2>
-
+    <h1>Connexion</h1>
+    <p>Veuillez vous connecter pour accéder au tableau de bord</p>
+    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <form method="POST">
         <input type="text" name="username" placeholder="Nom d'utilisateur" required><br>
         <input type="password" name="password" placeholder="Mot de passe" required><br>
