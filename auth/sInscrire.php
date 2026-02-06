@@ -123,7 +123,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <h2>Sign Up Form</h2>
-    <p><i>An email will be sent to the admin to validate your account</i></p>
+    <p><i>An email will be sent to the admin to validate your account. <br>
+    Then, you will receive a confirmation email about the decision. </i></p>
 
     <form method="POST">
         <input type="text" name="username" placeholder="Username" required><br>

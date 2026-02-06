@@ -77,9 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST">
         <label>Username or Email:<br>
             <input type="text" name="username_or_email" required>
-        </label><br><br>
+        </label><br>
         <button type="submit">Send Temporary Password</button>
     </form>
+    <br><a href="login.php">Go to login</a>
+    <br><a href="sInscrire.php">Sign up (No account yet)</a>
 
     <?php
     if (!empty($errors)) {
