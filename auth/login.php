@@ -46,7 +46,9 @@ else {
         <input type="password" name="password" placeholder="Password" required><br>
         <button type="submit">Login</button>
         <br><br>
+        <a href="forgotPassword.php">Forgot password? (complete the form to reset your password)</a><br>
         <a href="sInscrire.php">Sign up</a>
+
     </form>
 
     <p style="color:red"><?= $error ?></p>
