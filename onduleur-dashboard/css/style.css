@@ -1,0 +1,47 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    padding: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 250px);
+    gap: 15px;
+}
+
+.card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #000;
+}
+
+.status {
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.green { background: #2ecc71; }
+.orange { background: #f39c12; }
+.red { background: #e74c3c; }
+.grey { background: #7f8c8d; }
+
+.login form {
+    width: 300px;
+    margin: 100px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.login input, .login button {
+    width: 100%;
+    margin: 8px 0;
+    padding: 8px;
+}
+
+.error { color: red; }

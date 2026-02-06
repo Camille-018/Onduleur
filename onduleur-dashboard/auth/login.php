@@ -1,26 +1,20 @@
 <?php
 session_start();
-require_once "../config/database.php";
+require_once __DIR__ . '/../config/database.php';
 
-$error = "";
+$error = null;
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $username = $_POST["username"] ?? "";
-    $password = $_POST["password"] ?? "";
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-    $stmt->execute([$username]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt->execute([$_POST['username']]);
+    $user = $stmt->fetch();
 
-    if ($user && $password === $user["password"]) {
-        $_SESSION["user"] = $user["username"];
-        $_SESSION["role"] = $user["role"];
-        $_SESSION["mail"] = $user["mail"];
-
-        header("Location: ../dashboard/index.php");
+    if ($user && $_POST['password'] === $user['password']) {
+        $_SESSION['user'] = $user['username'];
+        header("Location: http://localhost/onduleur-dashboard/dashboard/index.php");
         exit;
     } else {
-        $error = "Identifiants ou mot de passe incorrects";
+        $error = "Identifiants incorrects";
     }
 }
 ?>
@@ -28,17 +22,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>Connexion</title>
+    <link rel="stylesheet" href="../css/style.css">
 </head>
-<body>
+<body class="login">
+<form method="post">
     <h2>Connexion</h2>
-
-    <form method="POST">
-        <input type="text" name="username" placeholder="Nom d'utilisateur" required><br>
-        <input type="password" name="password" placeholder="Mot de passe" required><br>
-        <button type="submit">Se connecter</button>
-    </form>
-
-    <p style="color:red"><?= $error ?></p>
+    <?php if ($error): ?><p class="error"><?= $error ?></p><?php endif; ?>
+    <input name="username" placeholder="Utilisateur" required>
+    <input name="password" type="password" placeholder="Mot de passe" required>
+    <button type="submit">Se connecter</button>
+</form>
 </body>
 </html>
