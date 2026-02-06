@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$username, $mail]);
 
         if ($stmt->fetch()) {
-            $error = "Nom d'utilisateur ou mail déjà utilisé.";
+            echo '<script>alert("Nom d\'utilisateur ou mail déjà utilisé.");</script>';
         } else {
             // 2️⃣ tout est ok → hash password
             $role = 'user';
@@ -109,12 +109,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1>Inscription</h1>
     <p>Veuillez vous inscrire pour accéder au tableau de bord</p>
 
-    <?php if ($success): ?>
-        <p style="color:green"><?= $success ?></p>
+    <?php if (isset($_GET['success'])): ?>
+    <script>
+        alert("Demande envoyée, en attente de validation admin.");
+    </script>
     <?php endif; ?>
 
-    <?php if ($error): ?>
-        <p style="color:red"><?= $error ?></p>
+    <?php if (isset($_GET['refused'])): ?>
+    <script>
+        alert("Inscription refusée.");
+    </script>
     <?php endif; ?>
 
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
@@ -126,6 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="password" name="password" placeholder="Mot de passe" required><br>
         <input type="email" name="mail" placeholder="Adresse mail" required><br>
         <button type="submit">S'inscrire</button>
+        <br><br><a href="login.php">Déjà un compte ? Se connecter</a>
     </form>
 </body>
 </html>
