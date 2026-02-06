@@ -54,6 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $signature = hash_hmac('sha256', $userId, SIGNATURE_SECRET);
             $lienAccept = "http://onduleur/auth/validerInscription.php?action=accept&id=$userId&sig=$signature";
             $lienRefuse = "http://onduleur/auth/validerInscription.php?action=refuse&id=$userId&sig=$signature";
+            $lienAcceptAdmin = "http://onduleur/auth/validerInscription.php?action=acceptAdmin&id=$userId&sig=$signature";
+
 
             // 4️⃣ envoi mail à l'admin
             $mailObj = new PHPMailer(true);
@@ -72,12 +74,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mailObj->isHTML(true);
             $mailObj->Subject = "Demande d'inscription - $username";
             $mailObj->Body = "
-                Nouvelle inscription<br><br>
+                <h1>Nouvelle inscription</h1>
+                <h2>Infos utilisateur :</h2>
                 User : $username<br>
                 Mail : $mail<br>
-                Rôle : $role<br><br>
-                <a href='$lienAccept'>✅ Accepter</a><br>
-                <a href='$lienRefuse'>❌ Refuser</a>
+                Rôle : $role<br><hr>
+                <h2>Actions :</h2>
+                <a href='$lienAccept'>✅ - Accepter</a><br><br>
+                <a href='$lienAcceptAdmin'>⭐ - Accepter en Admin</a><br><br>
+                <a href='$lienRefuse'>❌ - Refuser</a>
             ";
 
             try {

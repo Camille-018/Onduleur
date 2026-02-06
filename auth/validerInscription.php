@@ -49,7 +49,6 @@ $mail->addAddress($user['mail']);
 $mail->isHTML(true);
 
 if ($action === 'accept') {
-
     $stmt = $pdo->prepare("
         UPDATE users
         SET status = 'active'
@@ -60,8 +59,18 @@ if ($action === 'accept') {
     $mail->Subject = "Inscription acceptée";
     $mail->Body = "Ton compte est validé. Tu peux te connecter.";
 
-} elseif ($action === 'refuse') {
+} elseif ($action === 'acceptAdmin') {
+    $stmt = $pdo->prepare("
+        UPDATE users
+        SET status = 'active', role = 'admin'
+        WHERE id = ?
+    ");
+    $stmt->execute([$user['id']]);
 
+    $mail->Subject = "Inscription acceptée (Admin)";
+    $mail->Body = "Ton compte est validé et tu es maintenant admin. Tu peux te connecter.";
+
+} elseif ($action === 'refuse') {
     $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
     $stmt->execute([$user['id']]);
 
@@ -71,6 +80,8 @@ if ($action === 'accept') {
 } else {
     die("Action inconnue.");
 }
+
+
 
 try {
     $mail->send();
