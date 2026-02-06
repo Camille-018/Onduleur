@@ -96,8 +96,8 @@ $data = $stmt->fetch(PDO::FETCH_ASSOC);
     <?php endif; ?>
 
 </div>
-<a href="historique/historique.php">View history</a><br>
-<a href="alerte/alerte.php">View alerts</a><br>
+<a href="historique/historique.php">Go to history</a><br>
+<a href="alerte/alerte.php">Go to alerts</a><br>
 <a href= "collector/receiveUps.php">Receive UPS data</a>
 </body>
 </html>

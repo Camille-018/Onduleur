@@ -40,8 +40,8 @@ $historique = $stmt->fetchAll();
 <body>
     <h1>UPS - Filter Result</h1>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <a href="historique.php">Back to History</a><br>
-    <a href="../index.php">Back to Home</a><br><br>
+    <a href="historique.php">Go to History</a><br>
+    <a href="../index.php">Go to Home</a><br><br>
      <h3>Filter : <?= htmlspecialchars($colonne) ?> = <?= htmlspecialchars($valeur) ?></h3> <!--filter call -->
     <?php if (!empty($historique)): ?>
     <table>

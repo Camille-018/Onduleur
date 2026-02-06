@@ -1,13 +1,14 @@
-<!-- changerSeuils.php: admin seulement
-1) vérifier que l'utilisateur est admin (niveau=3) //verra apres
-2) formulaire pour changer les seuils
-3) sauvegarde - json --> 
+<!-- changerSeuils.php: admin only
+1) check if the user is admin
+2) form to change the thresholds
+3) compare old and new thresholds to display a message of what has changed
+4) save the new thresholds in a json file (config_seuils.json)--> 
 
 <?php
 session_start();
 require_once '../config/config.php';
 
-// Vérifier si l'utilisateur est connecté
+// 1- Check if user is logged in and is admin
 if (!isset($_SESSION['user'])) {
     echo "<script>
             alert('Accès refusé : utilisateur non connecté.');
@@ -24,11 +25,10 @@ if ($_SESSION['role'] !== 'admin') {
     exit;
 }
 
-
-// 2 -gérer le formulaire
+// 2 - form to change the thresholds
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // anciens seuils
+    // old thresholds
     $anciensSeuils = file_exists('../config/config_seuils.json')
         ? json_decode(file_get_contents('../config/config_seuils.json'), true)
         : [
@@ -37,38 +37,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'coupure' => 0.5
         ];
 
-    // nouveaux seuils
+    // new thresholds from form
     $nouveauxSeuils = [
         'batterieFaible' => floatval($_POST['batterieFaible']),
         'surcharge'      => floatval($_POST['surcharge']),
         'coupure'        => floatval($_POST['coupure'])
     ];
 
-    // sauvegarde
+    // save new thresholds in json file
     file_put_contents('../config/config_seuils.json', json_encode($nouveauxSeuils));
 
-    // comparaison
+    // compre old and new thresholds to display a message of what has changed
     $changements = [];
-
     foreach ($nouveauxSeuils as $cle => $valeur) {
         if ($anciensSeuils[$cle] != $valeur) {
             $changements[] = "- " . ucfirst($cle) . " : {$anciensSeuils[$cle]} → {$valeur}";
         }
     }
 
-    // message propre
+    // message to display 
     if ($changements) {
         $_SESSION['message_seuils'] = "<u>Seuils modifiés :</u><br>" . implode('<br>', $changements);
     } else {
         $_SESSION['message_seuils'] = "Aucun seuil n’a été modifié.";
     }
-
     header('Location: changerSeuils.php');
     exit;
 }
 
-
-// charger les seuils existants
+// load current thresholds to display in form
 if (file_exists('../config/config_seuils.json')) {
     $seuils = json_decode(file_get_contents('../config/config_seuils.json'), true);
 } else {
@@ -79,41 +76,40 @@ if (file_exists('../config/config_seuils.json')) {
     ];
 }
 
-// récupérer le message éventuel
+// message to display after form submission
 $message = $_SESSION['message_seuils'] ?? '';
 unset($_SESSION['message_seuils']);
 ?>
 
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Onduleur - Changer les seuils</title>
+    <title>UPS - Change thresholds</title>
 </head>
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <h1>Changer les seuils d'alerte</h1>
-    <a href="../index.php">Aller à l'accueil</a><br>
-    <a href="../alerte/alerte.php">Retour aux Alertes</a><br>
-    <a href="../historique/historique.php">Aller à l'Historique</a><br><br>
+    <h1>Change alert thresholds</h1>
+    <a href="../index.php">Go to homepage</a><br>
+    <a href="../alerte/alerte.php">Go to alerts</a><br>
+    <a href="../historique/historique.php">Go to history</a><br><br>
     <hr>
 
-
-    <h2>Changer les seuils</h2>
+    <h2>Change thresholds</h2>
     <form method="post">
-         <label for="batterieFaible">Batterie faible <i>(% trop faible)</i>:</label>
+         <label for="batterieFaible">Low battery <i>(% too low)</i>:</label>
         <input type="number" id="batterieFaible" name="batterieFaible" value="<?= $seuils['batterieFaible'] ?>" step="0.1" style="width:60px; font-size:13px;">%<br>
 
-        <label for="surcharge">Surcharge <i> (= Tension entree trop forte)</i>:</label>
+        <label for="surcharge">Overload <i> (= Input voltage too high)</i>:</label>
         <input type="number" id="surcharge" name="surcharge" value="<?= $seuils['surcharge'] ?>" step="0.1" style="width:60px; font-size:13px;">V<br>
 
-        <label for="coupure">Coupure <i> (= Tension sortie trop faible)</i>:</label>
+        <label for="coupure">Cut-off <i> (= Output voltage too low)</i>:</label>
         <input type="number" id="coupure" name="coupure" value="<?= $seuils['coupure'] ?>" step="0.1" style="width:60px; font-size:13px;">V<br>
 
-        <input type="submit" value="Mettre à jour les seuils">
+        <input type="submit" value="Update thresholds">
     </form>
     <?php if ($message): ?>
         <p><?= $message ?></p>

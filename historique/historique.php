@@ -2,7 +2,9 @@
 session_start();
 require_once '../config/config.php';
 
-// récupérer 100 dernières collectes
+// historique.php: display the history of collects, with a form to filter by specific value
+
+//1 - get the 100 last collects from the database
 $stmt = $pdo->query("SELECT * FROM ups_history ORDER BY timestamp DESC LIMIT 100");
 $historique = $stmt->fetchAll();
 ?>
@@ -18,7 +20,7 @@ $historique = $stmt->fetchAll();
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <h1>History of Collects</h1>
-    <a href="../index.php">Back to Home</a><br>
+    <a href="../index.php">Go to Home</a><br>
     <a href="../alerte/alerte.php">View Alerts</a>
     <br><br>
     <hr>
@@ -40,13 +42,12 @@ $historique = $stmt->fetchAll();
 
         <label for="valeur">Value :</label>
         <input type="text" name="valeur" id="valeur" required>
-
         <button type="submit">Filter</button>
     </form>
     <br>
     <hr>
 
-<!-- les 100 dernières collectes en tableau -->
+<!-- The 100 most recent collects (with a table) -->
  <h2>100 Most Recent Collects</h2>
  <p>Here is the table of the 100 most recent collects recorded by the UPS, sorted from newest to oldest.</p>
     <table>
