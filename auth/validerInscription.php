@@ -1,6 +1,12 @@
 <?php
 require_once '../config/config.php';
+require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
+require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
+require_once __DIR__ . '/../PHPMailer/src/Exception.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 
 $action = $_GET['action'] ?? null;
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -66,6 +72,17 @@ if ($action === 'accept') {
     die("Action inconnue.");
 }
 
-$mail->send();
-echo "Traitement terminé.";
-?>
+try {
+    $mail->send();
+} catch (Exception $e) {
+    die("Erreur envoi mail : " . $mail->ErrorInfo);
+}
+
+$message = ($action === 'accept')
+    ? "Compte activé avec succès"
+    : "Inscription refusée";
+
+echo "<script>
+alert(" . json_encode($message) . ");
+window.close();
+</script>";
