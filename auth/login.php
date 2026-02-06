@@ -1,4 +1,5 @@
 <?php
+// login.php: Login page, check credentials, set session
 session_start();
 require_once "../config/config.php";
 
@@ -14,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 if ($user && password_verify($password, $user["password"])) 
     {
     if ($user['status'] !== 'active') {
-        die("Compte non validé.");
+        die("Account not active.");
     }
     $_SESSION["user"] = $user["username"];
     $_SESSION["role"] = $user["role"];
@@ -25,10 +26,8 @@ if ($user && password_verify($password, $user["password"]))
     } 
     
 else {
-    $error = "Identifiants incorrects";
+    $error = "User not found or wrong password.";
     }
-
-
 }
 ?>
 
@@ -36,18 +35,18 @@ else {
 <html>
 <head>
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Onduleur - Connexion</title>
+    <title>UPS - Login</title>
 </head>
 <body>
-    <h1>Connexion</h1>
-    <p>Veuillez vous connecter pour accéder au tableau de bord</p>
+    <h1>Login</h1>
+    <p>Please login to access the dashboard</p>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <form method="POST">
-        <input type="text" name="username" placeholder="Nom d'utilisateur" required><br>
-        <input type="password" name="password" placeholder="Mot de passe" required><br>
-        <button type="submit">Se connecter</button>
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <button type="submit">Login</button>
         <br><br>
-        <a href="sInscrire.php">S'inscrire</a>
+        <a href="sInscrire.php">Sign up</a>
     </form>
 
     <p style="color:red"><?= $error ?></p>

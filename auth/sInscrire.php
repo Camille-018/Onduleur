@@ -1,4 +1,5 @@
 <?php
+// sInscrire.php: sign up page, insert user with pending status, send mail to admin for validation
 require_once '../config/config.php';
 require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
@@ -10,9 +11,9 @@ use PHPMailer\PHPMailer\Exception;
 $success = "";
 $error = "";
 
-// message de succès après redirection
+// success message after redirection from validerInscription
 if (isset($_GET['success'])) {
-    $success = "Demande envoyée, en attente de validation admin.";
+    $success = "Request sent, awaiting admin validation.";
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -21,28 +22,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mail     = trim($_POST['mail']);
     $password = $_POST['password'];
 
-    // validations simples
+    // basic validation
     if (strlen($username) < 3 || strlen($username) > 50) {
-        $error = "Nom d'utilisateur invalide.";
+        $error = "username too short (3) or too long (50).";
     } elseif (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-        $error = "Adresse mail invalide.";
+        $error = "Invalid email address.";
     } elseif (strlen($password) < 8) {
-        $error = "Mot de passe trop court.";
+        $error = "Password too short (8).";
     } else {
 
-        // 1️⃣ vérifier si username ou mail existe déjà
+        // 1️⃣ Check if username or mail alr exists
         $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR mail = ?");
         $stmt->execute([$username, $mail]);
-
         if ($stmt->fetch()) {
-            echo '<script>alert("Nom d\'utilisateur ou mail déjà utilisé.");</script>';
+            echo '<script>alert("Username or email already exists.");</script>';
             exit;
         } else {
-            // 2️⃣ tout est ok → hash password
+            // 2️⃣ Everything ok → hash password
             $role = 'user';
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            // 3️⃣ insert en DB
+            // 3️⃣ insert in database with pending status
             $stmt = $pdo->prepare("
                 INSERT INTO users (username, password, mail, role, status)
                 VALUES (?, ?, ?, ?, 'pending')
@@ -50,15 +50,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$username, $passwordHash, $mail, $role]);
             $userId = $pdo->lastInsertId();
 
-            // signature pour liens accept/refuse
-            #### onduleur: local
+            // signatures for validation links
+            #### onduleur: local (onduleur = UPS in french)
             $signature = hash_hmac('sha256', $userId, SIGNATURE_SECRET);
             $lienAccept = "http://onduleur/auth/validerInscription.php?action=accept&id=$userId&sig=$signature";
             $lienRefuse = "http://onduleur/auth/validerInscription.php?action=refuse&id=$userId&sig=$signature";
             $lienAcceptAdmin = "http://onduleur/auth/validerInscription.php?action=acceptAdmin&id=$userId&sig=$signature";
 
 
-            // 4️⃣ envoi mail à l'admin
+            // 4️⃣ Send mail to 1 admin
             $mailObj = new PHPMailer(true);
             $mailObj->isSMTP();
             $mailObj->Host = MAIL_HOST;
@@ -69,30 +69,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mailObj->Port = MAIL_PORT;
 
             $mailObj->setFrom(MAIL_FROM, MAIL_FROM_NAME);
-            ######mettre l'adresse de l'admin ici
+            ###### change mail there
             $mailObj->addAddress("erzasu45.008@gmail.com");
 
             $mailObj->isHTML(true);
-            $mailObj->Subject = "Demande d'inscription - $username";
+            $mailObj->Subject = "Registration request - $username";
             $mailObj->Body = "
-                <h1>Nouvelle inscription</h1>
-                <h2>Infos utilisateur :</h2>
-                User : $username<br>
-                Mail : $mail<br>
-                Rôle : $role<br><hr>
+                <h1>New registration request</h1>
+                <h2>User Info:</h2>
+                Username: $username<br>
+                Mail: $mail<br>
                 <h2>Actions :</h2>
-                <a href='$lienAccept'>✅ - Accepter</a><br><br>
-                <a href='$lienAcceptAdmin'>⭐ - Accepter en Admin</a><br><br>
-                <a href='$lienRefuse'>❌ - Refuser</a>
+                <a href='$lienAccept'>✅ - Accept</a><br><br>
+                <a href='$lienAcceptAdmin'>⭐ - Accept as Admin</a><br><br>
+                <a href='$lienRefuse'>❌ - Refuse</a>
             ";
 
             try {
                 $mailObj->send();
-                // redirection pour éviter double soumission
+                // redirect with success message (to avoid resending form on refresh)
                 header("Location: sInscrire.php?success=1");
                 exit;
             } catch (Exception $e) {
-                $error = "Erreur lors de l'envoi du mail : " . $mailObj->ErrorInfo;
+                $error = "Error while sending email: " . $mailObj->ErrorInfo;
             }
         }
     }
@@ -100,38 +99,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../style/style.css">
-    <title>Onduleur - Inscription</title>
+    <title>UPS - Sign Up</title>
 </head>
 <body>
-    <h1>Inscription</h1>
-    <p>Veuillez vous inscrire pour accéder au tableau de bord</p>
+    <h1>Sign Up</h1>
+    <p>Please sign up to access the dashboard</p>
 
     <?php if (isset($_GET['success'])): ?>
     <script>
-        alert("Demande envoyée, en attente de validation admin.");
+        alert("Request sent, waiting for admin validation.");
     </script>
     <?php endif; ?>
 
     <?php if (isset($_GET['refused'])): ?>
     <script>
-        alert("Inscription refusée.");
+        alert("Request refused by admin.");
     </script>
     <?php endif; ?>
 
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <h2>Formulaire d'inscription</h2>
-    <p><i>Un mail sera envoyé à l'admin pour valider votre compte</i></p>
+    <h2>Sign Up Form</h2>
+    <p><i>An email will be sent to the admin to validate your account</i></p>
 
     <form method="POST">
-        <input type="text" name="username" placeholder="Nom d'utilisateur" required><br>
-        <input type="password" name="password" placeholder="Mot de passe" required><br>
-        <input type="email" name="mail" placeholder="Adresse mail" required><br>
-        <button type="submit">S'inscrire</button>
-        <br><br><a href="login.php">Déjà un compte ? Se connecter</a>
+        <input type="text" name="username" placeholder="Username" required><br>
+        <input type="password" name="password" placeholder="Password" required><br>
+        <input type="email" name="mail" placeholder="Email address" required><br>
+        <button type="submit">Sign Up</button>
+        <br><br><a href="login.php">Already have an account? Log in</a>
     </form>
 </body>
 </html>
