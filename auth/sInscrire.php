@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($stmt->fetch()) {
             echo '<script>alert("Nom d\'utilisateur ou mail déjà utilisé.");</script>';
+            exit;
         } else {
             // 2️⃣ tout est ok → hash password
             $role = 'user';
