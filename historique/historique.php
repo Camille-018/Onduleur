@@ -5,65 +5,62 @@ require_once '../config/config.php';
 // récupérer 100 dernières collectes
 $stmt = $pdo->query("SELECT * FROM ups_history ORDER BY timestamp DESC LIMIT 100");
 $historique = $stmt->fetchAll();
-
 ?>
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Onduleur - Historique</title>
+    <title>UPS - History</title>
 </head>
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <h1>Historique des Collectes</h1>
-    <a href="../index.php">Retour à l'accueil</a><br>
-    <a href="../alerte/alerte.php">Aller aux Alertes</a>
+    <h1>History of Collects</h1>
+    <a href="../index.php">Back to Home</a><br>
+    <a href="../alerte/alerte.php">View Alerts</a>
     <br><br>
     <hr>
 
-        <!-- Formulaire pour filtrer par valeur spécifique -->
-    <h2>Filtrer par valeur spécifique</h2>
+    <!-- Form to filter by specific value -->
+    <h2>Filter by specific value</h2>
     <form action="valeurSpecifique.php" method="GET">
-        <label for="colonne">Choisir la colonne :</label>
+        <label for="colonne">Choose the column :</label>
         <select name="colonne" id="colonne" required>
             <option value="id">ID</option>
             <option value="ups_id">UPS ID</option>
-            <option value="battery_charge">Charge Batterie</option>
-            <option value="battery_runtime">Autonomie Restante Batterie</option>
-            <option value="input_voltage">Tension Entrée</option>
-            <option value="output_voltage">Tension Sortie</option>
-            <option value="ups_load">Charge Travail Onduleur</option>
-            <option value="ups_status">État Onduleur</option>
-            
+            <option value="battery_charge">Battery Charge</option>
+            <option value="battery_runtime">Battery Runtime</option>
+            <option value="input_voltage">Input Voltage</option>
+            <option value="output_voltage">Output Voltage</option>
+            <option value="ups_load">UPS Load</option>
+            <option value="ups_status">UPS Status</option>
         </select>
 
-        <label for="valeur">Valeur :</label>
+        <label for="valeur">Value :</label>
         <input type="text" name="valeur" id="valeur" required>
 
-
-        <button type="submit">Filtrer</button>
+        <button type="submit">Filter</button>
     </form>
     <br>
     <hr>
 
 <!-- les 100 dernières collectes en tableau -->
- <h2>Les 100 dernieres collectes</h2>
- <p>Voici le tableau des 100 dernières collectes enregistrées par l'onduleur, classées de la plus récente à la plus ancienne.</p>
+ <h2>100 Most Recent Collects</h2>
+ <p>Here is the table of the 100 most recent collects recorded by the UPS, sorted from newest to oldest.</p>
     <table>
         <thead>
             <tr>
                 <th>ID</th>
                 <th>UPS ID</th>
-                <th>Charge Batterie</th>
-                <th>Autonomie Restante Batterie</th>
-                <th>Tension Entrée</th>
-                <th>Tension Sortie</th>
-                <th>Charge Travail Onduleur</th>
-                <th>État Onduleur</th>
-                <th>Heure</th>
+                <th>Battery Charge</th>
+                <th>Battery Runtime</th>
+                <th>Input Voltage</th>
+                <th>Output Voltage</th>
+                <th>UPS Load</th>
+                <th>UPS Status</th>
+                <th>Timestamp</th>
             </tr>
         </thead>
         <tbody>

@@ -26,38 +26,36 @@ if (in_array($colonne, $colonnes_float)) {
     $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE $colonne LIKE :valeur ORDER BY timestamp DESC");
     $stmt->execute([':valeur' => "%$valeur%"]);
 }
-
-
 $historique = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Onduleur - Résultat Filtre</title>
+    <title>UPS - Filter Result</title>
 </head>
 <body>
-    <h1>Onduleur - Résultat Filtre</h1>
+    <h1>UPS - Filter Result</h1>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <a href="historique.php">Retour à l'historique</a><br>
-    <a href="../index.php">Retour à l'accueil</a><br><br>
-     <h3>Filtre : <?= htmlspecialchars($colonne) ?> = <?= htmlspecialchars($valeur) ?></h3> <!--appel du filtre -->
+    <a href="historique.php">Back to History</a><br>
+    <a href="../index.php">Back to Home</a><br><br>
+     <h3>Filter : <?= htmlspecialchars($colonne) ?> = <?= htmlspecialchars($valeur) ?></h3> <!--filter call -->
     <?php if (!empty($historique)): ?>
     <table>
         <thead>
             <tr>
                 <th>ID</th>
                 <th>UPS ID</th>
-                <th>Charge Batterie</th>
-                <th>Autonomie Restante Batterie</th>
-                <th>Tension Entrée</th>
-                <th>Tension Sortie</th>
-                <th>Charge Travail Onduleur</th>
-                <th>État Onduleur</th>
-                <th>Heure</th>
+                <th>Battery Charge</th>
+                <th>Battery Runtime</th>
+                <th>Input Voltage</th>
+                <th>Output Voltage</th>
+                <th>UPS Load</th>
+                <th>UPS Status</th>
+                <th>Timestamp</th>
             </tr>
         </thead>
         <tbody>
@@ -78,7 +76,7 @@ $historique = $stmt->fetchAll();
         </tbody>
     </table>
     <?php else: ?>
-        <p>Aucun résultat trouvé.</p>
+        <p>No results found.</p>
     <?php endif; ?>
 
 </body>
