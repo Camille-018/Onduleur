@@ -1,15 +1,15 @@
 <?php
-// 🔐 Protection par authentification
+// 🔐 Protection by authentification
 session_start();
 if (!isset($_SESSION["user"])) {
     header("Location: auth/login.php");
     exit;
 }
 
-// 🔌 Connexion BDD
+// 🔌 Connexion to DataBase
 require_once "config/config.php";
 
-// 📊 Récupération de la dernière mesure UPS
+// 📊 Retrieving the latest UPS measurement
 $stmt = $pdo->query("
     SELECT 
         u.device_model,
@@ -30,11 +30,11 @@ $stmt = $pdo->query("
 $data = $stmt->fetch(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <link rel=stylesheet href="style/style.css"></link>
-    <title>Onduleur - Dashboard UPS</title>
+    <title>UPS - Dashboard </title>
     <style>
         .card {
             background: white;
@@ -55,52 +55,49 @@ $data = $stmt->fetch(PDO::FETCH_ASSOC);
             text-align: right;
             font-size: 0.9em;
             color: #555;}
-
-
     </style>
 </head>
 <body>
 <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-<h1>Acceuil - Dashboard</h1>
+<h1>HomePage - Dashboard</h1>
 <div class="card">
 
     <div class="top">
-        Connecté : <?= htmlspecialchars($_SESSION["user"]) ?> |
-        <a href="../auth/logout.php">Déconnexion</a>
+        Connected : <?= htmlspecialchars($_SESSION["user"]) ?> |
+        <a href="../auth/logout.php">Logout</a>
     </div>
 
     <h1>UPS Dashboard</h1>
 
     <?php if ($data): ?>
-        <div class="row"><b>Modèle :</b> <?= htmlspecialchars($data['device_model']) ?></div>
-        <div class="row"><b>Numéro de série :</b> <?= htmlspecialchars($data['device_serial']) ?></div>
+        <div class="row"><b>Model :</b> <?= htmlspecialchars($data['device_model']) ?></div>
+        <div class="row"><b>Serial number :</b> <?= htmlspecialchars($data['device_serial']) ?></div>
 
         <hr>
 
-        <div class="row"><b>État :</b>
+        <div class="row"><b>Status :</b>
             <span class="<?= $data['ups_status'] === 'OL' ? 'ok' : 'alert' ?>">
                 <?= htmlspecialchars($data['ups_status']) ?>
             </span>
         </div>
 
-        <div class="row"><b>Batterie :</b> <?= $data['battery_charge'] ?> %</div>
-        <div class="row"><b>Autonomie :</b> <?= $data['battery_runtime'] ?> s</div>
-        <div class="row"><b>Charge :</b> <?= $data['ups_load'] ?> %</div>
-        <div class="row"><b>Tension entrée :</b> <?= $data['input_voltage'] ?> V</div>
-        <div class="row"><b>Tension sortie :</b> <?= $data['output_voltage'] ?> V</div>
-
+        <div class="row"><b>Battery :</b> <?= $data['battery_charge'] ?> %</div>
+        <div class="row"><b>Runtime :</b> <?= $data['battery_runtime'] ?> s</div>
+        <div class="row"><b>Load :</b> <?= $data['ups_load'] ?> %</div>
+        <div class="row"><b>Input Voltage :</b> <?= $data['input_voltage'] ?> V</div>
+        <div class="row"><b>Output Voltage :</b> <?= $data['output_voltage'] ?> V</div>
         <hr>
 
         <div class="row">
-            <small>Dernière mise à jour : <?= $data['timestamp'] ?></small>
+            <small>Last Update : <?= $data['timestamp'] ?></small>
         </div>
     <?php else: ?>
-        <p style="text-align:center;">Aucune donnée disponible.</p>
+        <p style="text-align:center;">No data available.</p>
     <?php endif; ?>
 
 </div>
-<a href="historique/historique.php">Voir l'historique</a><br>
-<a href="alerte/alerte.php">Voir les alertes</a><br>
-<a href= "collector/receiveUps.php">Recevoir les données UPS</a>
+<a href="historique/historique.php">View history</a><br>
+<a href="alerte/alerte.php">View alerts</a><br>
+<a href= "collector/receiveUps.php">Receive UPS data</a>
 </body>
 </html>
