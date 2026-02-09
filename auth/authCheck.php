@@ -1,4 +1,5 @@
 <?php
+// authCheck.php: centralize the authentication check, for each page, it checks if the user is logged in and if the account is active, otherwise redirect to login page
 session_start();
 
 if (!isset($_SESSION['user_id'])) {

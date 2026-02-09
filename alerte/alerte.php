@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/auth/auth_check.php';
+require_once __DIR__ . '/../auth/authCheck.php';
 
 // alerte.php: display the list of alerts, with an explanation of what they mean, and the form to change thresholds
 

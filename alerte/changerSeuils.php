@@ -5,7 +5,7 @@
 4) save the new thresholds in a json file (config_seuils.json)--> 
 
 <?php
-require_once __DIR__ . '/auth/auth_check.php';
+require_once __DIR__ . '/../auth/authCheck.php';
 
 // 1 - check if the user is admin
 if ($_SESSION['role'] !== 'admin') {

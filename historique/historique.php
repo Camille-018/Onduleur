@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/auth/auth_check.php';
+require_once __DIR__ . '/../auth/authCheck.php';
 
 // historique.php: display the history of collects, with a form to filter by specific value
 

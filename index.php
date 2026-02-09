@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/auth/auth_check.php';
+require_once __DIR__ . '/auth/authCheck.php';
 
 // Retrieves the list of UPS with their latest status
 $upsList = $pdo->query("

@@ -1,6 +1,6 @@
 <!-- verifierAlerte.php: check the ups_history table and create alerts if needed, send a mail to admin -->
  <?php
-require_once __DIR__ . '/auth/auth_check.php';
+require_once __DIR__ . '/../auth/authCheck.php';
 
 //send a mail to all admins with the alert info
 use PHPMailer\PHPMailer\PHPMailer;
