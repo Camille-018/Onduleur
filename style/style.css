@@ -4,8 +4,8 @@
 }
 
 body{
-    background: linear-gradient(135deg, #f0f4f8, #d9e2ec); /* gris clair vers bleu pâle */
-    color: #1b1f23; /* texte sombre et lisible */
+    background: linear-gradient(135deg, #f0f4f8, #d9e2ec); 
+    color: #1b1f23; 
     font-family: 'Helvetica Neue', Arial, sans-serif;
     min-height: 100vh;
     margin: 0;
@@ -24,7 +24,6 @@ h1{
     text-align: center;
 }
 
-
 .card {
     background: #fff;
     padding: 15px;
@@ -39,32 +38,31 @@ h1{
     transition: all 0.3s ease;
 }
 
-a{
+a:not(.card){
     text-decoration: none;
     color:rgb(53, 140, 253);
 }
 
-a:hover{
+a:hover:not(.card){
     text-decoration: underline;
     color: darkslategray;
 }
 
 table {
-    border: 2px solid #1b1f23; /* bord plus sobre que noir pur */
+    border: 2px solid #1b1f23; 
     border-collapse: collapse;
     width: 100%;
 }
 
 th {
-    background-color: #4a90e2; /* bleu pro */
+    background-color: #4a90e2; 
     color: white;
     padding: 12px;
     text-align: left;
-    border-right: 2px solid white; /* barre entre colonnes */
-    text-align: center;   /* centre horizontalement */
-}
+    border-right: 2px solid white; 
+    text-align: center;  } 
 
-/* enlever la dernière barre pour le dernier th */
+
 th:last-child {
     border-right: none;
 }
@@ -72,16 +70,16 @@ th:last-child {
 td {
     padding: 10px;
     border: 1px solid #ccc;
-    text-align: center;   /* centre horizontalement */
+    text-align: center; 
 }
 
-/* lignes alternées */
+
 tbody tr:nth-child(even) {
-    background-color: #f0f4f8; /* gris clair/bleu pâle */
+    background-color: #f0f4f8; 
 }
 
 tbody tr:nth-child(odd) {
-    background-color: #ffffff; /* blanc pur ou très clair */
+    background-color: #ffffff; 
 }
 
 
@@ -92,8 +90,7 @@ tbody tr:nth-child(odd) {
     font-weight: bold;
     font-family: Arial, sans-serif;
     box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-    background-color: #ff8c42; /* #3a6ea5; #d9534f /*
-    color: white; /* texte lisible sur fond coloré */
+    background-color: #ff8c42;
 }
 
 .grid {

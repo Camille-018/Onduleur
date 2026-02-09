@@ -1,5 +1,4 @@
 <?php
-// require_once __DIR__ . '/../auth/check.php';
 require_once __DIR__ . '/config/config.php';
 
 $id = (int)($_GET['id'] ?? 0);
@@ -9,7 +8,7 @@ $stmt->execute([$id]);
 $ups = $stmt->fetch();
 
 if (!$ups) {
-    die("UPS introuvable");
+    die("UPS not found");
 }
 
 $stmt = $pdo->prepare("
@@ -33,7 +32,7 @@ $data = array_reverse($stmt->fetchAll());
 </head>
 <body>
 
-<a href="index.php">← Retour</a>
+<a href="index.php">← Back to Overview</a>
 <h1><?= htmlspecialchars($ups['device_model']) ?></h1>
 
 <canvas id="batteryChart"></canvas>
@@ -49,7 +48,7 @@ new Chart(document.getElementById('batteryChart'), {
     data: {
         labels,
         datasets: [{
-            label: 'Batterie (%)',
+            label: 'Battery (%)',
             data: battery,
             borderWidth: 2
         }]
@@ -58,14 +57,14 @@ new Chart(document.getElementById('batteryChart'), {
         plugins: {
             title: {
                 display: true,
-                text: 'Évolution du niveau de batterie'
+                text: 'UPS battery Status'
             }
         },
         scales: {
             y: {
                 title: {
                     display: true,
-                    text: 'Pourcentage (%)'
+                    text: 'Percentage (%)'
                 },
                 min: 0,
                 max: 100
@@ -73,7 +72,7 @@ new Chart(document.getElementById('batteryChart'), {
             x: {
                 title: {
                     display: true,
-                    text: 'Temps'
+                    text: 'Time'
                 }
             }
         }
@@ -85,7 +84,7 @@ new Chart(document.getElementById('voltageChart'), {
     data: {
         labels,
         datasets: [{
-            label: 'Tension de sortie (V)',
+            label: 'Output Voltage (V)',
             data: voltage,
             borderWidth: 2
         }]
@@ -94,7 +93,7 @@ new Chart(document.getElementById('voltageChart'), {
         plugins: {
             title: {
                 display: true,
-                text: 'Tension de sortie de l’onduleur'
+                text: 'Output Voltage of the UPS'
             }
         },
         scales: {
@@ -107,13 +106,13 @@ new Chart(document.getElementById('voltageChart'), {
             x: {
                 title: {
                     display: true,
-                    text: 'Temps'
+                    text: 'Time'
                 }
             }
         }
     }
 });
 </script>
-<a href="index.php">← Retour</a>
+<a href="index.php">← Back to Overview</a>
 </body>
 </html>

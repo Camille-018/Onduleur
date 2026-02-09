@@ -1,5 +1,5 @@
 <?php
-// redirection sur login
+// redirect on login
 session_start();
 if (!isset($_SESSION['user'])) {
     header('Location: /auth/login.php');
@@ -8,6 +8,7 @@ if (!isset($_SESSION['user'])) {
 
 require_once __DIR__ . '/config/config.php';
 
+// Retrieves the list of UPS with their latest status
 $upsList = $pdo->query("
     SELECT u.id, u.device_model,
            h.ups_status, h.battery_charge, h.timestamp
@@ -21,6 +22,7 @@ $upsList = $pdo->query("
       )
 ")->fetchAll();
 
+//color depending on status
 function statusColor($s) {
     if (!$s) return 'grey';
     if (str_contains($s,'LB') || str_contains($s,'OFF')) return 'red';
@@ -33,28 +35,27 @@ function statusColor($s) {
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Onduleurs</title>
+    <title>UPS</title>
     <link rel="stylesheet" href="style/style.css">
 </head>
 <body>
 
-<h1>📊 Liste des onduleurs</h1>
-<a href="../auth/logout.php">Déconnexion</a><br>
-<a href="../alerte/alerte.php">Go to Alerts</a><br>
-<a href="../historique/historique.php">Go to History</a>
+<h1>📊 UPS List</h1>
+<a href="../auth/logout.php">Logout</a><br>
+<a href="../historique/historique.php">Go to History</a><br>
+<a href="../alerte/alerte.php">Go to Alerts</a><br><hr>
 
-
+<!-- Display UPS cards -->
 <div class="grid">
 <?php foreach ($upsList as $ups): ?>
 <a class="card" href="ups.php?id=<?= $ups['id'] ?>">
     <h3><?= htmlspecialchars($ups['device_model']) ?></h3>
-    <p>Batterie : <?= $ups['battery_charge'] ?? '--' ?> %</p>
+    <p>Battery : <?= $ups['battery_charge'] ?? '--' ?> %</p>
     <span class="status <?= statusColor($ups['ups_status']) ?>">
-        <?= $ups['ups_status'] ?? 'INCONNU' ?>
+        <?= $ups['ups_status'] ?? 'None' ?>
     </span>
 </a>
 <?php endforeach; ?>
 </div>
-
 </body>
 </html>
