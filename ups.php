@@ -25,17 +25,19 @@ $data = array_reverse($stmt->fetchAll());
 <!DOCTYPE html>
 <html>
 <head>
+     <link rel=stylesheet href="/style/style.css"></link>
     <meta charset="utf-8">
     <title><?= htmlspecialchars($ups['device_model']) ?></title>
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
-<a href="index.php">← Back to Overview</a>
 <h1><?= htmlspecialchars($ups['device_model']) ?></h1>
+<a href="index.php">← Back to Overview</a><hr>
+<h2 style="text-align: center;">UPS Battery Status</h2>
+<canvas id="batteryChart"></canvas><hr>
 
-<canvas id="batteryChart"></canvas>
+<h2 style="text-align: center;">Output Voltage of the UPS</h2>
 <canvas id="voltageChart"></canvas>
 
 <script>
@@ -55,25 +57,16 @@ new Chart(document.getElementById('batteryChart'), {
     },
     options: {
         plugins: {
-            title: {
-                display: true,
-                text: 'UPS battery Status'
-            }
+            title: { display: false } // on supprime le titre du graph
         },
         scales: {
             y: {
-                title: {
-                    display: true,
-                    text: 'Percentage (%)'
-                },
+                title: { display: true, text: 'Percentage (%)' },
                 min: 0,
                 max: 100
             },
             x: {
-                title: {
-                    display: true,
-                    text: 'Time'
-                }
+                title: { display: true, text: 'Time' }
             }
         }
     }
@@ -90,25 +83,10 @@ new Chart(document.getElementById('voltageChart'), {
         }]
     },
     options: {
-        plugins: {
-            title: {
-                display: true,
-                text: 'Output Voltage of the UPS'
-            }
-        },
+        plugins: { title: { display: false } }, // titre désactivé
         scales: {
-            y: {
-                title: {
-                    display: true,
-                    text: 'Volts (V)'
-                }
-            },
-            x: {
-                title: {
-                    display: true,
-                    text: 'Time'
-                }
-            }
+            y: { title: { display: true, text: 'Volts (V)' } },
+            x: { title: { display: true, text: 'Time' } }
         }
     }
 });

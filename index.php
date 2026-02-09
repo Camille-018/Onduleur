@@ -40,7 +40,8 @@ function statusColor($s) {
 <a href="../auth/logout.php">Logout</a><br>
 <a href="../historique/historique.php">Go to History</a><br>
 <a href="../alerte/alerte.php">Go to Alerts</a><br><hr>
-
+<p>Click on an UPS card to see detailed information.</p>
+<p><i>Go to alert to check to check the status meaning (red is critical, orange is warning, green is normal)</i></p>
 <!-- Display UPS cards -->
 <div class="grid">
 <?php foreach ($upsList as $ups): ?>
