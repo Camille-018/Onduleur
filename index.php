@@ -17,10 +17,13 @@ $upsList = $pdo->query("
 
 //color depending on status
 function statusColor($s) {
-    if (!$s) return 'grey';
-    if (str_contains($s,'LB') || str_contains($s,'OFF')) return 'red';
-    if (str_contains($s,'OB')) return 'orange';
-    return 'green';
+    // $criticalStates = ['LB', 'OVER', 'BYPASS', 'OFF']; -> Red
+    // $warningStates  = ['OB', 'DISCHRG', 'TEST', 'CAL']; -> Orange
+    // $normalStates   = ['OL', 'CHRG']; -> Green
+    if (!$s) return 'grey'; //None status
+    else if (str_contains($s,'LB') || str_contains($s,'OVER') || str_contains($s,'BYPASS')|| str_contains($s,'OFF') ) return 'red';
+    else if (str_contains($s,'OB') || str_contains($s,'DISCHRG') || str_contains($s,'TEST') || str_contains($s,'CAL')) return 'orange';
+    else return 'green';
 }
 ?>
 

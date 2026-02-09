@@ -25,7 +25,15 @@ $alertes = $stmt->fetchAll();
     <a href="changerSeuils.php">Change alert thresholds</a><br><br>
     <hr>
 
-    <h2>Explanation of alerts</h2>
+    <h2> Explanation of UPS automatic alerts </h2>
+    <p><i> UPS automatically generates alerts based on the data collected, we can see it with the status of the UPS (no mail) <p></i>
+        <!-- $criticalStates = ['LB', 'OVER', 'BYPASS', 'OFF'];
+        $warningStates  = ['OB', 'DISCHRG', 'TEST', 'CAL'];
+        $normalStates   = ['OL', 'CHRG']; -->
+    <hr>
+
+    <h2>Explanation of alerts (created with thresholds) </h2>
+    <h3>Created with thresholds</h3>
     <ul>
         <li>
             <strong>Low battery</strong> <i>(% too low)</i> : <code>battery_charge &lt; threshold low battery</code> <br>
@@ -38,12 +46,13 @@ $alertes = $stmt->fetchAll();
         <li>
             <strong>Cut-off</strong> <i>(Output voltage too low)</i> : <code>output_voltage &lt; threshold cut-off</code> <br>
             -> The output voltage is too low to properly power the connected equipment, potentially causing a shutdown or malfunction.
-        </li><br>
+        </li>
     </ul>
+    <p><i>Note: the thresholds for these alerts can be changed in the "Change alert thresholds" page.</i></p>
     <hr>
 
     <h2>The 100 last alerts</h2>
-    <p>Here is the table of the 100 last alerts recorded by the UPS, sorted from most recent to oldest.</p>
+    <p>Here is the table of the 100 last alerts with thresholds, sorted from most recent to oldest.</p>
     <?php if (!empty($alertes)): ?>
     <table>
         <thead>
