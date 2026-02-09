@@ -66,9 +66,25 @@ while (true) {
         $stmt = $pdo->prepare("SELECT id FROM ups WHERE device_serial = ?");
         $stmt->execute([$data['device.serial']]);
         $ups = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$ups) continue;
 
-        $upsId = $ups['id'];
+        if (!$ups) {
+            // 🔹 Nouvel UPS détecté → insertion auto
+            $stmt = $pdo->prepare("
+                INSERT INTO ups (device_serial, device_model)
+                VALUES (?, ?)
+            ");
+            $stmt->execute([
+                $data['device.serial'],
+                $data['device.model'] ?? 'UPS inconnu'
+            ]);
+
+            $upsId = $pdo->lastInsertId();
+
+            echo date("H:i:s") . " | 🆕 Nouvel UPS ajouté ($upsId)\n";
+        } else {
+            $upsId = $ups['id'];
+        }
+
 
         if (!isset($lastInsertTime[$upsId])) {
             $lastInsertTime[$upsId] = 0;
