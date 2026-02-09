@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once '../config/config.php';
+require_once __DIR__ . '/auth/auth_check.php';
 
 // historique.php: display the history of collects, with a form to filter by specific value
 

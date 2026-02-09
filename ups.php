@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/auth/auth_check.php';
 
 $id = (int)($_GET['id'] ?? 0);
 

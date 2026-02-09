@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once '../config/config.php';
+require_once __DIR__ . '/auth/auth_check.php';
 
 // récupération des paramètres GET
 $colonne = $_GET['colonne'] ?? ''; 

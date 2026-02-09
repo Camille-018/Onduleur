@@ -1,6 +1,6 @@
 <?php
-session_start();
-require_once '../config/config.php';
+require_once __DIR__ . '/auth/auth_check.php';
+
 // alerte.php: display the list of alerts, with an explanation of what they mean, and the form to change thresholds
 
 // get the 100 last alerts

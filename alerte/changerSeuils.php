@@ -5,18 +5,9 @@
 4) save the new thresholds in a json file (config_seuils.json)--> 
 
 <?php
-session_start();
-require_once '../config/config.php';
+require_once __DIR__ . '/auth/auth_check.php';
 
-// 1- Check if user is logged in and is admin
-if (!isset($_SESSION['user'])) {
-    echo "<script>
-            alert('Accès refusé : utilisateur non connecté.');
-            window.location.href = '../auth/login.php';
-          </script>";
-    exit;
-}
-
+// 1 - check if the user is admin
 if ($_SESSION['role'] !== 'admin') {
     echo "<script>
             alert('Accès refusé : seuls les admins peuvent changer les seuils.');

@@ -1,12 +1,5 @@
 <?php
-// redirect on login
-session_start();
-if (!isset($_SESSION['user'])) {
-    header('Location: /auth/login.php');
-    exit;
-}
-
-require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/auth/auth_check.php';
 
 // Retrieves the list of UPS with their latest status
 $upsList = $pdo->query("

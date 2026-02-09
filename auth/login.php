@@ -17,6 +17,7 @@ if ($user && password_verify($password, $user["password"]))
     if ($user['status'] !== 'active') {
         die("Account not active.");
     }
+    $_SESSION["user_id"] = $user["id"];
     $_SESSION["user"] = $user["username"];
     $_SESSION["role"] = $user["role"];
     $_SESSION["mail"] = $user["mail"];
@@ -46,7 +47,7 @@ else {
         <input type="password" name="password" placeholder="Password" required><br>
         <button type="submit">Login</button>
         <br><br>
-        <a href="forgotPassword.php">Forgot password? (complete the form to reset your password)</a><br>
+        <a href="forgotPassword.php">Forgot password?</a><br>
         <a href="sInscrire.php">Sign up</a>
 
     </form>
