@@ -1,97 +1,114 @@
 <?php
-// Afficher erreurs (debug)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+require_once __DIR__ . '/../config/config.php';
 
-// Connexion BDD
-$pdo = new PDO(
-    "mysql:host=localhost;dbname=ups_onduleur;charset=utf8",
-    "root",
-    ""
-);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$API_BASE = "http://192.168.66.20:5000/api/ups";
+$loopDelay = 2;
 
-// URL API Flask
-$url = "http://192.168.66.20:5000/api/ups";
-
-echo "Collecteur UPS démarré...\n";
+// Timer indépendant par UPS
+$lastInsertTime = [];
 
 while (true) {
 
-    echo "[" . date('Y-m-d H:i:s') . "] Collecte...\n";
-
-    // Lire JSON depuis Flask
-    $json = @file_get_contents($url);
-
-    if ($json === false) {
-        echo "❌ API inaccessible\n";
-        sleep(60);
+    // ===== LISTE DES UPS =====
+    $json = @file_get_contents($API_BASE);
+    if (!$json) {
+        echo date("H:i:s") . " | API injoignable\n";
+        sleep($loopDelay);
         continue;
     }
 
-    $data = json_decode($json, true);
-
-    if (!$data) {
-        echo "❌ JSON invalide\n";
-        sleep(60);
+    $api = json_decode($json, true);
+    if (empty($api['ups'])) {
+        echo date("H:i:s") . " | Aucun UPS trouvé\n";
+        sleep($loopDelay);
         continue;
     }
 
-    // Infos fixes
-    $serial = $data['device.serial'] ?? null;
-    $model  = $data['device.model'] ?? null;
+    foreach ($api['ups'] as $upsName) {
 
-    if (!$serial) {
-        echo "❌ device.serial manquant\n";
-        sleep(60);
-        continue;
+        // ===== DÉTAIL UPS =====
+        $detailJson = @file_get_contents("$API_BASE/$upsName");
+        if (!$detailJson) {
+            echo date("H:i:s") . " | $upsName injoignable\n";
+            continue;
+        }
+
+        $data = json_decode($detailJson, true);
+        if (!$data || empty($data['device.serial'])) {
+            echo date("H:i:s") . " | UPS invalide / déconnecté\n";
+            continue;
+        }
+
+        // ===== STATUS =====
+        $statusRaw = $data['ups.status'] ?? 'UNKNOWN';
+        $statusList = explode(' ', $statusRaw);
+
+        $criticalStates = ['LB', 'OVER', 'BYPASS', 'OFF'];
+        $warningStates  = ['OB', 'DISCHRG', 'TEST', 'CAL'];
+        $normalStates   = ['OL', 'CHRG'];
+
+        $isCritical = false;
+        $isValid = false;
+
+        foreach ($statusList as $s) {
+            if (in_array($s, $criticalStates)) {
+                $isCritical = true;
+                $isValid = true;
+            }
+            if (in_array($s, $warningStates) || in_array($s, $normalStates)) {
+                $isValid = true;
+            }
+        }
+
+        if (!$isValid) continue;
+
+        // ===== UPS ID =====
+        $stmt = $pdo->prepare("SELECT id FROM ups WHERE device_serial = ?");
+        $stmt->execute([$data['device.serial']]);
+        $ups = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$ups) continue;
+
+        $upsId = $ups['id'];
+
+        if (!isset($lastInsertTime[$upsId])) {
+            $lastInsertTime[$upsId] = 0;
+        }
+
+        // ===== DONNÉES =====
+        $batteryCharge   = $data['battery.charge'] ?? null;
+        $batteryRuntime = $data['battery.runtime'] ?? null;
+        $inputVoltage   = $data['input.voltage'] ?? null;
+        $outputVoltage  = $data['output.voltage'] ?? null;
+        $upsLoad        = $data['ups.load'] ?? null;
+
+        // ===== INSERT =====
+        if ($isCritical || time() - $lastInsertTime[$upsId] >= 60) {
+
+            $stmt = $pdo->prepare("
+                INSERT INTO ups_history
+                (ups_id, battery_charge, battery_runtime, input_voltage, output_voltage, ups_load, ups_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ");
+
+            $stmt->execute([
+                $upsId,
+                $batteryCharge,
+                $batteryRuntime,
+                $inputVoltage,
+                $outputVoltage,
+                $upsLoad,
+                $statusRaw
+            ]);
+
+            $lastInsertTime[$upsId] = time();
+
+            if ($isCritical) {
+                echo date("H:i:s") . " | 🚨 ALERTE UPS $upsId ($statusRaw)\n";
+            } else {
+                echo date("H:i:s") . " | UPS $upsId enregistré\n";
+            }
+        }
     }
 
-    // UPS existe ?
-    $stmt = $pdo->prepare("SELECT id FROM ups WHERE device_serial = ?");
-    $stmt->execute([$serial]);
-    $ups = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$ups) {
-        $stmt = $pdo->prepare(
-            "INSERT INTO ups (device_serial, device_model) VALUES (?, ?)"
-        );
-        $stmt->execute([$serial, $model]);
-        $ups_id = $pdo->lastInsertId();
-    } else {
-        $ups_id = $ups['id'];
-    }
-
-    // Timestamp
-    $timestamp = $data['timestamp'] ?? date('Y-m-d H:i:s');
-
-    // Insertion historique
-    $stmt = $pdo->prepare("
-        INSERT INTO ups_history (
-            ups_id,
-            battery_charge,
-            battery_runtime,
-            input_voltage,
-            output_voltage,
-            ups_load,
-            ups_status,
-            timestamp
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ");
-
-    $stmt->execute([
-        $ups_id,
-        $data['battery.charge'] ?? null,
-        $data['battery.runtime'] ?? null,
-        $data['input.voltage'] ?? null,
-        $data['output.voltage'] ?? null,
-        $data['ups.load'] ?? null,
-        $data['ups.status'] ?? null,
-        $timestamp
-    ]);
-
-    echo "✅ Données enregistrées\n";
-
-    // Attente 60 secondes
-    sleep(60);
+    sleep($loopDelay);
 }
