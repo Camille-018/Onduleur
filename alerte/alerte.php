@@ -25,12 +25,49 @@ $alertes = $stmt->fetchAll();
     <a href="changerSeuils.php">Change alert thresholds</a><br><br>
     <hr>
 
-    <h2> Explanation of UPS automatic alerts </h2>
-    <p><i> UPS automatically generates alerts based on the data collected, we can see it with the status of the UPS (no mail) <p></i>
-        <!-- $criticalStates = ['LB', 'OVER', 'BYPASS', 'OFF'];
-        $warningStates  = ['OB', 'DISCHRG', 'TEST', 'CAL'];
-        $normalStates   = ['OL', 'CHRG']; -->
-    <hr>
+    <h2>UPS Status Explanation</h2>
+    <p><i>
+    The UPS automatically generates status alerts based on the data it collects.<br>
+    Each status reflects the current operating condition of the UPS.
+    </i></p>
+    <div class="grid">
+        <!-- NORMAL -->
+        <div class="card normal-card">
+            <h3>Normal Status</h3>
+            <p>UPS operating normally, no immediate action required.</p>
+            <p>
+                <span class="status green">OL</span> On Line – UPS supplying power normally<br>
+                <span class="status green">CHRG</span> Charging – Battery currently charging
+            </p>
+        </div>
+
+        <!-- WARNING -->
+        <div class="card warning-card">
+            <h3>Warning Status</h3>
+            <p>UPS is operating but attention may be required.</p>
+            <p>
+                <span class="status orange">OB</span> On Battery – Running on battery power<br>
+                <span class="status orange">DISCHRG</span> Discharging – Battery in use<br>
+                <span class="status orange">TEST</span> Test in progress<br>
+                <span class="status orange">CAL</span> Calibration in progress
+            </p>
+        </div>
+
+        <!-- CRITICAL -->
+        <div class="card critical-card">
+            <h3>Critical Status</h3>
+            <p>Immediate action required. Risk of shutdown or power loss.</p>
+            <p>
+                <span class="status red">LB</span> Low Battery<br>
+                <span class="status red">OVER</span> Overload detected<br>
+                <span class="status red">BYPASS</span> Bypass mode active<br>
+                <span class="status red">OFF</span> UPS powered off
+            </p>
+        </div>
+    </div>
+    <p class="mail-info"><i>
+    Note: Status values are generated directly by the UPS and may represent different operational conditions depending on the situation.
+    </i></p><hr>
 
     <h2>Explanation of alerts (created with thresholds) </h2>
     <h3>Created with thresholds</h3>
@@ -48,7 +85,7 @@ $alertes = $stmt->fetchAll();
             -> The output voltage is too low to properly power the connected equipment, potentially causing a shutdown or malfunction.
         </li>
     </ul>
-    <p><i>Note: the thresholds for these alerts can be changed in the "Change alert thresholds" page.</i></p>
+    <p class="mail-info"><i>Note: the thresholds for these alerts can be changed in the "Change alert thresholds" page.</i></p>
     <hr>
 
     <h2>The 100 last alerts</h2>
