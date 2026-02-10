@@ -115,7 +115,8 @@ while (true) {
                 $upsLoad,
                 $statusRaw
             ]);
-
+            
+            $historyId = $pdo->lastInsertId(); // 🔹 récupérer l'id de cette collecte
             $lastInsertTime[$upsId] = time();
 
             if ($isCritical) {
