@@ -4,6 +4,9 @@ session_start();
 require_once "../config/config.php";
 
 $error = "";
+if (isset($_GET['reset'])) {
+    echo "<script>alert('If the account exists, a reset email has been sent.');</script>";
+}
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = $_POST["username"] ?? "";
