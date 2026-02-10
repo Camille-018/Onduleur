@@ -30,9 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':id' => $user['id']]);
         $lastReset = $stmt->fetch();
 
+        date_default_timezone_set('Europe/Paris'); // UTC+1
         if ($lastReset) {
             $diff = time() - strtotime($lastReset['created_at']);
-            if ($diff > 300) { // 300 secondes = 5 minutes
+            if ($diff < 300) { // 300 secondes = 5 minutes
                 $secondsLeft = 300 - $diff;
                 $errors[] = "You must wait " . $secondsLeft . " seconds before requesting a new password reset.";
             }
