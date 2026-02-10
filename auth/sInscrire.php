@@ -73,17 +73,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mailObj->addAddress("erzasu45.008@gmail.com");
 
             $mailObj->isHTML(true);
-            $mailObj->Subject = "Registration request - $username";
-            $mailObj->Body = "
-                <h1>New registration request</h1>
-                <h2>User Info:</h2>
-                Username: $username<br>
-                Mail: $mail<br>
-                <h2>Actions :</h2>
-                <a href='$lienAccept'>✅ - Accept</a><br><br>
-                <a href='$lienAcceptAdmin'>⭐ - Accept as Admin</a><br><br>
-                <a href='$lienRefuse'>❌ - Refuse</a>
+            $contentHtml = "
+            Username: $username<br>
+            Mail: $mail<br><br>
+            <h3>Actions:</h3>
+            <a href='$lienAccept' style='background:#28a745;color:#fff;padding:8px 15px;border-radius:5px;text-decoration:none;'>
+                <span style='color:#ffff00;'>✅</span> Accept
+            </a><br><br>
+
+            <a href='$lienAcceptAdmin' style='background:#F4AA0B;color:#000;padding:8px 15px;border-radius:5px;text-decoration:none;'>
+                <span style='color:#ff6600;'>⭐</span> Accept as Admin
+            </a><br><br>
+
+            <a href='$lienRefuse' style='background:#C82909;color:#fff;padding:8px 15px;border-radius:5px;text-decoration:none;'>
+                <span style='color:#ffcdd2;'>❌</span> Refuse
+            </a>
             ";
+
+            $mailObj->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid');
+            $mailObj->Body = mailTemplate("New registration request", $contentHtml);
+            $mailObj->Subject = "New registration request";
 
             try {
                 $mailObj->send();

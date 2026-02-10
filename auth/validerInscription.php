@@ -39,38 +39,41 @@ if (!$user) {
 if ($action === 'accept') {
     $stmt = $pdo->prepare("UPDATE users SET status='active' WHERE id=?");
     $stmt->execute([$user['id']]);
-    $subject = "Accepted registration";
-    $body = "Hello {$user['username']},<br>
-    Your account has been validated.<br>
-    You can now log in to the dashboard: 
-    <a href='http://onduleur'>Login</a><br>
-    <strong>Warning: you must be on the company's network to access it.</strong>
-    <i>Note: Automatic message, please do not reply.</i>
+
+    $contentHtml = "
+    <p>Hello <strong>{$user['username']}</strong>,</p>
+    <p>Your account has been validated.<br>You can now log in to the dashboard:</p>
+    <p>Login: <a href='http://onduleur'>Dashboard</a></p>
+    <p><i>Automatic message, do not reply.</i></p>
     ";
+    $subject = "Account activated";
 
 } elseif ($action === 'acceptAdmin') {
     $stmt = $pdo->prepare("UPDATE users SET status='active', role='admin' WHERE id=?");
     $stmt->execute([$user['id']]);
-    $subject = "Accepted registration (Admin)";
-    $body = "Hello {$user['username']},<br>
-    Your account has been validated. You are now an admin.
-    You can now log in to the dashboard: 
-    <a href='http://onduleur'>Login</a><br>
-    <strong>Warning: you must be on the company's network to access it.</strong>
+
+    $contentHtml = "
+    <p>Hello <strong>{$user['username']}</strong>,</p>
+    <p>Your account has been validated. You are now an admin.<br>
     <i><strong>As an admin, you will be able to change alert thresholds.</strong></i>
-    <i>Note: Automatic message, please do not reply.</i>
+    You can now log in to the dashboard:</p>
+    <p>Login: <a href='http://onduleur'>Dashboard</a></p>
+    <p><i>Automatic message, do not reply.</i></p>
     ";
+    $subject = "Account activated as admin";
 
 } elseif ($action === 'refuse') {
     $stmt = $pdo->prepare("DELETE FROM users WHERE id=?");
     $stmt->execute([$user['id']]);
-    $subject = "Registration refused";
-    $body = "Hello {$user['username']},<br>
-    Your registration request has been refused.<br>
-    If you think this is an error, contact an administrator.<br>
-    Website: <a href='http://onduleur'>http://onduleur</a><br>
-    <i>Note: Automatic message, please do not reply.</i>
+
+    $contentHtml = "
+    <p>Hello <strong>{$user['username']}</strong>,</p>
+    <p>Your registration request has been refused.<br>If you think this is an error, contact an administrator.</p>
+    <p>Login: <a href='http://onduleur'>Dashboard</a></p>
+    <p><i>Automatic message, do not reply.</i></p>
     ";
+    $subject = "Registration refused";
+
 } else {
     die("Unknown action.");
 }
@@ -84,11 +87,13 @@ $mailUser->Username = MAIL_USERNAME;
 $mailUser->Password = MAIL_PASSWORD;
 $mailUser->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 $mailUser->Port = MAIL_PORT;
+
 $mailUser->setFrom(MAIL_FROM, MAIL_FROM_NAME);
 $mailUser->addAddress($user['mail']); // mail of user
+$mailUser->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid'); // logo inline
 $mailUser->isHTML(true);
 $mailUser->Subject = $subject;
-$mailUser->Body = $body;
+$mailUser->Body = mailTemplate($subject, $contentHtml);
 
 try {
     $mailUser->send();

@@ -7,19 +7,18 @@ require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require __DIR__ . '/../PHPMailer/src/SMTP.php';
 require __DIR__ . '/../PHPMailer/src/Exception.php';
 
-$msg = false;
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userInput = trim($_POST['username_or_email']);
 
-    // 1️⃣ Check if user exists
+    // 1️⃣ Vérifier si l'utilisateur existe
     $stmt = $pdo->prepare("SELECT id, username, mail FROM users WHERE username = :u OR mail = :u");
     $stmt->execute([':u' => $userInput]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        // rate limit
+        // 2️⃣ Vérifier la limite de temps pour les resets
         $stmt = $pdo->prepare("
             SELECT created_at 
             FROM password_resets
@@ -33,35 +32,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         date_default_timezone_set('Europe/Paris'); // UTC+1
         if ($lastReset) {
             $diff = time() - strtotime($lastReset['created_at']);
-            if ($diff < 300) { // 300 secondes = 5 minutes
+            if ($diff < 300) { // 5 minutes
                 $secondsLeft = 300 - $diff;
-                $errors[] = "You must wait " . $secondsLeft . " seconds before requesting a new password reset.";
+                $errors[] = "You must wait $secondsLeft seconds before requesting a new password reset.";
             }
         }
 
+        // 3️⃣ Si pas d'erreurs, créer le token et envoyer le mail
         if (empty($errors)) {
-            // 2️⃣ Générer token
             $token = bin2hex(random_bytes(32));
             $tokenHash = password_hash($token, PASSWORD_DEFAULT);
             $expires = date('Y-m-d H:i:s', strtotime('+30 minutes'));
 
-            // 3️⃣ Supprimer anciens resets
+            // Supprimer anciens resets
             $stmt = $pdo->prepare("DELETE FROM password_resets WHERE user_id = :id");
             $stmt->execute([':id' => $user['id']]);
 
-            // 4️⃣ Créer reset
+            // Créer un nouveau reset
             $stmt = $pdo->prepare("
                 INSERT INTO password_resets (user_id, token_hash, expires_at)
                 VALUES (:user_id, :token_hash, :expires_at)
             ");
-
             $stmt->execute([
                 ':user_id' => $user['id'],
                 ':token_hash' => $tokenHash,
                 ':expires_at' => $expires
             ]);
 
-            // 5 Send mail
+            // 4️⃣ Envoyer le mail
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
@@ -74,34 +72,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
                 $mail->addAddress($user['mail']);
-                $mail->isHTML(true);
-                $mail->Subject = "Password reset";
-                $mail->Body = "
-                Hello {$user['username']},<br>
-                A password reset was requested for your account.<br>
-                Click the link below to choose a new password:<br>
-                <a href='http://onduleur/auth/changePassword.php?token=$token'>
-                Reset my password
-                </a><br><br>
-                This link expires in <strong>30 minutes</strong>.<br>
-                If you didn't request this, ignore this email.<br><br>
-                <strong><i>Warning: you must be on the company's network to access the dashboard.</i></strong>
-                ";
+                $mail->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid');
+
+                $contentHtml= 
+                "<table style='width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse;'>
+                    <tr>
+                        <td style='text-align:center; padding:20px 0;'>
+                        <img src='cid:logo_cid' alt='Company Logo' style='width:150px; max-width:100%; height:auto;'>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style='padding:20px; background:#f9f9f9; border-radius:8px;'>
+                        <p>Hello <strong>{$user['username']}</strong>,</p>
+                        <p>A password reset was requested for your account.</p>
+                        <p>Click the link below to choose a new password:</p>
+                        <p style='text-align:center; margin:20px 0;'>
+                            <a href='http://onduleur/auth/changePassword.php?token=$token' 
+                            style='background:#0073e6; color:#fff; text-decoration:none; padding:10px 20px; border-radius:5px; display:inline-block;'>
+                            Reset my password
+                            </a>
+                        </p>
+                        <p>This link expires in <strong>30 minutes</strong>.</p>
+                        <p>If you didn't request this, ignore this email.</p>
+                        <p style='font-style:italic; color:#555;'>Warning: you must be on the company's network to access the website.</p>
+                        </td>
+                    </tr>
+                </table>";
+
+                $mail->isHTML(true);  
+                $mail->Body = mailTemplate("Password Reset Request", $contentHtml);
+                $mail->Subject = "Password Reset Request";
 
                 $mail->send();
-                $msg = true;
-        } catch (Exception $e) {
-            $errors[] = "Mail could not be sent.";
-        } 
+
+            } catch (Exception $e) {
+                echo "Erreur lors de l'envoi de l'email";
+            }
+        }
     }
-}
-else {
-    $msg=true;
-}
-if ($msg) {
-        header("Location: login.php?reset=sent");
-        exit;
-    } 
+    header("Location: login.php?reset=sent");
+    exit;
 }
 ?>
 

@@ -31,3 +31,24 @@ define('MAIL_FROM_NAME', 'Onduleur - Alertes');
 //authentification des requêtes API
 define('SIGNATURE_SECRET', 'une_cle_ultra_secrete_a_ne_pas_commit');
 
+function mailTemplate($title, $contentHtml) {
+    $logoCid = 'logo_cid';
+    return "
+    <table style='width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse;'>
+        <tr>
+            <td style='text-align:center; padding:20px 0;'>
+                <img src='cid:$logoCid' alt='Company Logo' style='width:150px; max-width:100%; height:auto;'>
+            </td>
+        </tr>
+        <tr>
+            <td style='padding:20px; background:#f9f9f9; border-radius:8px;'>
+                <h2 style='margin-top:0;'>$title</h2>
+                $contentHtml
+                <p style='font-style:italic; color:#555; margin-top:20px;'>
+                    Warning: you must be on the company's network to access the dashboard.
+                </p>
+            </td>
+        </tr>
+    </table>
+    ";
+}

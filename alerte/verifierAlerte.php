@@ -29,14 +29,16 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         return "MAIL SIMULATION : UPS Alert : $type";
     }
 
-    $sujet = "UPS Alert : $type";
-    $message = "<strong>UPS Alert : $type</strong><br><br>";
-    $message .= $messageAlerte;
-    $message .= "<br><br>ID Collect : $id<br>";
-    $message .= "UPS ID : $ups_id<br>";
-    $message .= "Timestamp : $recorded_at<br>";
-    $message .= "History : <a href='http://onduleur/historique/historique.php'>Go to history</a><br>";
-    $message .= "Collect with the alert: <a href='http://onduleur/historique/valeurSpecifique.php?colonne=id&valeur=$id'>Go to the specific collect</a>";
+    $messageHtml = "
+    <p><strong>UPS Alert: $type</strong></p>
+    <p>$messageAlerte</p>
+    <p>ID Collect: $id<br>UPS ID: $ups_id<br>Timestamp: $recorded_at</p>
+    <p>
+        History: <a href='http://onduleur/historique/historique.php'>Go to history</a><br>
+        Specific collect: <a href='http://onduleur/historique/valeurSpecifique.php?colonne=id&valeur=$id'>Go to the specific collect</a>
+    </p>
+    ";
+
     $mail = new PHPMailer(true);
 
     try {
@@ -51,6 +53,11 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
         $mail->addAddress(MAIL_FROM);
 
+        $mail->isHTML(true);
+        $mail->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid');
+        $mail->Body = mailTemplate("UPS Alert: $type", $messageHtml);
+        $mail->Subject = "UPS Alert: $type";
+
         $admins = getMailsAdmins($pdo);
         if (empty($admins)) {
             return "No admin to notify!!! (mail not sent)  <br>--> Table users, no 'admin' role with email provided.";
@@ -60,12 +67,8 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
             $mail->addBCC($email);
         }
 
-        $mail->Subject = $sujet;
-        $mail->isHTML(true);  
-        $mail->Body    = $message;
-
         $mail->send();
-        return "Mail Sent - $sujet";
+        return "Mail Sent - $type";
 
     } catch (Exception $e) {
         return "Mail error : {$mail->ErrorInfo}";
