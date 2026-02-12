@@ -1,10 +1,27 @@
 <?php
 require_once __DIR__ . '/../auth/authCheck.php';
 
-// historique.php: display the history of collects, with a form to filter by specific value
+// pagination
+$parPage = 15;
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($page - 1) * $parPage;
 
-//1 - get the 100 last collects from the database
-$stmt = $pdo->query("SELECT * FROM ups_history ORDER BY timestamp DESC LIMIT 100");
+// récupérer les 10 collectes de la page
+$stmt = $pdo->prepare("
+    SELECT * 
+    FROM ups_history 
+    ORDER BY timestamp DESC 
+    LIMIT :limit OFFSET :offset
+");
+$stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+
+$totalStmt = $pdo->query("SELECT COUNT(*) FROM ups_history");
+$total = $totalStmt->fetchColumn();
+$totalPages = ceil($total / $parPage);
+$page = min($page, $totalPages ?: 1);
+
 $historique = $stmt->fetchAll();
 ?>
 
@@ -47,9 +64,9 @@ $historique = $stmt->fetchAll();
     <hr>
 
 <!-- The 100 most recent collects (with a table) -->
- <h2>100 Most Recent Collects</h2>
- <p>Here is the table of the 100 most recent collects recorded by the UPS, sorted from newest to oldest.</p>
-    <table>
+ <h2>Recent Collects</h2>
+ <p>Here is the table with all collects recorded by the UPS, sorted from newest to oldest.</p>
+    <table id="tableauHistorique">
         <thead>
             <tr>
                 <th>ID</th>
@@ -79,6 +96,32 @@ $historique = $stmt->fetchAll();
             <?php endforeach; ?>
         </tbody>
     </table>
+    <div class="pagination">
+        <!-- début -->
+        <?php if ($page > 1): ?>
+            <a href="?page=1#tableauHistorique">&laquo;&laquo;</a>
+        <?php endif; ?>
+
+        <!-- précédent -->
+        <?php if ($page > 1): ?>
+            <a href="?page=<?= $page - 1 ?>#tableauHistorique">&laquo;</a>
+        <?php endif; ?>
+
+        <!-- page actuelle -->
+        <span class="current-page">
+            Page <?= $page ?> / <?= $totalPages ?>
+        </span>
+
+        <!-- suivant -->
+        <?php if ($page < $totalPages): ?>
+            <a href="?page=<?= $page + 1 ?>#tableauHistorique">&raquo;</a>
+        <?php endif; ?>
+
+        <!-- fin -->
+        <?php if ($page < $totalPages): ?>
+            <a href="?page=<?= $totalPages ?>#tableauHistorique">&raquo;&raquo;</a>
+        <?php endif; ?>
+    </div>
 </body>
 </html>
 

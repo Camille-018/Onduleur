@@ -1,10 +1,27 @@
 <?php
 require_once __DIR__ . '/../auth/authCheck.php';
 
-// alerte.php: display the list of alerts, with an explanation of what they mean, and the form to change thresholds
+// pagination
+$parPage = 15;
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($page - 1) * $parPage;
 
-// get the 100 last alerts
-$stmt = $pdo->query("SELECT * FROM Alertes ORDER BY heureAlerte DESC LIMIT 100");
+// récupérer les alertes de la page
+$stmt = $pdo->prepare("
+    SELECT * 
+    FROM Alertes 
+    ORDER BY heureAlerte DESC 
+    LIMIT :limit OFFSET :offset
+");
+$stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
+
+$totalStmt = $pdo->query("SELECT COUNT(*) FROM alertes");
+$total = $totalStmt->fetchColumn();
+$totalPages = ceil($total / $parPage);
+$page = min($page, $totalPages ?: 1);
+
 $alertes = $stmt->fetchAll();
 ?>
 
@@ -88,10 +105,10 @@ $alertes = $stmt->fetchAll();
     <p class="mail-info"><i>Note: the thresholds for these alerts can be changed in the "Change alert thresholds" page.</i></p>
     <hr>
 
-    <h2>The 100 last alerts</h2>
-    <p>Here is the table of the 100 last alerts with thresholds, sorted from most recent to oldest.</p>
+    <h2>The Alerts</h2>
+    <p>Here is the table with all the alerts with thresholds, sorted from most recent to oldest.</p>
     <?php if (!empty($alertes)): ?>
-    <table>
+    <table id="tableauAlerte">
         <thead>
             <tr>
                 <th>ID</th>
@@ -113,6 +130,32 @@ $alertes = $stmt->fetchAll();
             <?php endforeach; ?>
         </tbody>
     </table>
+    <div class="pagination">
+        <!-- début -->
+        <?php if ($page > 1): ?>
+            <a href="?page=1#tableauAlerte">&laquo;&laquo;</a>
+        <?php endif; ?>
+
+        <!-- précédent -->
+        <?php if ($page > 1): ?>
+            <a href="?page=<?= $page - 1 ?>#tableauAlerte">&laquo;</a>
+        <?php endif; ?>
+
+        <!-- page actuelle -->
+        <span class="current-page">
+            Page <?= $page ?> / <?= $totalPages ?>
+        </span>
+
+        <!-- suivant -->
+        <?php if ($page < $totalPages): ?>
+            <a href="?page=<?= $page + 1 ?>#tableauAlerte">&raquo;</a>
+        <?php endif; ?>
+
+        <!-- fin -->
+        <?php if ($page < $totalPages): ?>
+            <a href="?page=<?= $totalPages ?>#tableauAlerte">&raquo;&raquo;</a>
+        <?php endif; ?>
+    </div>
     <?php else: ?>
         <p>No alerts found.</p>
     <?php endif; ?>
