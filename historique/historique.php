@@ -63,9 +63,16 @@ $historique = $stmt->fetchAll();
 
     <script>
     function addFilter() {
+        const form = document.querySelector('form');
+        const currentFilters = form.querySelectorAll('.filter-row').length;
+        if (currentFilters >= 5) {
+            alert('You can only add up to 5 filters.');
+            return;
+        }
+
         const row = document.querySelector('.filter-row').cloneNode(true);
         row.querySelectorAll('input').forEach(i => i.value = '');
-        document.querySelector('form').insertBefore(row, document.querySelector('form').children[document.querySelector('form').children.length-2]);
+        form.insertBefore(row, form.children[form.children.length - 2]);
     }
     </script>
     <br>
