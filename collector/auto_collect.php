@@ -1,11 +1,13 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../alerte/verifieralerte.php';
 
 $API_BASE = "http://192.168.66.20:5000/api/ups";
 $loopDelay = 2;
 
 // Timer indépendant par UPS
 $lastInsertTime = [];
+echo "=== AUTO COLLECT STARTED ".date("Y-m-d H:i:s")." ===\n";
 
 while (true) {
 
@@ -118,6 +120,9 @@ while (true) {
             
             $historyId = $pdo->lastInsertId(); // 🔹 récupérer l'id de cette collecte
             $lastInsertTime[$upsId] = time();
+
+            verifierAlertePourCollecte($pdo, $historyId);
+
 
             if ($isCritical) {
                 echo date("H:i:s") . " | 🚨 ALERTE UPS $upsId ($statusRaw)\n";
