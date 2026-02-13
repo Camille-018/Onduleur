@@ -106,7 +106,7 @@ $alertes = $stmt->fetchAll();
     <hr>
 
     <h2>The Alerts</h2>
-    <p>Here is the table with all the alerts with thresholds, sorted from most recent to oldest.</p>
+    <p>Here is the table with all the alerts with <strong>thresholds</strong> and some critical UPS statuses <strong>(offline and bypass)</strong>, sorted from most recent to oldest.</p>
     <?php if (!empty($alertes)): ?>
     <table id="tableauAlerte">
         <thead>
