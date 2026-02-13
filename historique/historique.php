@@ -44,22 +44,30 @@ $historique = $stmt->fetchAll();
     <!-- Form to filter by specific value -->
     <h2>Filter by specific value</h2>
     <form action="valeurSpecifique.php" method="GET">
-        <label for="colonne">Choose the column :</label>
-        <select name="colonne" id="colonne" required>
-            <option value="id">ID</option>
-            <option value="ups_id">UPS ID</option>
-            <option value="battery_charge">Battery Charge</option>
-            <option value="battery_runtime">Battery Runtime</option>
-            <option value="input_voltage">Input Voltage</option>
-            <option value="output_voltage">Output Voltage</option>
-            <option value="ups_load">UPS Load</option>
-            <option value="ups_status">UPS Status</option>
-        </select>
-
-        <label for="valeur">Value :</label>
-        <input type="text" name="valeur" id="valeur" required>
+        <div class="filter-row">
+            <select name="colonne[]" required>
+                <option value="id">ID</option>
+                <option value="ups_id">UPS ID</option>
+                <option value="battery_charge">Battery Charge</option>
+                <option value="battery_runtime">Battery Runtime</option>
+                <option value="input_voltage">Input Voltage</option>
+                <option value="output_voltage">Output Voltage</option>
+                <option value="ups_load">UPS Load</option>
+                <option value="ups_status">UPS Status</option>
+            </select>
+            <input type="text" name="valeur[]" required>
+        </div>
+        <button type="button" onclick="addFilter()">+ Add Filter</button>
         <button type="submit">Filter</button>
     </form>
+
+    <script>
+    function addFilter() {
+        const row = document.querySelector('.filter-row').cloneNode(true);
+        row.querySelectorAll('input').forEach(i => i.value = '');
+        document.querySelector('form').insertBefore(row, document.querySelector('form').children[document.querySelector('form').children.length-2]);
+    }
+    </script>
     <br>
     <hr>
 

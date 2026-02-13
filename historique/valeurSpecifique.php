@@ -1,33 +1,78 @@
 <?php
 require_once __DIR__ . '/../auth/authCheck.php';
 
-// récupération des paramètres GET
-$colonne = $_GET['colonne'] ?? ''; 
-$valeur  = $_GET['valeur'] ?? '';
+// pagination
+$parPage = 15;
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($page - 1) * $parPage;
 
+// récupérer les filtres
+$colonnes = $_GET['colonne'] ?? [];
+$valeurs  = $_GET['valeur'] ?? [];
+
+if (!is_array($colonnes)) $colonnes = [$colonnes];
+if (!is_array($valeurs)) $valeurs = [$valeurs];
+
+// définir le type des colonnes
 $colonnes_float = ['input_voltage','output_voltage'];
 $colonnes_int   = ['id','ups_id','battery_runtime','battery_charge','ups_load'];
 $colonnes_text  = ['ups_status'];
 
-if (in_array($colonne, $colonnes_float)) {
-    $valeur = (float)$valeur;
-    $epsilon = 0.01;
-    $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE $colonne BETWEEN :min AND :max ORDER BY timestamp DESC");
-    $stmt->execute([
-        ':min' => $valeur - $epsilon,
-        ':max' => $valeur + $epsilon
-    ]);
-} elseif (in_array($colonne, $colonnes_int)) {
-    $valeur = (int)$valeur;
-    $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE $colonne = :valeur ORDER BY timestamp DESC");
-    $stmt->execute([':valeur' => $valeur]);
-} else { // texte
-    $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE $colonne LIKE :valeur ORDER BY timestamp DESC");
-    $stmt->execute([':valeur' => "%$valeur%"]);
+$where = [];
+$params = [];
+
+foreach ($colonnes as $i => $colonne) {
+    $valeur = $valeurs[$i] ?? '';
+    if (!$colonne || $valeur === '') continue;
+
+    if (in_array($colonne, $colonnes_float)) {
+        $valeur = (float)$valeur;
+        $epsilon = 0.01;
+        $where[] = "$colonne BETWEEN :min$i AND :max$i";
+        $params[":min$i"] = $valeur - $epsilon;
+        $params[":max$i"] = $valeur + $epsilon;
+    } elseif (in_array($colonne, $colonnes_int)) {
+        $valeur = (int)$valeur;
+        $where[] = "$colonne = :val$i";
+        $params[":val$i"] = $valeur;
+    } else { // texte
+        $where[] = "$colonne LIKE :val$i";
+        $params[":val$i"] = "%$valeur%";
+    }
 }
+
+// total pour pagination
+$totalSql = "SELECT COUNT(*) FROM ups_history";
+if ($where) {
+    $totalSql .= " WHERE " . implode(" AND ", $where);
+}
+$totalStmt = $pdo->prepare($totalSql);
+$totalStmt->execute($params);
+$total = $totalStmt->fetchColumn();
+$totalPages = ceil($total / $parPage);
+$page = min($page, $totalPages ?: 1);
+$offset = ($page - 1) * $parPage;
+
+// récupérer la page courante
+$sql = "SELECT * FROM ups_history";
+if ($where) {
+    $sql .= " WHERE " . implode(" AND ", $where);
+}
+$sql .= " ORDER BY timestamp DESC LIMIT :limit OFFSET :offset";
+
+$stmt = $pdo->prepare($sql);
+foreach ($params as $k => $v) {
+    if (is_int($v)) {
+        $stmt->bindValue($k, $v, PDO::PARAM_INT);
+    } else {
+        $stmt->bindValue($k, $v);
+    }
+}
+$stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+$stmt->execute();
 $historique = $stmt->fetchAll();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,7 +86,18 @@ $historique = $stmt->fetchAll();
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <a href="historique.php">Go to History</a><br>
     <a href="../index.php">Go to Home</a><br><br>
-     <h3>Filter : <?= htmlspecialchars($colonne) ?> = <?= htmlspecialchars($valeur) ?></h3> <!--filter call -->
+
+    <!-- Affichage de tous les filtres appliqués -->
+    <?php if (!empty($colonnes) && !empty($valeurs)): ?>
+        <h3>Filters applied:</h3>
+        <ul>
+        <?php foreach ($colonnes as $i => $colonneFiltre): ?>
+            <?php $valeurFiltre = $valeurs[$i] ?? ''; ?>
+            <li><?= htmlspecialchars($colonneFiltre) ?> = <?= htmlspecialchars($valeurFiltre) ?></li>
+        <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+
     <?php if (!empty($historique)): ?>
     <table>
         <thead>
@@ -70,10 +126,27 @@ $historique = $stmt->fetchAll();
                 <td><?= $row['ups_status'] ?></td>
                 <td><?= $row['timestamp'] ?></td>
             </tr>
-
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <?php if ($page > 1): ?>
+            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>1])) ?>#tableauHistorique">&laquo;&laquo;</a>
+            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>$page-1])) ?>#tableauHistorique">&laquo;</a>
+        <?php endif; ?>
+
+        <span class="current-page">
+            Page <?= $page ?> / <?= $totalPages ?>
+        </span>
+
+        <?php if ($page < $totalPages): ?>
+            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>$page+1])) ?>#tableauHistorique">&raquo;</a>
+            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>$totalPages])) ?>#tableauHistorique">&raquo;&raquo;</a>
+        <?php endif; ?>
+    </div>
+
     <?php else: ?>
         <p>No results found.</p>
     <?php endif; ?>
