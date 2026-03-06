@@ -1,18 +1,19 @@
 <?php
+//changePassword.php: page to change password after clicking reset link, validate token, update password
 require_once '../config/config.php';
 
 $errors = [];
 $success = "";
 $showForm = true;
 
-// Récupérer token
+// Get token from GET or POST (hidden input)
 $token = $_GET['token'] ?? ($_POST['token'] ?? '');
 
 if (!$token) {
-    die("Invalid reset link.");
+    die("Lien de réinitialisation invalide.");
 }
 
-// Chercher reset valide
+// Find the reset request matching the token (hash)
 $stmt = $pdo->prepare("
     SELECT * FROM password_resets
     WHERE used_at IS NULL
@@ -21,6 +22,7 @@ $stmt->execute();
 
 $reset = null;
 
+// We compare the provided token with the hashed tokens in the database using password_verify, and also check expiration
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     if (password_verify($token, $row['token_hash'])) {
         if (strtotime($row['expires_at']) > time()) {
@@ -31,9 +33,10 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 }
 
 if (!$reset) {
-    die("Invalid or expired reset link.");
+    die("Lien de réinitialisation invalide ou expiré.");
 }
 
+// If form submitted, validate and update password
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $newPass = trim($_POST['new_password']);
@@ -41,11 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validation
     if (strlen($newPass) < 6) {
-        $errors[] = "Password must be at least 6 characters.";
+        $errors[] = "Le mot de passe doit contenir au moins 6 caractères.";
     }
 
     if ($newPass !== $confirmPass) {
-        $errors[] = "Passwords do not match.";
+        $errors[] = "Les mots de passe ne correspondent pas.";
     }
 
     if (empty($errors)) {
@@ -59,28 +62,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':id' => $reset['user_id']
         ]);
 
-        // Marquer token utilisé
+        // Mark reset as used
         $stmt = $pdo->prepare("UPDATE password_resets SET used_at = NOW() WHERE id = :id");
         $stmt->execute([':id' => $reset['id']]);
 
-        $success = "Your password has been changed successfully!";
+        $success = "Votre mot de passe a été changé avec succès!";
         $showForm = false;
     }
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../style/style.css">
-    <title>Change Password</title>
+    <title>Onduleur - Changer de mot de passe</title>
 </head>
 <body>
-    <h1>Change your password</h1>
+    <h1>Changer ton mot de passe</h1>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
 
     <?php
+    // Display errors or success message
     if (!empty($errors)) {
         echo "<div class='errors'><ul>";
         foreach ($errors as $e) echo "<li>$e</li>";
@@ -92,20 +96,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<a href='../auth/login.php'>Go to login</a>";
     }
 
+    // Show form if no success yet
     if ($showForm) {
     ?>
     <form method="POST">
         <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
 
-        <label>New Password:<br>
+        <label>Nouveau mot de passe:<br>
             <input type="password" name="new_password" required>
         </label><br><br>
 
-        <label>Confirm New Password:<br>
+        <label>Confirmer le nouveau mot de passe:<br>
             <input type="password" name="confirm_password" required>
         </label><br><br>
 
-        <button type="submit">Change Password</button>
+        <button type="submit">Changer le mot de passe</button>
     </form>
     <?php } ?>
 </body>

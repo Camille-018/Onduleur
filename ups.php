@@ -1,4 +1,5 @@
 <?php
+//ups.php: details page for a single UPS, showing graphs of battery level and output voltage over time
 require_once __DIR__ . '/auth/authCheck.php';
 
 $id = (int)($_GET['id'] ?? 0);
@@ -8,9 +9,10 @@ $stmt->execute([$id]);
 $ups = $stmt->fetch();
 
 if (!$ups) {
-    die("UPS not found");
+    die("Onduleur non trouvé");
 }
 
+#retrieve last 120 entries for this UPS
 $stmt = $pdo->prepare("
     SELECT *
     FROM ups_history
@@ -33,11 +35,11 @@ $data = array_reverse($stmt->fetchAll());
 </head>
 <body>
 <h1><?= htmlspecialchars($ups['device_model']) ?></h1>
-<a href="index.php">← Back to Overview</a><hr>
-<h2 style="text-align: center;">UPS Battery Status</h2>
+<a href="index.php">← Retour à la liste</a><hr>
+<h2 style="text-align: center;">Statut de la Batterie de l'Onduleur</h2>
 <canvas id="batteryChart"></canvas><hr>
 
-<h2 style="text-align: center;">Output Voltage of the UPS</h2>
+<h2 style="text-align: center;">Tension de Sortie de l'Onduleur</h2>
 <canvas id="voltageChart"></canvas>
 
 <script>
@@ -45,39 +47,42 @@ const labels  = <?= json_encode(array_column($data,'timestamp')) ?>;
 const battery = <?= json_encode(array_column($data,'battery_charge')) ?>;
 const voltage = <?= json_encode(array_column($data,'output_voltage')) ?>;
 
+// Graphics configuration - Battery
 new Chart(document.getElementById('batteryChart'), {
     type: 'line',
     data: {
         labels,
         datasets: [{
-            label: 'Battery (%)',
+            label: 'Batterie (%)',
             data: battery,
             borderWidth: 2
         }]
     },
     options: {
         plugins: {
-            title: { display: false } // on supprime le titre du graph
+            title: { display: false } // we delete the default title (already in h2)
         },
         scales: {
             y: {
-                title: { display: true, text: 'Percentage (%)' },
+                title: { display: true, text: 'Pourcentage (%)' },
                 min: 0,
                 max: 100
             },
             x: {
-                title: { display: true, text: 'Time' }
+                title: { display: true, text: 'Temps' }
             }
         }
     }
 });
 
+
+// Graphics configuration - Voltage
 new Chart(document.getElementById('voltageChart'), {
     type: 'line',
     data: {
         labels,
         datasets: [{
-            label: 'Output Voltage (V)',
+            label: 'Tension de Sortie (V)',
             data: voltage,
             borderWidth: 2
         }]
@@ -86,11 +91,11 @@ new Chart(document.getElementById('voltageChart'), {
         plugins: { title: { display: false } }, // titre désactivé
         scales: {
             y: { title: { display: true, text: 'Volts (V)' } },
-            x: { title: { display: true, text: 'Time' } }
+            x: { title: { display: true, text: 'Temps' } }
         }
     }
 });
 </script>
-<a href="index.php">← Back to Overview</a>
+<a href="index.php">← Retour à la liste</a>
 </body>
 </html>

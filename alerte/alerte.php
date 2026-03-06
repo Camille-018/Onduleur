@@ -1,4 +1,5 @@
 <?php
+//alerte.php: web page to display all alerts and explain them, with pagination
 require_once __DIR__ . '/../auth/authCheck.php';
 
 // pagination
@@ -6,7 +7,7 @@ $parPage = 15;
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $parPage;
 
-// récupérer les alertes de la page
+// get alerts with pagination
 $stmt = $pdo->prepare("
     SELECT * 
     FROM Alertes 
@@ -26,96 +27,96 @@ $alertes = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>UPS - Alerts</title>
+    <title>Onduleur - Alertes</title>
 </head>
 <body>
-    <h1>Alerts</h1>
+    <h1>Alertes</h1>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <a href="../index.php">Go to homepage</a><br>
-    <a href="../historique/historique.php">Go to history</a><br><br>
-    <a href="verifierAlerte.php">Verify alerts</a><br>
-    <a href="changerSeuils.php">Change alert thresholds</a><br><br>
+    <a href="../index.php">Aller à l'acceuil</a><br>
+    <a href="../historique/historique.php">Aller à l'historique</a><br><br>
+    <a href="verifierAlerte.php">Vérifier les alertes</a><br>
+    <a href="changerSeuils.php">Modifier les seuils d'alerte</a><br><br>
     <hr>
 
-    <h2>UPS Status Explanation</h2>
+    <h2>Explication des statuts des onduleurs</h2>
     <p><i>
-    The UPS automatically generates status alerts based on the data it collects.<br>
-    Each status reflects the current operating condition of the UPS.
+    L'onduleur génère automatiquement des alertes de statut basées sur les données qu'il collecte.<br>
+    Chaque statut reflète la condition d'exploitation actuelle de l'onduleur.
     </i></p>
     <div class="grid">
         <!-- NORMAL -->
         <div class="card normal-card">
-            <h3>Normal Status</h3>
-            <p>UPS operating normally, no immediate action required.</p>
+            <h3>Statut Normal</h3>
+            <p>L'onduleur fonctionne normalement, aucune action immédiate requise.</p>
             <p>
-                <span class="status green">OL</span> On Line – UPS supplying power normally<br>
-                <span class="status green">CHRG</span> Charging – Battery currently charging
+                <span class="status green">OL</span> On Line – L'onduleur est en ligne<br>
+                <span class="status green">CHRG</span> Charging – La batterie est en cours de charge
             </p>
         </div>
 
         <!-- WARNING -->
         <div class="card warning-card">
-            <h3>Warning Status</h3>
-            <p>UPS is operating but attention may be required.</p>
+            <h3>Statut d'Attention</h3>
+            <p>L'onduleur est en cours d'exploitation mais une attention peut être nécessaire.</p>
             <p>
-                <span class="status orange">OB</span> On Battery – Running on battery power<br>
-                <span class="status orange">DISCHRG</span> Discharging – Battery in use<br>
-                <span class="status orange">TEST</span> Test in progress<br>
-                <span class="status orange">CAL</span> Calibration in progress
+                <span class="status orange">OB</span> On Battery – Fonctionne sur alimentation batterie<br>
+                <span class="status orange">DISCHRG</span> Discharging – Batterie en cours d'utilisation<br>
+                <span class="status orange">TEST</span> Test en cours<br>
+                <span class="status orange">CAL</span> Calibration en cours
             </p>
         </div>
 
         <!-- CRITICAL -->
         <div class="card critical-card">
-            <h3>Critical Status</h3>
-            <p>Immediate action required. Risk of shutdown or power loss.</p>
+            <h3>Statut Critique</h3>
+            <p> Action immédiate requise. Risque de coupure ou de perte d'alimentation.</p>
             <p>
-                <span class="status red">LB</span> Low Battery<br>
-                <span class="status red">OVER</span> Overload detected<br>
-                <span class="status red">BYPASS</span> Bypass mode active<br>
-                <span class="status red">OFF</span> UPS powered off
+                <span class="status red">LB</span> Low Battery - La batterie est trop faible<br>
+                <span class="status red">OVER</span> Overload detected - La charge dépasse la capacité de l'onduleur<br>
+                <span class="status red">BYPASS</span> Bypass mode active - L'onduleur est en mode de secours<br>
+                <span class="status red">OFF</span> UPS powered off - L'onduleur est éteint
             </p>
         </div>
     </div>
     <p class="mail-info"><i>
-    Note: Status values are generated directly by the UPS and may represent different operational conditions depending on the situation.
+    Note: Les statuts sont générés directement par l'onduleur et peuvent représenter différentes conditions d'exploitation selon la situation.
     </i></p><hr>
 
-    <h2>Explanation of alerts (created with thresholds) </h2>
-    <h3>Created with thresholds</h3>
+    <h2>Explication des alertes (créées avec des seuils) </h2>
+    <h3>Créées avec des seuils</h3>
     <ul>
         <li>
-            <strong>Low battery</strong> <i>(% too low)</i> : <code>battery_charge &lt; threshold low battery</code> <br>
-            -> The UPS battery is too low and may not be able to power the equipment.
+            <strong>Batterie faible</strong> <i>(% trop bas)</i> : <code>battery_charge &lt; seuil batterieFaible</code> <br>
+            -> La batterie de l'onduleur est trop faible pour assurer une alimentation de secours fiable, ce qui peut entraîner une coupure de courant en cas de panne d'alimentation principale.
         </li><br>
         <li>
-            <strong>Overload</strong> <i>(Input voltage too high)</i> : <code>input_voltage &gt; threshold overload</code> <br>
-            -> The input voltage is too high and may damage the UPS or connected equipment.
+            <strong>Surchage</strong> <i>(Tension d'entrée trop élevée)</i> : <code>input_voltage &gt; seuil surcharge</code> <br>
+            -> La tension d'entrée est trop élevée et peut endommager l'onduleur ou l'équipement connecté.
         </li><br>
         <li>
-            <strong>Cut-off</strong> <i>(Output voltage too low)</i> : <code>output_voltage &lt; threshold cut-off</code> <br>
-            -> The output voltage is too low to properly power the connected equipment, potentially causing a shutdown or malfunction.
+            <strong>Cut-off</strong> <i>(Tension de sortie trop basse)</i> : <code>output_voltage &lt; seuil cut-off</code> <br>
+            -> La tension de sortie est trop basse pour alimenter correctement l'équipement connecté, ce qui peut entraîner un arrêt ou un dysfonctionnement.
         </li>
     </ul>
-    <p class="mail-info"><i>Note: the thresholds for these alerts can be changed in the "Change alert thresholds" page.</i></p>
+    <p class="mail-info"><i>Note: Les seuils pour ces alertes peuvent être modifiés dans la page "Modifier les seuils d'alerte" (seulement pour les administrateurs).</i></p>
     <hr>
 
-    <h2>The Alerts</h2>
-    <p>Here is the table with all the alerts with <strong>thresholds</strong> and some critical UPS statuses <strong>(offline and bypass)</strong>, sorted from most recent to oldest.</p>
+    <h2>Les Alertes</h2>
+    <p>Voici le tableau avec toutes les alertes avec <strong>seuils</strong> et quelques statuts critiques d'onduleur <strong>(hors ligne et mode de secours)</strong>, triés du plus récent au plus ancien.</p>
     <?php if (!empty($alertes)): ?>
     <table id="tableauAlerte">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Id Collect</th>
+                <th>Id Collecte</th>
                 <th>Type</th>
                 <th>Message</th>
-                <th>Timestamp</th>
+                <th>Date</th>
             </tr>
         </thead>
         <tbody>
@@ -131,33 +132,33 @@ $alertes = $stmt->fetchAll();
         </tbody>
     </table>
     <div class="pagination">
-        <!-- début -->
+        <!-- first -->
         <?php if ($page > 1): ?>
             <a href="?page=1#tableauAlerte">&laquo;&laquo;</a>
         <?php endif; ?>
 
-        <!-- précédent -->
+        <!-- previous -->
         <?php if ($page > 1): ?>
             <a href="?page=<?= $page - 1 ?>#tableauAlerte">&laquo;</a>
         <?php endif; ?>
 
-        <!-- page actuelle -->
+        <!-- current -->
         <span class="current-page">
             Page <?= $page ?> / <?= $totalPages ?>
         </span>
 
-        <!-- suivant -->
+        <!-- next -->
         <?php if ($page < $totalPages): ?>
             <a href="?page=<?= $page + 1 ?>#tableauAlerte">&raquo;</a>
         <?php endif; ?>
 
-        <!-- fin -->
+        <!-- last -->
         <?php if ($page < $totalPages): ?>
             <a href="?page=<?= $totalPages ?>#tableauAlerte">&raquo;&raquo;</a>
         <?php endif; ?>
     </div>
     <?php else: ?>
-        <p>No alerts found.</p>
+        <p>Auncune alertes trouvées.</p>
     <?php endif; ?>
 </body>
 </html>

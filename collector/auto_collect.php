@@ -1,17 +1,18 @@
 <?php
+//auto_collect.php : collect automatically UPS data every 2 seconds, insert into database, and check for alerts
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../alerte/verifieralerte.php';
 
 $API_BASE = "http://192.168.66.20:5000/api/ups";
-$loopDelay = 2;
+$loopDelay = 2; // seconds
 
-// Timer indépendant par UPS
+// Table to track last insert time for each UPS to avoid flooding the database
 $lastInsertTime = [];
 echo "=== AUTO COLLECT STARTED ".date("Y-m-d H:i:s")." ===\n";
 
 while (true) {
 
-    // ===== LISTE DES UPS =====
+    // ===== UPS LIST =====
     $json = @file_get_contents($API_BASE);
     if (!$json) {
         echo date("H:i:s") . " | API injoignable\n";
@@ -28,7 +29,7 @@ while (true) {
 
     foreach ($api['ups'] as $upsName) {
 
-        // ===== DÉTAIL UPS =====
+        // ===== UPS DETAILS =====
         $detailJson = @file_get_contents("$API_BASE/$upsName");
         if (!$detailJson) {
             echo date("H:i:s") . " | $upsName injoignable\n";
@@ -70,7 +71,7 @@ while (true) {
         $ups = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$ups) {
-            // 🔹 Nouvel UPS détecté → insertion auto
+            // 🔹 New UPS detected → automatic insertion
             $stmt = $pdo->prepare("
                 INSERT INTO ups (device_serial, device_model)
                 VALUES (?, ?)
@@ -92,7 +93,7 @@ while (true) {
             $lastInsertTime[$upsId] = 0;
         }
 
-        // ===== DONNÉES =====
+        // ===== DATA =====
         $batteryCharge   = $data['battery.charge'] ?? null;
         $batteryRuntime = $data['battery.runtime'] ?? null;
         $inputVoltage   = $data['input.voltage'] ?? null;
@@ -118,12 +119,12 @@ while (true) {
                 $statusRaw
             ]);
             
-            $historyId = $pdo->lastInsertId(); // 🔹 récupérer l'id de cette collecte
+            $historyId = $pdo->lastInsertId(); // 🔹 get ID of this collect
             $lastInsertTime[$upsId] = time();
 
             verifierAlertePourCollecte($pdo, $historyId);
 
-
+            // debug log
             if ($isCritical) {
                 echo date("H:i:s") . " | 🚨 ALERTE UPS $upsId ($statusRaw)\n";
             } else {

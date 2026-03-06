@@ -1,4 +1,5 @@
 <?php
+//valeurSpecifique.php: page where we can filter the history by specific values (ex: all entries where battery_charge = 50%)
 require_once __DIR__ . '/../auth/authCheck.php';
 
 // pagination
@@ -6,14 +7,14 @@ $parPage = 15;
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $parPage;
 
-// récupérer les filtres
+// get the filter values from the form
 $colonnes = $_GET['colonne'] ?? [];
 $valeurs  = $_GET['valeur'] ?? [];
 
 if (!is_array($colonnes)) $colonnes = [$colonnes];
 if (!is_array($valeurs)) $valeurs = [$valeurs];
 
-// définir le type des colonnes
+// define the type of each column for proper query building
 $colonnes_float = ['input_voltage','output_voltage'];
 $colonnes_int   = ['id','ups_id','battery_runtime','battery_charge','ups_load'];
 $colonnes_text  = ['ups_status'];
@@ -21,6 +22,7 @@ $colonnes_text  = ['ups_status'];
 $where = [];
 $params = [];
 
+// build the WHERE clause based on the filters
 foreach ($colonnes as $i => $colonne) {
     $valeur = $valeurs[$i] ?? '';
     if (!$colonne || $valeur === '') continue;
@@ -41,7 +43,7 @@ foreach ($colonnes as $i => $colonne) {
     }
 }
 
-// total pour pagination
+// total for pagination
 $totalSql = "SELECT COUNT(*) FROM ups_history";
 if ($where) {
     $totalSql .= " WHERE " . implode(" AND ", $where);
@@ -53,7 +55,7 @@ $totalPages = ceil($total / $parPage);
 $page = min($page, $totalPages ?: 1);
 $offset = ($page - 1) * $parPage;
 
-// récupérer la page courante
+// get the current page
 $sql = "SELECT * FROM ups_history";
 if ($where) {
     $sql .= " WHERE " . implode(" AND ", $where);
@@ -74,22 +76,22 @@ $stmt->execute();
 $historique = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>UPS - Filter Result</title>
+    <title>Onduleur - Résultat du Filtre</title>
 </head>
 <body>
-    <h1>UPS - Filter Result</h1>
+    <h1>Onduleur - Résultat du Filtre</h1>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <a href="historique.php">Go to History</a><br>
-    <a href="../index.php">Go to Home</a><br><br>
+    <a href="historique.php">Aller à l'Historique</a><br>
+    <a href="../index.php">Aller à l'Accueil</a><br><br>
 
-    <!-- Affichage de tous les filtres appliqués -->
+    <!-- Display applied filters -->
     <?php if (!empty($colonnes) && !empty($valeurs)): ?>
-        <h3>Filters applied:</h3>
+        <h3>Filtres appliqués:</h3>
         <ul>
         <?php foreach ($colonnes as $i => $colonneFiltre): ?>
             <?php $valeurFiltre = $valeurs[$i] ?? ''; ?>
@@ -98,19 +100,20 @@ $historique = $stmt->fetchAll();
         </ul>
     <?php endif; ?>
 
+    <!-- Display results -->
     <?php if (!empty($historique)): ?>
     <table>
         <thead>
             <tr>
                 <th>ID</th>
-                <th>UPS ID</th>
-                <th>Battery Charge</th>
-                <th>Battery Runtime</th>
-                <th>Input Voltage</th>
-                <th>Output Voltage</th>
-                <th>UPS Load</th>
-                <th>UPS Status</th>
-                <th>Timestamp</th>
+                <th>ID Onduleur</th>
+                <th>Charge de la Batterie</th>
+                <th>Runtime de la Batterie</th>
+                <th>Tension d'Entrée</th>
+                <th>Tension de Sortie</th>
+                <th>Charge de l'Onduleur</th>
+                <th>Status de l'Onduleur</th>
+                <th>Date</th>
             </tr>
         </thead>
         <tbody>
@@ -148,7 +151,7 @@ $historique = $stmt->fetchAll();
     </div>
 
     <?php else: ?>
-        <p>No results found.</p>
+        <p>Pas de résultats trouvés.</p>
     <?php endif; ?>
 
 </body>

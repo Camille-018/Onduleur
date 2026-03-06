@@ -7,19 +7,20 @@ require_once __DIR__ . '/../PHPMailer/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// 1️⃣ get parameters
 $action = $_GET['action'] ?? null;
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) die("Invalid ID.");
 $sig    = $_GET['sig'] ?? null;
 
 if (!$action || !$id || !$sig) {
-    die("Invalid request.");
+    die("Requete invalide.");
 }
 
 // check signature (hash)
 $expectedSig = hash_hmac('sha256', $id, SIGNATURE_SECRET);
 if (!hash_equals($expectedSig, $sig)) {
-    die("Invalid signature.");
+    die("Signature invalide.");
 }
 
 // get the user
@@ -32,7 +33,7 @@ $stmt->execute([$id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$user) {
-    die("Account already processed or does not exist.");
+    die("Compte déjà traité ou n'existe pas.");
 }
 
 // 1️⃣ decide action (accept/refuse) and update database
@@ -41,41 +42,41 @@ if ($action === 'accept') {
     $stmt->execute([$user['id']]);
 
     $contentHtml = "
-    <p>Hello <strong>{$user['username']}</strong>,</p>
-    <p>Your account has been validated.<br>You can now log in to the dashboard:</p>
-    <p>Login: <a href='http://onduleur'>Dashboard</a></p>
-    <p><i>Automatic message, do not reply.</i></p>
+    <p>Bonjour <strong>{$user['username']}</strong>,</p>
+    <p>Votre compte a été validé.<br>Vous pouvez maintenant vous connecter au tableau de bord:</p>
+    <p>Connexion: <a href='http://onduleur'>Tableau de bord</a></p>
+    <p><i>Message automatique, ne pas répondre.</i></p>
     ";
-    $subject = "Account activated";
+    $subject = "Compte activé";
 
 } elseif ($action === 'acceptAdmin') {
     $stmt = $pdo->prepare("UPDATE users SET status='active', role='admin' WHERE id=?");
     $stmt->execute([$user['id']]);
 
     $contentHtml = "
-    <p>Hello <strong>{$user['username']}</strong>,</p>
-    <p>Your account has been validated. You are now an admin.<br>
-    <i><strong>As an admin, you will be able to change alert thresholds.</strong></i>
-    You can now log in to the dashboard:</p>
-    <p>Login: <a href='http://onduleur'>Dashboard</a></p>
-    <p><i>Automatic message, do not reply.</i></p>
+    <p>Bonjour <strong>{$user['username']}</strong>,</p>
+    <p>Votre compte a été validé. Vous êtes maintenant un admin.<br>
+    <i><strong>En tant qu'admin, vous pourrez modifier les seuils d'alerte.</strong></i>
+    Vous pouvez maintenant vous connecter au tableau de bord:</p>
+    <p>Connexion: <a href='http://onduleur'>Tableau de bord</a></p>
+    <p><i>Message automatique, ne pas répondre.</i></p>
     ";
-    $subject = "Account activated as admin";
+    $subject = "Compte activé en tant qu'admin";
 
 } elseif ($action === 'refuse') {
     $stmt = $pdo->prepare("DELETE FROM users WHERE id=?");
     $stmt->execute([$user['id']]);
 
     $contentHtml = "
-    <p>Hello <strong>{$user['username']}</strong>,</p>
-    <p>Your registration request has been refused.<br>If you think this is an error, contact an administrator.</p>
-    <p>Login: <a href='http://onduleur'>Dashboard</a></p>
-    <p><i>Automatic message, do not reply.</i></p>
+    <p>Bonjour <strong>{$user['username']}</strong>,</p>
+    <p>Votre demande d'inscription a été refusée.<br>Si vous pensez que c'est une erreur, contactez un administrateur.</p>
+    <p>Connexion: <a href='http://onduleur'>Tableau de bord</a></p>
+    <p><i>Message automatique, ne pas répondre.</i></p>
     ";
-    $subject = "Registration refused";
+    $subject = "Inscription refusée";
 
 } else {
-    die("Unknown action.");
+    die("Action inconnue.");
 }
 
 // 2️⃣ send mail to user about the decision
@@ -103,8 +104,8 @@ try {
 
 // 3️⃣ popup message and close window (for admin)
 $message = ($action === 'refuse') 
-    ? "Registration refused" 
-    : ($action === 'acceptAdmin' ? "Account activated as admin" : "Account activated successfully");
+    ? "Demande refusée." 
+    : ($action === 'acceptAdmin' ? "Compte activé en tant qu'admin" : "Compte activé avec succès");
 
 echo "<script>
 alert(" . json_encode($message) . ");

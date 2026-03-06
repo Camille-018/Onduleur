@@ -1,4 +1,5 @@
 <?php
+//index.php: main dashboard showing all UPS with their latest status, and links to details, history and alerts pages
 require_once __DIR__ . '/auth/authCheck.php';
 
 // Retrieves the list of UPS with their latest status
@@ -36,18 +37,18 @@ function statusColor($s) {
 </head>
 <body>
 
-<h1>📊 UPS List</h1>
-<a href="../auth/logout.php">Logout</a><br>
-<a href="../historique/historique.php">Go to History</a><br>
-<a href="../alerte/alerte.php">Go to Alerts</a><br><hr>
-<p>Click on an UPS card to see detailed information.</p>
-<p><i>Go to alert to check the status meaning (red is critical, orange is warning, green is normal)</i></p>
+<h1>📊 Liste des Onduleurs</h1>
+<a href="../auth/logout.php">Se déconnecter</a><br>
+<a href="../historique/historique.php">Aller à l'historique</a><br>
+<a href="../alerte/alerte.php">Aller aux alertes</a><br><hr>
+<p>Cliquez sur un carte d'onduleur pour voir les informations détaillées.</p>
+<p><i>Aller aux alertes pour comprendre le sens des statuts (rouge: critique, orange: avertissement, vert: normal)</i></p>
 <!-- Display UPS cards -->
 <div class="grid">
 <?php foreach ($upsList as $ups): ?>
 <a class="card" href="ups.php?id=<?= $ups['id'] ?>">
     <h3><?= htmlspecialchars($ups['device_model']) ?></h3>
-    <p>Battery : <?= $ups['battery_charge'] ?? '--' ?> %</p>
+    <p>Batterie : <?= $ups['battery_charge'] ?? '--' ?> %</p>
     <span class="status <?= statusColor($ups['ups_status']) ?>">
         <?= $ups['ups_status'] ?? 'None' ?>
     </span>

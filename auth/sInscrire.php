@@ -24,18 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // basic validation
     if (strlen($username) < 3 || strlen($username) > 50) {
-        $error = "username too short (3) or too long (50).";
+        $error = "Utilisateur doit être entre 3 et 50 caractères.";
     } elseif (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-        $error = "Invalid email address.";
+        $error = "Adresse email invalide.";
     } elseif (strlen($password) < 8) {
-        $error = "Password too short (8).";
+        $error = "Mot de passe trop court (8).";
     } else {
 
         // 1️⃣ Check if username or mail alr exists
         $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR mail = ?");
         $stmt->execute([$username, $mail]);
         if ($stmt->fetch()) {
-            echo '<script>alert("Username or email already exists.");</script>';
+            echo '<script>alert("Utilisateur ou email déjà existant.");</script>';
             exit;
         } else {
             // 2️⃣ Everything ok → hash password
@@ -69,30 +69,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mailObj->Port = MAIL_PORT;
 
             $mailObj->setFrom(MAIL_FROM, MAIL_FROM_NAME);
-            ###### change mail there
+####################### change mail there #######################
             $mailObj->addAddress("erzasu45.008@gmail.com");
-
+#################################################################
             $mailObj->isHTML(true);
             $contentHtml = "
-            Username: $username<br>
+            Utilisateur: $username<br>
             Mail: $mail<br><br>
             <h3>Actions:</h3>
             <a href='$lienAccept' style='background:#28a745;color:#fff;padding:8px 15px;border-radius:5px;text-decoration:none;'>
-                <span style='color:#ffff00;'>✅</span> Accept
+                <span style='color:#ffff00;'>✅</span> Accepter
             </a><br><br>
 
             <a href='$lienAcceptAdmin' style='background:#F4AA0B;color:#000;padding:8px 15px;border-radius:5px;text-decoration:none;'>
-                <span style='color:#ff6600;'>⭐</span> Accept as Admin
+                <span style='color:#ff6600;'>⭐</span> Accepter en Admin
             </a><br><br>
 
             <a href='$lienRefuse' style='background:#C82909;color:#fff;padding:8px 15px;border-radius:5px;text-decoration:none;'>
-                <span style='color:#ffcdd2;'>❌</span> Refuse
+                <span style='color:#ffcdd2;'>❌</span> Refuser
             </a>
             ";
 
             $mailObj->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid');
-            $mailObj->Body = mailTemplate("New registration request", $contentHtml);
-            $mailObj->Subject = "New registration request";
+            $mailObj->Body = mailTemplate("Demande de inscription", $contentHtml);
+            $mailObj->Subject = "Demande de inscription - CEREEP - onduleur";
 
             try {
                 $mailObj->send();
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: sInscrire.php?success=1");
                 exit;
             } catch (Exception $e) {
-                $error = "Error while sending email: " . $mailObj->ErrorInfo;
+                $error = "Erreur lors de l'envoi de l'email: " . $mailObj->ErrorInfo;
             }
         }
     }
@@ -108,39 +108,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../style/style.css">
-    <title>UPS - Sign Up</title>
+    <title>Onduleur - S'inscrire</title>
 </head>
 <body>
-    <h1>Sign Up</h1>
-    <p>Please sign up to access the dashboard</p>
+    <h1>S'inscrire</h1>
+    <p>Veuillez vous inscrire pour accéder au tableau de bord</p>
 
     <?php if (isset($_GET['success'])): ?>
     <script>
-        alert("Request sent, waiting for admin validation.");
+        alert("Demande envoyée, en attente de validation par l'admin.");
     </script>
     <?php endif; ?>
 
     <?php if (isset($_GET['refused'])): ?>
     <script>
-        alert("Request refused by admin.");
+        alert("Demande refusée par l'admin.");
     </script>
     <?php endif; ?>
 
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <h2>Sign Up Form</h2>
-    <p><i>An email will be sent to the admin to validate your account. <br>
-    Then, you will receive a confirmation email about the decision. </i></p>
+    <h2>Formulaire d'inscription</h2>
+    <p><i>Un email sera envoyé à un admin pour valider votre compte. <br>
+    Ensuite, vous recevrez un email concernant la décision. </i></p>
 
     <form method="POST">
-        <input type="text" name="username" placeholder="Username" required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
-        <input type="email" name="mail" placeholder="Email address" required><br>
-        <button type="submit">Sign Up</button>
-        <br><br><a href="login.php">Already have an account? Log in</a>
+        <input type="text" name="username" placeholder="Utilisateur" required><br>
+        <input type="password" name="password" placeholder="Mot de Passe" required><br>
+        <input type="email" name="mail" placeholder="Adresse email" required><br>
+        <button type="submit">S'inscrire</button>
+        <br><br><a href="login.php">Déjà un compte? Se connecter</a>
     </form>
 </body>
 </html>

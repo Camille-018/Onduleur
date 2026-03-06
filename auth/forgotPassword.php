@@ -1,4 +1,5 @@
 <?php
+//forgotPassword.php: page to request password reset, check user exists, create token, send mail with reset link
 require_once '../config/config.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -12,13 +13,13 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userInput = trim($_POST['username_or_email']);
 
-    // 1️⃣ Vérifier si l'utilisateur existe
+    // 1️⃣ Check if user exists by username or email
     $stmt = $pdo->prepare("SELECT id, username, mail FROM users WHERE username = :u OR mail = :u");
     $stmt->execute([':u' => $userInput]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        // 2️⃣ Vérifier la limite de temps pour les resets
+        // 2️⃣ Check if a reset was already requested in the last 5 minutes
         $stmt = $pdo->prepare("
             SELECT created_at 
             FROM password_resets
@@ -38,17 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // 3️⃣ Si pas d'erreurs, créer le token et envoyer le mail
+        // 3️⃣ If no recent reset, create token, store in DB and send mail
         if (empty($errors)) {
             $token = bin2hex(random_bytes(32));
             $tokenHash = password_hash($token, PASSWORD_DEFAULT);
             $expires = date('Y-m-d H:i:s', strtotime('+30 minutes'));
 
-            // Supprimer anciens resets
+            // Delete any existing resets for this user
             $stmt = $pdo->prepare("DELETE FROM password_resets WHERE user_id = :id");
             $stmt->execute([':id' => $user['id']]);
 
-            // Créer un nouveau reset
+            // Create new reset entry
             $stmt = $pdo->prepare("
                 INSERT INTO password_resets (user_id, token_hash, expires_at)
                 VALUES (:user_id, :token_hash, :expires_at)
@@ -59,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':expires_at' => $expires
             ]);
 
-            // 4️⃣ Envoyer le mail
+            // 4️⃣ Send reset email
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
@@ -83,25 +84,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </tr>
                     <tr>
                         <td style='padding:20px; background:#f9f9f9; border-radius:8px;'>
-                        <p>Hello <strong>{$user['username']}</strong>,</p>
-                        <p>A password reset was requested for your account.</p>
-                        <p>Click the link below to choose a new password:</p>
+                        <p>Bonjour <strong>{$user['username']}</strong>,</p>
+                        <p>Un lien de réinitialisation de mot de passe a été demandé pour votre compte.</p>
+                        <p>Cliquez sur le lien ci-dessous pour choisir un nouveau mot de passe:</p>
                         <p style='text-align:center; margin:20px 0;'>
                             <a href='http://onduleur/auth/changePassword.php?token=$token' 
                             style='background:#0073e6; color:#fff; text-decoration:none; padding:10px 20px; border-radius:5px; display:inline-block;'>
-                            Reset my password
+                            Reinitialiser mon mot de passe
                             </a>
                         </p>
-                        <p>This link expires in <strong>30 minutes</strong>.</p>
-                        <p>If you didn't request this, ignore this email.</p>
-                        <p style='font-style:italic; color:#555;'>Warning: you must be on the company's network to access the website.</p>
+                        <p>Ce lien expire dans <strong>30 minutes</strong>.</p>
+                        <p>Si vous n'avez pas demandé de réinitialisation de mot de passe, ignorez cet email.</p>
+                        <p style='font-style:italic; color:#555;'>Attention: vous devez être sur le réseau de l'entreprise pour accéder au site web.</p>
                         </td>
                     </tr>
                 </table>";
 
                 $mail->isHTML(true);  
-                $mail->Body = mailTemplate("Password Reset Request", $contentHtml);
-                $mail->Subject = "Password Reset Request";
+                $mail->Body = mailTemplate("Requete de réinitialisation de mot de passe", $contentHtml);
+                $mail->Subject = "Requete de réinitialisation de mot de passe";
 
                 $mail->send();
 
@@ -116,24 +117,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../style/style.css">
-    <title>Forgot Password</title>
+    <title>Onduleur - Mot de passe oublié</title>
 </head>
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <h1>Forgot Password</h1>
+    <h1>Mot de passe oublié</h1>
 
     <form method="POST">
-        <label>Username or Email:<br>
+        <label>Utilisateur ou Email:<br>
             <input type="text" name="username_or_email" required>
         </label><br>
-        <button type="submit">Send Reset Link</button>
+        <button type="submit">Envoyer le lien de réinitialisation</button>
     </form>
-    <br><a href="login.php">Go to login</a>
-    <br><a href="sInscrire.php">Sign up (No account yet)</a>
+    <br><a href="login.php">Aller à la page de connexion</a>
+    <br><a href="sInscrire.php">S'inscrire (Pas encore de compte)</a>
 
     <?php
     if (!empty($errors)) {

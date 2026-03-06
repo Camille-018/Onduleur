@@ -1,12 +1,13 @@
 <?php
+// historique.php - web page to display the history of collects from the UPS
 require_once __DIR__ . '/../auth/authCheck.php';
 
-// pagination
+// pagination (15 collects per page)
 $parPage = 15;
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($page - 1) * $parPage;
 
-// récupérer les 10 collectes de la page
+// get the collects for the current page
 $stmt = $pdo->prepare("
     SELECT * 
     FROM ups_history 
@@ -17,6 +18,7 @@ $stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 
+// Get total collects for pagination
 $totalStmt = $pdo->query("SELECT COUNT(*) FROM ups_history");
 $total = $totalStmt->fetchColumn();
 $totalPages = ceil($total / $parPage);
@@ -31,42 +33,43 @@ $historique = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>UPS - History</title>
+    <title>Onduleur - Historique</title>
 </head>
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <h1>History of Collects</h1>
-    <a href="../index.php">Go to Home</a><br>
-    <a href="../alerte/alerte.php">View Alerts</a>
+    <h1>Historique des Collectes</h1>
+    <a href="../index.php">Retour à l'accueil</a><br>
+    <a href="../alerte/alerte.php">Voir les Alertes</a>
     <br><br>
     <hr>
 
     <!-- Form to filter by specific value -->
-    <h2>Filter by specific value</h2>
+    <h2>Filtrer par une valeur spécifique</h2>
     <form action="valeurSpecifique.php" method="GET">
         <div class="filter-row">
             <select name="colonne[]" required>
                 <option value="id">ID</option>
-                <option value="ups_id">UPS ID</option>
-                <option value="battery_charge">Battery Charge</option>
-                <option value="battery_runtime">Battery Runtime</option>
-                <option value="input_voltage">Input Voltage</option>
-                <option value="output_voltage">Output Voltage</option>
-                <option value="ups_load">UPS Load</option>
-                <option value="ups_status">UPS Status</option>
+                <option value="ups_id">ID de l'onduleur</option>
+                <option value="battery_charge">Charge de la Batterie</option>
+                <option value="battery_runtime">Runtime de la Batterie</option>
+                <option value="input_voltage">Tension d'Entrée</option>
+                <option value="output_voltage">Tension de Sortie</option>
+                <option value="ups_load">Charge de l'Onduleur</option>
+                <option value="ups_status">Status de l'Onduleur</option>
             </select>
             <input type="text" name="valeur[]" required>
         </div>
-        <button type="button" onclick="addFilter()">+ Add Filter</button>
-        <button type="submit">Filter</button>
+        <button type="button" onclick="addFilter()">+ Ajouter un Filtre</button>
+        <button type="submit">Filtrer</button>
     </form>
 
     <script>
+        // JavaScript to add more filter rows
     function addFilter() {
         const form = document.querySelector('form');
         const currentFilters = form.querySelectorAll('.filter-row').length;
         if (currentFilters >= 5) {
-            alert('You can only add up to 5 filters.');
+            alert('Vous pouvez ajouter jusqu\'à 5 filtres seulement.');
             return;
         }
 
@@ -79,20 +82,20 @@ $historique = $stmt->fetchAll();
     <hr>
 
 <!-- The 100 most recent collects (with a table) -->
- <h2>Recent Collects</h2>
- <p>Here is the table with all collects recorded by the UPS, sorted from newest to oldest.</p>
+ <h2>Collectes Récentes</h2>
+ <p>Voici le tableau avec toutes les collectes enregistrées par l'Onduleur, triées de la plus récente à la plus ancienne.</p>
     <table id="tableauHistorique">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>UPS ID</th>
-                <th>Battery Charge</th>
-                <th>Battery Runtime</th>
-                <th>Input Voltage</th>
-                <th>Output Voltage</th>
-                <th>UPS Load</th>
-                <th>UPS Status</th>
-                <th>Timestamp</th>
+                <th>ID de l'onduleur</th>
+                <th>Charge de la Batterie</th>
+                <th>Runtime de la Batterie</th>
+                <th>Tension d'Entrée</th>
+                <th>Tension de Sortie</th>
+                <th>Charge de l'Onduleur</th>
+                <th>Status de l'Onduleur</th>
+                <th>Date</th>
             </tr>
         </thead>
         <tbody>
@@ -112,27 +115,27 @@ $historique = $stmt->fetchAll();
         </tbody>
     </table>
     <div class="pagination">
-        <!-- début -->
+        <!-- first page -->
         <?php if ($page > 1): ?>
             <a href="?page=1#tableauHistorique">&laquo;&laquo;</a>
         <?php endif; ?>
 
-        <!-- précédent -->
+        <!-- previous page -->
         <?php if ($page > 1): ?>
             <a href="?page=<?= $page - 1 ?>#tableauHistorique">&laquo;</a>
         <?php endif; ?>
 
-        <!-- page actuelle -->
+        <!-- current page -->
         <span class="current-page">
             Page <?= $page ?> / <?= $totalPages ?>
         </span>
 
-        <!-- suivant -->
+        <!-- next page-->
         <?php if ($page < $totalPages): ?>
             <a href="?page=<?= $page + 1 ?>#tableauHistorique">&raquo;</a>
         <?php endif; ?>
 
-        <!-- fin -->
+        <!-- last page-->
         <?php if ($page < $totalPages): ?>
             <a href="?page=<?= $totalPages ?>#tableauHistorique">&raquo;&raquo;</a>
         <?php endif; ?>

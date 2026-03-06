@@ -1,4 +1,5 @@
 <?php
+//verifierAlerte.php : check alerts for a collect and insert into Alertes table if needed, then send mail to admins
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -9,24 +10,24 @@ require_once __DIR__ . '/../config/config.php';
 
 
 /**
- * Vérifie les alertes pour UNE collecte
- * Appelé directement après insertion dans ups_history
+ * Check alerts for a collect 
+ * Called by collecter.php after each collect
  */
 function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
 
-    // ===== RÉCUP COLLECTE =====
+    // ===== Get collect =====
     $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE id = ?");
     $stmt->execute([$collectId]);
     $d = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$d) return;
 
-    // ===== CHARGE SEUILS =====
+    // ===== Load thresholds =====
     $seuils = json_decode(file_get_contents(__DIR__ . '/../config/config_seuils.json'), true);
     $alertes_a_creer = [];
 
     // =========================================================
-    // 1️⃣ CHECK STATUS UPS (OFF / BYPASS uniquement)
+    // 1️⃣ CHECK STATUS UPS (OFF / BYPASS only)
     // =========================================================
     $statusList = explode(' ', $d['ups_status']);
 
@@ -34,7 +35,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'off')) {
             $alertes_a_creer[] = [
                 'Type' => 'off',
-                'Message' => "UPS powered off"
+                'Message' => "Onduleur éteint"
             ];
         }
     }
@@ -43,20 +44,20 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'bypass')) {
             $alertes_a_creer[] = [
                 'Type' => 'bypass',
-                'Message' => "UPS in bypass mode"
+                'Message' => "Onduleur en mode de secours"
             ];
         }
     }
 
     // =========================================================
-    // 2️⃣ CHECK SEUILS
+    // 2️⃣ CHECK thresholds (SEUILS)
     // =========================================================
 
     if ($d['battery_charge'] !== null && $d['battery_charge'] < $seuils['batterieFaible']) {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'batterieFaible')) {
             $alertes_a_creer[] = [
                 'Type' => 'batterieFaible',
-                'Message' => "Battery low : {$d['battery_charge']}%"
+                'Message' => "Batterie faible : {$d['battery_charge']}%"
             ];
         }
     }
@@ -65,7 +66,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'surcharge')) {
             $alertes_a_creer[] = [
                 'Type' => 'surcharge',
-                'Message' => "Input voltage too high : {$d['input_voltage']}V"
+                'Message' => "Tension d'entrée trop élevée : {$d['input_voltage']}V"
             ];
         }
     }
@@ -74,13 +75,13 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'coupure')) {
             $alertes_a_creer[] = [
                 'Type' => 'coupure',
-                'Message' => "Output voltage too low : {$d['output_voltage']}V"
+                'Message' => "Tension de sortie trop basse : {$d['output_voltage']}V"
             ];
         }
     }
 
     // =========================================================
-    // 3️⃣ INSERT ALERTES + MAIL
+    // 3️⃣ INSERT ALERTS + MAIL
     // =========================================================
     if (!empty($alertes_a_creer)) {
 
@@ -112,7 +113,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
 
 
 /**
- * Empêche spam : vérifie si une alerte identique récente existe
+ * Avoid spam: check if an alert of the same type for the same UPS has been created in the last 5 minutes
  */
 function alerteRecenteExiste(PDO $pdo, int $upsId, string $type): bool {
 
@@ -135,7 +136,7 @@ function alerteRecenteExiste(PDO $pdo, int $upsId, string $type): bool {
 
 
 /**
- * Récup mails admins
+ * Get admins emails from database
  */
 function getMailsAdmins(PDO $pdo) {
     $stmt = $pdo->prepare("
@@ -151,21 +152,21 @@ function getMailsAdmins(PDO $pdo) {
 
 
 /**
- * Envoi mail alerte
+ * Send alert email to admins
  */
 function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $pdo) {
 
     if (!MAIL_ENABLED) {
-        return "MAIL SIMULATION : UPS Alert : $type";
+        return "MAIL SIMULATION : Onduleur Alerte : $type";
     }
 
     $messageHtml = "
-        <p><strong>UPS Alert: $type</strong></p>
+        <p><strong>Onduleur Alerte: $type</strong></p>
         <p>$messageAlerte</p>
-        <p>ID Collect: $id<br>UPS ID: $ups_id<br>Timestamp: $recorded_at</p>
+        <p>ID Collecte: $id<br>UPS ID: $ups_id<br>Date: $recorded_at</p>
         <p>
-            History: <a href='http://onduleur/historique/historique.php'>Go to history</a><br>
-            Specific collect: <a href='http://onduleur/historique/valeurSpecifique.php?colonne=id&valeur=$id'>Go to the specific collect</a>
+            Historique: <a href='http://onduleur/historique/historique.php'>Aller à l'historique</a><br>
+            Collecte spécifique: <a href='http://onduleur/historique/valeurSpecifique.php?colonne=id&valeur=$id'>Aller à la collecte spécifique</a>
         </p>
     ";
 
@@ -182,9 +183,9 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
 
         $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
         $mail->isHTML(true);
-        $mail->Subject = "UPS Alert: $type";
+        $mail->Subject = "Onduleur Alerte: $type";
         $mail->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid');
-        $mail->Body = mailTemplate("UPS Alert: $type", $messageHtml);
+        $mail->Body = mailTemplate("Onduleur Alerte: $type", $messageHtml);
 
 
         $admins = getMailsAdmins($pdo);
@@ -193,9 +194,9 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         }
 
         $mail->send();
-        return "Mail Sent";
+        return "Mail envoyé aux admins : $type";
 
     } catch (Exception $e) {
-        return "Mail error : {$mail->ErrorInfo}";
+        return "Erreur mail: {$mail->ErrorInfo}";
     }
 }

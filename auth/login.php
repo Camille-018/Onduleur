@@ -3,11 +3,13 @@
 session_start();
 require_once "../config/config.php";
 
+// show success message after password reset request
 $error = "";
 if (isset($_GET['reset'])) {
-    echo "<script>alert('If the account exists, a reset email has been sent.');</script>";
+    echo "<script>alert('Si le compte existe, un email de réinitialisation a été envoyé.');</script>";
 }
 
+// verify if user and password are correct
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = $_POST["username"] ?? "";
     $password = $_POST["password"] ?? "";
@@ -18,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 if ($user && password_verify($password, $user["password"])) 
     {
     if ($user['status'] !== 'active') {
-        die("Account not active.");
+        die("Compte non actif.");
     }
     $_SESSION["user_id"] = $user["id"];
     $_SESSION["user"] = $user["username"];
@@ -30,7 +32,7 @@ if ($user && password_verify($password, $user["password"]))
     } 
     
 else {
-    $error = "User not found or wrong password.";
+    $error = "utilisateur ou mot de passe incorrect.";
     }
 }
 ?>
@@ -39,19 +41,19 @@ else {
 <html>
 <head>
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>UPS - Login</title>
+    <title>UPS - S'identifier</title>
 </head>
 <body>
-    <h1>Login</h1>
-    <p>Please login to access the dashboard</p>
+    <h1>S'identifier</h1>
+    <p>Veuillez vous connecter pour accéder au tableau de bord</p>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <form method="POST">
-        <input type="text" name="username" placeholder="Username" required><br>
-        <input type="password" name="password" placeholder="Password" required><br>
-        <button type="submit">Login</button>
+        <input type="text" name="username" placeholder="Utilisateur" required><br>
+        <input type="password" name="password" placeholder="Mot de passe" required><br>
+        <button type="submit">S'identifier</button>
         <br><br>
-        <a href="forgotPassword.php">Forgot password?</a><br>
-        <a href="sInscrire.php">Sign up</a>
+        <a href="forgotPassword.php">Mot de passe oublié?</a><br>
+        <a href="sInscrire.php">S'inscrire</a>
 
     </form>
 

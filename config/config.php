@@ -1,5 +1,5 @@
 <?php
-// config.php: configuration de la connexion à la base de données
+// config.php: configuration of connexion to database and mail server
 $host = 'localhost';
 $db   = 'ups_onduleur';
 $user = 'root';
@@ -18,7 +18,7 @@ try {
     die('Erreur BDD : ' . $e->getMessage());
 }
 
-// pour les notifications par mail/sms
+// for mail sending
 define('MAIL_ENABLED', true);
 
 define('MAIL_HOST', 'smtp.gmail.com');
@@ -28,9 +28,10 @@ define('MAIL_PASSWORD', 'cshy fwzk wnis rfid'); // mdp de lapp
 define('MAIL_FROM', 'ondulateur.alertes@gmail.com');
 define('MAIL_FROM_NAME', 'Onduleur - Alertes');
 
-//authentification des requêtes API
+// for alert signature
 define('SIGNATURE_SECRET', 'une_cle_ultra_secrete_a_ne_pas_commit');
 
+// mail template function
 function mailTemplate($title, $contentHtml) {
     $logoCid = 'logo_cid';
     return "
@@ -45,7 +46,7 @@ function mailTemplate($title, $contentHtml) {
                 <h2 style='margin-top:0;'>$title</h2>
                 $contentHtml
                 <p style='font-style:italic; color:#555; margin-top:20px;'>
-                    Warning: you must be on the company's network to access the dashboard.
+                    Attenttion: vous devez être sur le réseau de l'entreprise pour accéder au site web.
                 </p>
             </td>
         </tr>

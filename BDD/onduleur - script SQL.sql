@@ -3,13 +3,14 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : mar. 10 fév. 2026 à 08:33
+-- Généré le : lun. 02 mars 2026 à 12:35
 -- Version du serveur : 9.1.0
 -- Version de PHP : 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -34,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `alertes` (
   `message` varchar(255) NOT NULL,
   `heureAlerte` timestamp NOT NULL,
   PRIMARY KEY (`idAlerte`)
-) ENGINE=MyISAM AUTO_INCREMENT=315 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -53,7 +54,8 @@ CREATE TABLE IF NOT EXISTS `password_resets` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `expires_at` (`expires_at`)
-) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- --------------------------------------------------------
 
@@ -71,6 +73,7 @@ CREATE TABLE IF NOT EXISTS `ups` (
   UNIQUE KEY `device_serial` (`device_serial`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
 -- --------------------------------------------------------
 
 --
@@ -83,15 +86,14 @@ CREATE TABLE IF NOT EXISTS `ups_history` (
   `ups_id` int NOT NULL,
   `battery_charge` int DEFAULT NULL,
   `battery_runtime` int DEFAULT NULL,
-  `input_voltage` float DEFAULT NULL,
-  `output_voltage` float DEFAULT NULL,
+  `input_voltage` float DEFAULT '0',
+  `output_voltage` float DEFAULT '0',
   `ups_load` int DEFAULT NULL,
   `ups_status` varchar(10) DEFAULT NULL,
   `timestamp` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `ups_id` (`ups_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=478 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
+) ENGINE=MyISAM AUTO_INCREMENT=154 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -109,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `status` enum('pending','active','refused') DEFAULT 'pending',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
