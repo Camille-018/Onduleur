@@ -15,7 +15,6 @@ $offset = ($sheet - 1) * $collects;
 $colonnes   = $_GET['colonne'] ?? [];
 $valeurs    = $_GET['valeur'] ?? [];
 $operateurs = $_GET['operateur'] ?? [];
-$valeurs2   = $_GET['valeur2'] ?? [];
 
 if (!is_array($colonnes)) $colonnes = [$colonnes];
 if (!is_array($valeurs)) $valeurs = [$valeurs];
@@ -29,17 +28,10 @@ $params = [];
 foreach ($colonnes as $i => $colonne) {
 
     $valeur  = $valeurs[$i] ?? '';
-    $valeur2 = $valeurs2[$i] ?? '';
     $op      = $operateurs[$i] ?? '=';
 
     if (!$colonne || $valeur === '') continue;
-
-    if ($op === "between" && $valeur2 !== '') {
-        // BETWEEN doit utiliser deux paramètres distincts
-        $where[] = "$colonne BETWEEN :min$i AND :max$i";
-        $params[":min$i"] = $valeur;   // pas de cast forcé
-        $params[":max$i"] = $valeur2;
-    } elseif (in_array($op, ['>','<','='])) {
+    if (in_array($op, ['>','<','='])) {
         $where[] = "$colonne $op :val$i";
         $params[":val$i"] = $valeur;
     } elseif ($op === "like") {
@@ -102,13 +94,10 @@ $historique = $stmt->fetchAll();
 <ul>
 <?php foreach ($colonnes as $i => $colonneFiltre):
     $valeurFiltre  = $valeurs[$i] ?? '';
-    $valeurFiltre2 = $valeurs2[$i] ?? '';
     $op = $operateurs[$i] ?? '='; ?>
     <li>
         <?php
-        if ($op === 'between') {
-            echo htmlspecialchars($colonneFiltre) . " entre " . htmlspecialchars($valeurFiltre) . " et " . htmlspecialchars($valeurFiltre2);
-        } elseif ($op === 'like') {
+        if ($op === 'like') {
             echo htmlspecialchars($colonneFiltre) . " contient " . htmlspecialchars($valeurFiltre);
         } else {
             echo htmlspecialchars($colonneFiltre) . " $op " . htmlspecialchars($valeurFiltre);
