@@ -56,7 +56,15 @@ $historique = $stmt->fetchAll();
                 <option value="ups_load">Charge de l'Onduleur</option>
                 <option value="ups_status">Status de l'Onduleur</option>
             </select>
-            <input type="text" name="valeur[]" required>
+
+            <select name="operateur[]">
+                <option value="=">=</option>
+                <option value=">">&gt;</option>
+                <option value="<">&lt;</option>
+                <option value="like">contient</option>
+            </select>
+
+            <input type="text" name="valeur[]" placeholder="valeur">
         </div>
         <button type="button" onclick="addFilter()">+ Ajouter un Filtre</button>
         <button type="submit">Filtrer</button>
