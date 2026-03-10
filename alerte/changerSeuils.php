@@ -82,7 +82,6 @@ unset($_SESSION['message_seuils']);
     <title>UPS - Modifier les seuils</title>
 </head>
 <body>
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <h1>Modifier les seuils d'alerte</h1>
     <a href="../index.php">Aller à l'acceuil</a><br>
     <a href="../alerte/alerte.php">Aller aux alertes</a><br>
@@ -90,7 +89,6 @@ unset($_SESSION['message_seuils']);
     <hr>
 
     <h2>Changer les seuils</h2>
-    <p>Attention: Les valeurs de seuils que vous modifier doivent être cohérente. (Sinon vous allez recevoir des alertes régulièrement)<p>
     <form method="post">
          <label for="batterieFaible">Batterie faible <i>(% trop bas)</i>:</label>
         <input type="number" id="batterieFaible" name="batterieFaible" value="<?= $seuils['batterieFaible'] ?>" step="0.1" style="width:60px; font-size:13px;">%<br>
@@ -103,6 +101,8 @@ unset($_SESSION['message_seuils']);
 
         <input type="submit" value="Mettre à jour les seuils">
     </form>
+    <p class="mail-info">Attention: Les valeurs de seuils que vous modifier doivent être cohérente. (Sinon vous allez recevoir des alertes régulièrement)</p>
+
     <?php if ($message): ?>
         <p><?= $message ?></p>
     <?php endif; ?>

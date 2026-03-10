@@ -36,7 +36,6 @@ $historique = $stmt->fetchAll();
     <title>Onduleur - Historique</title>
 </head>
 <body>
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <h1>Historique des Collectes</h1>
     <a href="../index.php">Retour à l'accueil</a><br>
     <a href="../alerte/alerte.php">Voir les Alertes</a>

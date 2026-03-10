@@ -85,7 +85,6 @@ $historique = $stmt->fetchAll();
 </head>
 <body>
     <h1>Onduleur - Résultat du Filtre</h1>
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <a href="historique.php">Aller à l'Historique</a><br>
     <a href="../index.php">Aller à l'Accueil</a><br><br>
 

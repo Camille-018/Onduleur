@@ -28,6 +28,7 @@ if ($user && password_verify($password, $user["password"]))
     $_SESSION["mail"] = $user["mail"];
 
     header("Location: ../index.php");
+    session_regenerate_id(true);
     exit;
     } 
     

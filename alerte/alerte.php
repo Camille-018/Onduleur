@@ -36,7 +36,6 @@ $alertes = $stmt->fetchAll();
 </head>
 <body>
     <h1>Alertes</h1>
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <a href="../index.php">Aller à l'acceuil</a><br>
     <a href="../historique/historique.php">Aller à l'historique</a><br><br>
     <a href="verifierAlerte.php">Vérifier les alertes</a><br>
