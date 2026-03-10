@@ -18,3 +18,14 @@ if (!$user || $user['status'] !== 'active') {
     header('Location: /auth/login.php');
     exit;
 }
+
+?>
+
+<div class="top-bar">
+    <img src="/style/images/cereep.jpg" alt="logo" class="logo">
+
+    <p class="user-info">
+        Connecté : <b><?= htmlspecialchars($_SESSION['user']) ?></b><br>
+        <a href="/auth/logout.php">Se déconnecter</a>
+    </p>
+</div>

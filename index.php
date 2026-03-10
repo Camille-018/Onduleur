@@ -38,8 +38,6 @@ function statusColor($s) {
 <body>
 
 <h1>📊 Liste des Onduleurs</h1>
-<img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-<a href="../auth/logout.php">Se déconnecter</a><br>
 <a href="../historique/historique.php">Aller à l'historique</a><br>
 <a href="../alerte/alerte.php">Aller aux alertes</a><br><hr>
 <p>Cliquez sur une carte d'onduleur pour voir les informations détaillées.</p>
