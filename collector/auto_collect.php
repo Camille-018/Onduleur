@@ -88,7 +88,6 @@ while (true) {
             $upsId = $ups['id'];
         }
 
-
         if (!isset($lastInsertTime[$upsId])) {
             $lastInsertTime[$upsId] = 0;
         }

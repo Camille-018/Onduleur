@@ -2,7 +2,7 @@
 1) check if the user is admin
 2) form to change the thresholds
 3) compare old and new thresholds to display a message of what has changed
-4) save the new thresholds in a json file (config_seuils.json)--> 
+4) save the new thresholds in a json file (config/config_seuils.json)--> 
 
 <?php
 require_once __DIR__ . '/../auth/authCheck.php';
@@ -79,7 +79,7 @@ unset($_SESSION['message_seuils']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Onduleur - Modifier les seuils</title>
+    <title>UPS - Modifier les seuils</title>
 </head>
 <body>
     <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
@@ -90,6 +90,7 @@ unset($_SESSION['message_seuils']);
     <hr>
 
     <h2>Changer les seuils</h2>
+    <p>Attention: Les valeurs de seuils que vous modifier doivent être cohérente. (Sinon vous allez recevoir des alertes régulièrement)<p>
     <form method="post">
          <label for="batterieFaible">Batterie faible <i>(% trop bas)</i>:</label>
         <input type="number" id="batterieFaible" name="batterieFaible" value="<?= $seuils['batterieFaible'] ?>" step="0.1" style="width:60px; font-size:13px;">%<br>

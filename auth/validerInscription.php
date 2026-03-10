@@ -1,5 +1,7 @@
 <?php
 // validerInscription.php: Page to validate/refuse registration, accessed via email link
+
+//PHP Mailer is used to send mails
 require_once '../config/config.php';
 require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
@@ -7,7 +9,7 @@ require_once __DIR__ . '/../PHPMailer/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// 1️⃣ get parameters
+// get parameters
 $action = $_GET['action'] ?? null;
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) die("Invalid ID.");
@@ -36,7 +38,7 @@ if (!$user) {
     die("Compte déjà traité ou n'existe pas.");
 }
 
-// 1️⃣ decide action (accept/refuse) and update database
+// decide action (accept/refuse) and update database
 if ($action === 'accept') {
     $stmt = $pdo->prepare("UPDATE users SET status='active' WHERE id=?");
     $stmt->execute([$user['id']]);

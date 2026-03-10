@@ -1,5 +1,7 @@
 <?php
 // sInscrire.php: sign up page, insert user with pending status, send mail to admin for validation
+
+//PHP Mailer is used to send mails
 require_once '../config/config.php';
 require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
@@ -24,11 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // basic validation
     if (strlen($username) < 3 || strlen($username) > 50) {
-        $error = "Utilisateur doit être entre 3 et 50 caractères.";
+        $error = "L'Utilisateur Invalide (3 < user < 50)";
     } elseif (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
         $error = "Adresse email invalide.";
     } elseif (strlen($password) < 8) {
-        $error = "Mot de passe trop court (8).";
+        $error = "Mot de passe trop court (<8).";
     } else {
 
         // 1️⃣ Check if username or mail alr exists

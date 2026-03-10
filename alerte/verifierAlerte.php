@@ -1,5 +1,7 @@
 <?php
 //verifierAlerte.php : check alerts for a collect and insert into Alertes table if needed, then send mail to admins
+
+//PHP Mailer is used to send mails
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -7,7 +9,6 @@ require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require __DIR__ . '/../PHPMailer/src/SMTP.php';
 require __DIR__ . '/../PHPMailer/src/Exception.php';
 require_once __DIR__ . '/../config/config.php';
-
 
 /**
  * Check alerts for a collect 
@@ -35,7 +36,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'off')) {
             $alertes_a_creer[] = [
                 'Type' => 'off',
-                'Message' => "Onduleur éteint"
+                'Message' => "Onduleur éteint (OFF)"
             ];
         }
     }
@@ -44,7 +45,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'bypass')) {
             $alertes_a_creer[] = [
                 'Type' => 'bypass',
-                'Message' => "Onduleur en mode de secours"
+                'Message' => "Onduleur en mode de secours (BYPASS)"
             ];
         }
     }

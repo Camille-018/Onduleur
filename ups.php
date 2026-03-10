@@ -2,6 +2,7 @@
 //ups.php: details page for a single UPS, showing graphs of battery level and output voltage over time
 require_once __DIR__ . '/auth/authCheck.php';
 
+// Get UPS ID from query parameter
 $id = (int)($_GET['id'] ?? 0);
 
 $stmt = $pdo->prepare("SELECT * FROM ups WHERE id = ?");
@@ -12,13 +13,13 @@ if (!$ups) {
     die("Onduleur non trouvé");
 }
 
-#retrieve last 120 entries for this UPS
+#retrieve last 50 entries for this UPS
 $stmt = $pdo->prepare("
     SELECT *
     FROM ups_history
     WHERE ups_id = ?
     ORDER BY timestamp DESC
-    LIMIT 120
+    LIMIT 50
 ");
 $stmt->execute([$id]);
 $data = array_reverse($stmt->fetchAll());
@@ -47,7 +48,7 @@ const labels  = <?= json_encode(array_column($data,'timestamp')) ?>;
 const battery = <?= json_encode(array_column($data,'battery_charge')) ?>;
 const voltage = <?= json_encode(array_column($data,'output_voltage')) ?>;
 
-// Graphics configuration - Battery
+// Graphic configuration - Battery
 new Chart(document.getElementById('batteryChart'), {
     type: 'line',
     data: {
@@ -74,7 +75,6 @@ new Chart(document.getElementById('batteryChart'), {
         }
     }
 });
-
 
 // Graphics configuration - Voltage
 new Chart(document.getElementById('voltageChart'), {

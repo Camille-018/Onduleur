@@ -3,9 +3,9 @@
 require_once __DIR__ . '/../auth/authCheck.php';
 
 // pagination
-$parPage = 15;
-$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-$offset = ($page - 1) * $parPage;
+$collects= 15;
+$sheet = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($sheet - 1) * $collects;
 
 // get alerts with pagination
 $stmt = $pdo->prepare("
@@ -14,14 +14,14 @@ $stmt = $pdo->prepare("
     ORDER BY heureAlerte DESC 
     LIMIT :limit OFFSET :offset
 ");
-$stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+$stmt->bindValue(':limit', $collects, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 
 $totalStmt = $pdo->query("SELECT COUNT(*) FROM alertes");
 $total = $totalStmt->fetchColumn();
-$totalPages = ceil($total / $parPage);
-$page = min($page, $totalPages ?: 1);
+$totalSheet = ceil($total / $collects);
+$final = min($sheet, $totalSheet ?: 1);
 
 $alertes = $stmt->fetchAll();
 ?>
@@ -32,7 +32,7 @@ $alertes = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Onduleur - Alertes</title>
+    <title>UPS - Alertes</title>
 </head>
 <body>
     <h1>Alertes</h1>
@@ -107,7 +107,7 @@ $alertes = $stmt->fetchAll();
     <hr>
 
     <h2>Les Alertes</h2>
-    <p>Voici le tableau avec toutes les alertes avec <strong>seuils</strong> et quelques statuts critiques d'onduleur <strong>(hors ligne et mode de secours)</strong>, triés du plus récent au plus ancien.</p>
+    <p>Voici le tableau avec toutes les alertes avec <strong>seuils</strong> et quelques statuts critiques d'onduleur <strong>(BYPASS et OFF)</strong>, triés du plus récent au plus ancien.</p>
     <?php if (!empty($alertes)): ?>
     <table id="tableauAlerte">
         <thead>
@@ -133,28 +133,28 @@ $alertes = $stmt->fetchAll();
     </table>
     <div class="pagination">
         <!-- first -->
-        <?php if ($page > 1): ?>
+        <?php if ($sheet > 1): ?>
             <a href="?page=1#tableauAlerte">&laquo;&laquo;</a>
         <?php endif; ?>
 
         <!-- previous -->
-        <?php if ($page > 1): ?>
-            <a href="?page=<?= $page - 1 ?>#tableauAlerte">&laquo;</a>
+        <?php if ($sheet > 1): ?>
+            <a href="?page=<?= $sheet - 1 ?>#tableauAlerte">&laquo;</a>
         <?php endif; ?>
 
         <!-- current -->
         <span class="current-page">
-            Page <?= $page ?> / <?= $totalPages ?>
+            Page <?= $sheet ?> / <?= $totalSheet ?>
         </span>
 
         <!-- next -->
-        <?php if ($page < $totalPages): ?>
-            <a href="?page=<?= $page + 1 ?>#tableauAlerte">&raquo;</a>
+        <?php if ($sheet < $totalSheet): ?>
+            <a href="?page=<?= $sheet + 1 ?>#tableauAlerte">&raquo;</a>
         <?php endif; ?>
 
         <!-- last -->
-        <?php if ($page < $totalPages): ?>
-            <a href="?page=<?= $totalPages ?>#tableauAlerte">&raquo;&raquo;</a>
+        <?php if ($sheet < $totalSheet): ?>
+            <a href="?page=<?= $totalSheet ?>#tableauAlerte">&raquo;&raquo;</a>
         <?php endif; ?>
     </div>
     <?php else: ?>

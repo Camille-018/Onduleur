@@ -1,5 +1,7 @@
 <?php
 //forgotPassword.php: page to request password reset, check user exists, create token, send mail with reset link
+
+//Php Mailer is used to send mails
 require_once '../config/config.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -30,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':id' => $user['id']]);
         $lastReset = $stmt->fetch();
 
-        date_default_timezone_set('Europe/Paris'); // UTC+1
+        date_default_timezone_set('Europe/Paris'); // UTC+1 (Database)
         if ($lastReset) {
             $diff = time() - strtotime($lastReset['created_at']);
             if ($diff < 300) { // 5 minutes

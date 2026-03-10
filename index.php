@@ -1,5 +1,5 @@
 <?php
-//index.php: main dashboard showing all UPS with their latest status, and links to details, history and alerts pages
+//index.php: main dashboard showing all UPS with their latest status
 require_once __DIR__ . '/auth/authCheck.php';
 
 // Retrieves the list of UPS with their latest status
@@ -38,10 +38,11 @@ function statusColor($s) {
 <body>
 
 <h1>📊 Liste des Onduleurs</h1>
+<img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
 <a href="../auth/logout.php">Se déconnecter</a><br>
 <a href="../historique/historique.php">Aller à l'historique</a><br>
 <a href="../alerte/alerte.php">Aller aux alertes</a><br><hr>
-<p>Cliquez sur un carte d'onduleur pour voir les informations détaillées.</p>
+<p>Cliquez sur une carte d'onduleur pour voir les informations détaillées.</p>
 <p><i>Aller aux alertes pour comprendre le sens des statuts (rouge: critique, orange: avertissement, vert: normal)</i></p>
 <!-- Display UPS cards -->
 <div class="grid">

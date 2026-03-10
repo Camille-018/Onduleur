@@ -1,7 +1,7 @@
 <?php
 // config.php: configuration of connexion to database and mail server
 $host = 'localhost';
-$db   = 'ups_onduleur';
+$db   = 'ups_onduleur'; //name of the database//
 $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
@@ -24,9 +24,9 @@ define('MAIL_ENABLED', true);
 define('MAIL_HOST', 'smtp.gmail.com');
 define('MAIL_PORT', 587);
 define('MAIL_USERNAME', 'ondulateur.alertes@gmail.com');
-define('MAIL_PASSWORD', 'cshy fwzk wnis rfid'); // mdp de lapp
+define('MAIL_PASSWORD', 'cshy fwzk wnis rfid'); // app password generated for the email account, not the actual email password
 define('MAIL_FROM', 'ondulateur.alertes@gmail.com');
-define('MAIL_FROM_NAME', 'Onduleur - Alertes');
+define('MAIL_FROM_NAME', 'Onduleur - CEREEP');
 
 // for alert signature
 define('SIGNATURE_SECRET', 'une_cle_ultra_secrete_a_ne_pas_commit');

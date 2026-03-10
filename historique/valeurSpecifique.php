@@ -3,9 +3,9 @@
 require_once __DIR__ . '/../auth/authCheck.php';
 
 // pagination
-$parPage = 15;
-$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-$offset = ($page - 1) * $parPage;
+$collects = 15;
+$sheet = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($sheet - 1) * $collects;
 
 // get the filter values from the form
 $colonnes = $_GET['colonne'] ?? [];
@@ -51,9 +51,9 @@ if ($where) {
 $totalStmt = $pdo->prepare($totalSql);
 $totalStmt->execute($params);
 $total = $totalStmt->fetchColumn();
-$totalPages = ceil($total / $parPage);
-$page = min($page, $totalPages ?: 1);
-$offset = ($page - 1) * $parPage;
+$totalSheet = ceil($total / $collects);
+$sheet = min($sheet, $totalSheet ?: 1);
+$offset = ($sheet - 1) * $collects;
 
 // get the current page
 $sql = "SELECT * FROM ups_history";
@@ -70,7 +70,7 @@ foreach ($params as $k => $v) {
         $stmt->bindValue($k, $v);
     }
 }
-$stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+$stmt->bindValue(':limit', $collects, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 $historique = $stmt->fetchAll();
@@ -135,18 +135,18 @@ $historique = $stmt->fetchAll();
 
     <!-- Pagination -->
     <div class="pagination">
-        <?php if ($page > 1): ?>
+        <?php if ($sheet > 1): ?>
             <a href="?<?= http_build_query(array_merge($_GET, ['page'=>1])) ?>#tableauHistorique">&laquo;&laquo;</a>
-            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>$page-1])) ?>#tableauHistorique">&laquo;</a>
+            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>$sheet-1])) ?>#tableauHistorique">&laquo;</a>
         <?php endif; ?>
 
         <span class="current-page">
-            Page <?= $page ?> / <?= $totalPages ?>
+            Page <?= $sheet ?> / <?= $totalSheet ?>
         </span>
 
-        <?php if ($page < $totalPages): ?>
-            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>$page+1])) ?>#tableauHistorique">&raquo;</a>
-            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>$totalPages])) ?>#tableauHistorique">&raquo;&raquo;</a>
+        <?php if ($sheet < $totalSheet): ?>
+            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>$sheet+1])) ?>#tableauHistorique">&raquo;</a>
+            <a href="?<?= http_build_query(array_merge($_GET, ['page'=>$totalSheet])) ?>#tableauHistorique">&raquo;&raquo;</a>
         <?php endif; ?>
     </div>
 

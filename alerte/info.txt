@@ -1,4 +1,4 @@
-===== Infos Compte Gmail pour Alertes Onduleur =====
+===== Infos Compte Google pour Alertes Onduleur =====
 
 Compte Gmail utilisé : ondulateur.alertes@gmail.com
 MDP gmail: ondulateurcereep18?

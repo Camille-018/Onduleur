@@ -1,3 +1,6 @@
+---- script SQL for UPS monitoring application ----
+---> This SQL script creates the necessary database and tables for the UPS monitoring application.
+
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/

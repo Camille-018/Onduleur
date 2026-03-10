@@ -3,9 +3,9 @@
 require_once __DIR__ . '/../auth/authCheck.php';
 
 // pagination (15 collects per page)
-$parPage = 15;
-$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-$offset = ($page - 1) * $parPage;
+$collects = 15;
+$sheet = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($sheet - 1) * $collects;
 
 // get the collects for the current page
 $stmt = $pdo->prepare("
@@ -14,21 +14,21 @@ $stmt = $pdo->prepare("
     ORDER BY timestamp DESC 
     LIMIT :limit OFFSET :offset
 ");
-$stmt->bindValue(':limit', $parPage, PDO::PARAM_INT);
+$stmt->bindValue(':limit', $collects, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 
 // Get total collects for pagination
 $totalStmt = $pdo->query("SELECT COUNT(*) FROM ups_history");
 $total = $totalStmt->fetchColumn();
-$totalPages = ceil($total / $parPage);
-$page = min($page, $totalPages ?: 1);
+$totalSheet = ceil($total / $collects);
+$final = min($sheet, $totalSheet ?: 1);
 
 $historique = $stmt->fetchAll();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -116,28 +116,28 @@ $historique = $stmt->fetchAll();
     </table>
     <div class="pagination">
         <!-- first page -->
-        <?php if ($page > 1): ?>
+        <?php if ($sheet > 1): ?>
             <a href="?page=1#tableauHistorique">&laquo;&laquo;</a>
         <?php endif; ?>
 
         <!-- previous page -->
-        <?php if ($page > 1): ?>
-            <a href="?page=<?= $page - 1 ?>#tableauHistorique">&laquo;</a>
+        <?php if ($sheet > 1): ?>
+            <a href="?page=<?= $sheet - 1 ?>#tableauHistorique">&laquo;</a>
         <?php endif; ?>
 
         <!-- current page -->
         <span class="current-page">
-            Page <?= $page ?> / <?= $totalPages ?>
+            Page <?= $sheet ?> / <?= $totalSheet ?>
         </span>
 
         <!-- next page-->
-        <?php if ($page < $totalPages): ?>
-            <a href="?page=<?= $page + 1 ?>#tableauHistorique">&raquo;</a>
+        <?php if ($sheet < $totalSheet): ?>
+            <a href="?page=<?= $sheet + 1 ?>#tableauHistorique">&raquo;</a>
         <?php endif; ?>
 
         <!-- last page-->
-        <?php if ($page < $totalPages): ?>
-            <a href="?page=<?= $totalPages ?>#tableauHistorique">&raquo;&raquo;</a>
+        <?php if ($sheet < $totalSheet): ?>
+            <a href="?page=<?= $totalSheet ?>#tableauHistorique">&raquo;&raquo;</a>
         <?php endif; ?>
     </div>
 </body>

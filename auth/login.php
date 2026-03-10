@@ -54,9 +54,7 @@ else {
         <br><br>
         <a href="forgotPassword.php">Mot de passe oublié?</a><br>
         <a href="sInscrire.php">S'inscrire</a>
-
     </form>
-
     <p style="color:red"><?= $error ?></p>
 </body>
 </html>
