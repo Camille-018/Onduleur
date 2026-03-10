@@ -44,9 +44,9 @@ else {
     <title>UPS - S'identifier</title>
 </head>
 <body>
+    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <h1>S'identifier</h1>
     <p>Veuillez vous connecter pour accéder au tableau de bord</p>
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
     <form method="POST">
         <input type="text" name="username" placeholder="Utilisateur" required><br>
         <input type="password" name="password" placeholder="Mot de passe" required><br>

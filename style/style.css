@@ -209,21 +209,23 @@ tbody tr:nth-child(odd) {
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
+    /* plus de background */
 }
 
 /* logo */
 .logo{
-    height: 80px;
-    border-radius: 6px;
+    height: 60px; /* taille plus raisonnable */
+    border-radius: 100%; /* comme avant si tu veux */
 }
 
 /* utilisateur connecté */
 .user-info{
     font-size: 14px;
-    background: #222;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 6px;
+    background: rgb(190, 199, 211); /* gris clair pour bien voir le texte */
+    color: #000; /* texte noir */
+    padding: 5px 10px; /* un peu de marge à l’intérieur */
+    border-radius: 6px; /* coins arrondis pour l’esthétique */
+    display: inline-block; /* pour que le background englobe juste le texte */
 }
 
 .user-info b{
