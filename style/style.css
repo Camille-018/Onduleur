@@ -24,7 +24,7 @@ a:not(.card) {
     color: rgb(53, 140, 253);
 }
 
-a:hover:not(.card) {
+a:hover:not(.card)  {
     text-decoration: underline;
     color: darkslategray;
 }
@@ -204,11 +204,7 @@ tbody tr:nth-child(odd) {
 /* =========================
    HEADER / TOP BAR
 ========================= */
-body{
-    margin:0;
-    font-family:Arial, Helvetica, sans-serif;
-    background:#f5f6fa;
-}
+
 
 .top-bar{
     display:flex;
@@ -263,7 +259,7 @@ body{
 
 .logout:hover{
     background-color: #e84118;
-    color: #fff;
+    color: #ffffff !important;
 }
 
 /* Dropdown */

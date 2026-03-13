@@ -13,7 +13,7 @@ $upsListForMenu = $pdo->query("SELECT id, device_model FROM ups ORDER BY device_
 </a>
 
     <div class="dropdown">
-      <a href="/index.php" class="dropbtn">Dashboard ▾</a>
+      <span class="dropbtn">Dashboard ▾</span>
       <div class="dropdown-content">
         <a href="/index.php">Accueil</a>
         <?php foreach ($upsListForMenu as $ups): ?>
@@ -23,7 +23,7 @@ $upsListForMenu = $pdo->query("SELECT id, device_model FROM ups ORDER BY device_
     </div>
 
     <div class="dropdown">
-      <a href="/alerte/alerte.php" class="dropbtn">Alertes ▾</a>
+      <span class="dropbtn">Alertes ▾</span>
       <div class="dropdown-content">
         <a href="/alerte/alerte.php">Alertes</a>
         <a href="/alerte/changerSeuils.php">Changer Seuils</a>
