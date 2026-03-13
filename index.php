@@ -34,6 +34,8 @@ function statusColor($s) {
 <head>
     <meta charset="utf-8">
     <title>UPS</title>
+    <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="stylesheet" href="style/style.css">
 </head>
 <body>

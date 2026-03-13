@@ -76,6 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="stylesheet" href="../style/style.css">
     <title>Onduleur - Changer de mot de passe</title>
 </head>

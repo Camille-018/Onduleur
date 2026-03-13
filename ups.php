@@ -32,6 +32,8 @@ $data = array_reverse($stmt->fetchAll());
      <link rel=stylesheet href="/style/style.css"></link>
     <meta charset="utf-8">
     <title><?= htmlspecialchars($ups['device_model']) ?></title>
+    <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>

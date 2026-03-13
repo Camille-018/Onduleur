@@ -41,6 +41,8 @@ else {
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel=stylesheet href="../style/style.css"></link>
     <title>UPS - S'identifier</title>
 </head>
