@@ -6,6 +6,7 @@
 
 <?php
 require_once __DIR__ . '/../auth/authCheck.php';
+include __DIR__ . '/../style/navbar.php';
 
 // 1 - check if the user is admin
 if ($_SESSION['role'] !== 'admin') {
@@ -83,10 +84,6 @@ unset($_SESSION['message_seuils']);
 </head>
 <body>
     <h1>Modifier les seuils d'alerte</h1>
-    <a href="../index.php">Aller à l'acceuil</a><br>
-    <a href="../alerte/alerte.php">Aller aux alertes</a><br>
-    <a href="../historique/historique.php">Aller à l'historique</a><br><br>
-    <hr>
 
     <h2>Changer les seuils</h2>
     <form method="post">

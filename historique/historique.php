@@ -1,6 +1,7 @@
 <?php
 // historique.php - web page to display the history of collects from the UPS
 require_once __DIR__ . '/../auth/authCheck.php';
+include __DIR__ . '/../style/navbar.php';   
 
 // pagination (15 collects per page)
 $collects = 15;
@@ -33,13 +34,11 @@ $historique = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel=stylesheet href="../style/style.css"></link>
-    <title>Onduleur - Historique</title>
+    <title>UPS - Historique</title>
 </head>
 <body>
-    <h1>Historique des Collectes</h1>
-    <a href="../index.php">Retour à l'accueil</a><br>
-    <a href="../alerte/alerte.php">Voir les Alertes</a>
-    <br><br>
+    <h1 class=title>Historique des Collectes</h1>
+    <br>
     <hr>
 
     <!-- Form to filter by specific value -->

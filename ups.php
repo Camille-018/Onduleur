@@ -1,6 +1,7 @@
 <?php
 //ups.php: details page for a single UPS, showing graphs of battery level and output voltage over time
 require_once __DIR__ . '/auth/authCheck.php';
+include __DIR__ . '/style/navbar.php';   
 
 // Get UPS ID from query parameter
 $id = (int)($_GET['id'] ?? 0);
@@ -36,7 +37,6 @@ $data = array_reverse($stmt->fetchAll());
 </head>
 <body>
 <h1><?= htmlspecialchars($ups['device_model']) ?></h1>
-<a href="index.php">← Retour à la liste</a><hr>
 <h2 style="text-align: center;">Statut de la Batterie de l'Onduleur</h2>
 <canvas id="batteryChart"></canvas><hr>
 
@@ -96,6 +96,5 @@ new Chart(document.getElementById('voltageChart'), {
     }
 });
 </script>
-<a href="index.php">← Retour à la liste</a>
 </body>
 </html>

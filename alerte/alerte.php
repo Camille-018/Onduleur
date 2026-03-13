@@ -1,6 +1,7 @@
 <?php
 //alerte.php: web page to display all alerts and explain them, with pagination
 require_once __DIR__ . '/../auth/authCheck.php';
+include __DIR__ . '/../style/navbar.php';
 
 // pagination
 $collects= 15;
@@ -35,11 +36,7 @@ $alertes = $stmt->fetchAll();
     <title>UPS - Alertes</title>
 </head>
 <body>
-    <h1>Alertes</h1>
-    <a href="../index.php">Aller à l'acceuil</a><br>
-    <a href="../historique/historique.php">Aller à l'historique</a><br><br>
-    <a href="verifierAlerte.php">Vérifier les alertes</a><br>
-    <a href="changerSeuils.php">Modifier les seuils d'alerte</a><br><br>
+    <h1 class="title">Alertes</h1>
     <hr>
 
     <h2>Explication des statuts des onduleurs</h2>

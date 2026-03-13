@@ -1,6 +1,7 @@
 <?php
 //index.php: main dashboard showing all UPS with their latest status
 require_once __DIR__ . '/auth/authCheck.php';
+include __DIR__ . '/style/navbar.php';
 
 // Retrieves the list of UPS with their latest status
 $upsList = $pdo->query("
@@ -37,9 +38,7 @@ function statusColor($s) {
 </head>
 <body>
 
-<h1>📊 Liste des Onduleurs</h1>
-<a href="../historique/historique.php">Aller à l'historique</a><br>
-<a href="../alerte/alerte.php">Aller aux alertes</a><br><hr>
+<h1 class="title">📊 Liste des Onduleurs</h1>
 <p>Cliquez sur une carte d'onduleur pour voir les informations détaillées.</p>
 <p><i>Aller aux alertes pour comprendre le sens des statuts (rouge: critique, orange: avertissement, vert: normal)</i></p>
 <!-- Display UPS cards -->

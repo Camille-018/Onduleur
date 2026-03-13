@@ -117,7 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Onduleur - S'inscrire</title>
 </head>
 <body>
-    <h1>S'inscrire</h1>
+    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
+    <h1 class="title">S'inscrire</h1>
     <p>Veuillez vous inscrire pour accéder au tableau de bord</p>
 
     <?php if (isset($_GET['success'])): ?>
@@ -132,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </script>
     <?php endif; ?>
 
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
+
     <h2>Formulaire d'inscription</h2>
     <p><i>Un email sera envoyé à un admin pour valider votre compte. <br>
     Ensuite, vous recevrez un email concernant la décision. </i></p>

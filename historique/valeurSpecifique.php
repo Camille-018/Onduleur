@@ -1,6 +1,7 @@
 <?php
 // valeurSpecifique.php : page pour filtrer l'historique selon une ou plusieurs valeurs
 require_once __DIR__ . '/../auth/authCheck.php';
+include __DIR__ . '/../style/navbar.php';   
 
 // ----------------------------
 // Pagination
@@ -86,7 +87,6 @@ $historique = $stmt->fetchAll();
 </head>
 <body>
 <h1>Onduleur - Résultat du Filtre</h1>
-<a href="historique.php">Aller à l'Historique</a> | <a href="../index.php">Accueil</a>
 
 <!-- Affichage des filtres -->
 <?php if (!empty($colonnes)): ?>

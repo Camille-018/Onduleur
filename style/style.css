@@ -30,6 +30,7 @@ a:hover:not(.card) {
 }
 
 
+
 /* =========================
    GRID / LAYOUT
 ========================= */
@@ -203,31 +204,108 @@ tbody tr:nth-child(odd) {
 /* =========================
    HEADER / TOP BAR
 ========================= */
+body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#f5f6fa;
+}
 
 .top-bar{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    /* plus de background */
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#1e272e;
+    padding:10px 30px;
 }
 
-/* logo */
+.nav-left{
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.nav-left a{
+    color:white;
+    text-decoration:none;
+    font-weight:500;
+}
+
+.nav-left a:hover{
+    color:#00a8ff;
+}
+
 .logo{
-    height: 60px; /* taille plus raisonnable */
-    border-radius: 100%; /* comme avant si tu veux */
+    height:40px;
+    margin-right:15px;
 }
 
-/* utilisateur connecté */
-.user-info{
-    font-size: 14px;
-    background: rgb(190, 199, 211); /* gris clair pour bien voir le texte */
-    color: #000; /* texte noir */
-    padding: 5px 10px; /* un peu de marge à l’intérieur */
-    border-radius: 6px; /* coins arrondis pour l’esthétique */
-    display: inline-block; /* pour que le background englobe juste le texte */
+.nav-right{
+    display:flex;
+    align-items:center;
+    gap:15px;
 }
 
-.user-info b{
-    color: #4CAF50;
+.user{
+    color:white;
+}
+
+/* logout + hover plus clean */
+.logout{
+    background: none;
+    border: 2px solid #e84118;
+    color: #e84118;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.logout:hover{
+    background-color: #e84118;
+    color: #fff;
+}
+
+/* Dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  color: white;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #2f3640; /* sombre pour le dropdown */
+  min-width: 180px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  border-radius: 6px;
+  z-index: 1000;
+}
+
+.dropdown-content a {
+  color: white;
+  padding: 10px 14px;
+  text-decoration: none;
+  display: block;
+  transition: 0.2s;
+}
+
+.dropdown-content a:hover {
+  background-color: #57606f;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  color: #00a8ff;
 }
