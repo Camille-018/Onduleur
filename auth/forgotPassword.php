@@ -124,28 +124,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/auth.css">
     <title>UPS - Mot de passe oublié</title>
 </head>
 <body>
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
+<div class="auth-container">
+    <img src="../style/images/cereep.jpg" class="auth-logo">
     <h1>Mot de passe oublié</h1>
+    <p>Entrez votre utilisateur ou email</p>
+
+    <?php if (!empty($errors)): ?>
+    <div class="error">
+        <?php foreach ($errors as $e): ?>
+        <?= htmlspecialchars($e) ?><br>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 
     <form method="POST">
-        <label>Utilisateur ou Email:<br>
-            <input type="text" name="username_or_email" required>
-        </label><br>
-        <button type="submit">Envoyer le lien de réinitialisation</button>
+        <input type="text" name="username_or_email" placeholder="Utilisateur ou Email" required>
+        <button type="submit">Envoyer le lien</button>
     </form>
-    <br><a href="login.php">Aller à la page de connexion</a>
-    <br><a href="sInscrire.php">S'inscrire (Pas encore de compte)</a>
 
-    <?php
-    if (!empty($errors)) {
-        echo "<div class='errors'><ul>";
-        foreach ($errors as $e) echo "<li>$e</li>";
-        echo "</ul></div>";
-    }
-    ?>
+    <div class="auth-links">
+        <a href="login.php">Retour à la connexion</a><br>
+        <a href="sInscrire.php">Créer un compte</a>
+    </div>
+</div>
+
 </body>
 </html>

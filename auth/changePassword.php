@@ -78,42 +78,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/auth.css">
     <title>Onduleur - Changer de mot de passe</title>
 </head>
 <body>
-    <h1>Changer ton mot de passe</h1>
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
+    <div class="auth-container">
+        <img src="../style/images/cereep.jpg" class="auth-logo">
+        <h1>Nouveau mot de passe</h1>
+        <p>Choisissez un nouveau mot de passe pour votre compte</p>
 
-    <?php
-    // Display errors or success message
-    if (!empty($errors)) {
-        echo "<div class='errors'><ul>";
-        foreach ($errors as $e) echo "<li>$e</li>";
-        echo "</ul></div>";
-    }
+        <?php if (!empty($errors)): ?>
+        <div class="error">
+            <?php foreach ($errors as $e): ?>
+                <?= htmlspecialchars($e) ?><br>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+        
+        <?php if ($success): ?>
+        <div class="success">
+            <?= htmlspecialchars($success) ?>
+        </div>
 
-    if ($success) {
-        echo "<div class='success'>$success</div>";
-        echo "<a href='../auth/login.php'>Go to login</a>";
-    }
+        <div class="auth-links">
+            <a href="login.php">Retour à la connexion</a>
+        </div>
+        <?php endif; ?>
 
-    // Show form if no success yet
-    if ($showForm) {
-    ?>
-    <form method="POST">
-        <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
-
-        <label>Nouveau mot de passe:<br>
-            <input type="password" name="new_password" required>
-        </label><br><br>
-
-        <label>Confirmer le nouveau mot de passe:<br>
-            <input type="password" name="confirm_password" required>
-        </label><br><br>
-
-        <button type="submit">Changer le mot de passe</button>
-    </form>
-    <?php } ?>
+        <?php if ($showForm): ?>
+        <form method="POST">
+            <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+            <input type="password" name="new_password" placeholder="Nouveau mot de passe" required>
+            <input type="password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
+            <button type="submit">Changer le mot de passe</button>
+        </form>
+        <?php endif; ?>
+    </div>
 </body>
 </html>

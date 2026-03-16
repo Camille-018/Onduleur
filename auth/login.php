@@ -43,21 +43,26 @@ else {
 <head>
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
-    <link rel=stylesheet href="../style/style.css"></link>
+    <link rel="stylesheet" href="../style/auth.css">
     <title>UPS - S'identifier</title>
 </head>
 <body>
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <h1>S'identifier</h1>
-    <p>Veuillez vous connecter pour accéder au tableau de bord</p>
-    <form method="POST">
-        <input type="text" name="username" placeholder="Utilisateur" required><br>
-        <input type="password" name="password" placeholder="Mot de passe" required><br>
-        <button type="submit">S'identifier</button>
-        <br><br>
-        <a href="forgotPassword.php">Mot de passe oublié?</a><br>
-        <a href="sInscrire.php">S'inscrire</a>
-    </form>
-    <p style="color:red"><?= $error ?></p>
+    <div class="auth-container">
+        <img src="../style/images/cereep.jpg" class="auth-logo">
+        <h1>Connexion</h1>
+        <p>Accès au tableau de bord</p>
+        <form method="POST">
+            <input type="text" name="username" placeholder="Utilisateur" required>
+            <input type="password" name="password" placeholder="Mot de passe" required>
+            <button type="submit">Se connecter</button>
+        </form>
+        <div class="auth-links">
+            <a href="forgotPassword.php">Mot de passe oublié</a><br>
+            <a href="sInscrire.php">Créer un compte</a>
+        </div>
+        <?php if($error): ?>
+            <div class="error"><?= $error ?></div>
+        <?php endif; ?>
+    </div>
 </body>
 </html>

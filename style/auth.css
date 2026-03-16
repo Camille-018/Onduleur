@@ -1,0 +1,107 @@
+/* =========================
+   AUTH PAGE
+========================= */
+
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background: linear-gradient(135deg,#f0f4f8,#d9e2ec);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* container */
+.auth-container{
+    background:white;
+    padding:35px;
+    width:360px;
+    border-radius:10px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.15);
+    text-align:center;
+}
+
+/* logo */
+.auth-logo{
+    width:110px;
+    margin-bottom:10px;
+}
+
+/* titles */
+.auth-container h1{
+    margin-bottom:5px;
+}
+
+.auth-container p{
+    color:#555;
+    font-size:14px;
+}
+
+/* inputs */
+
+.auth-container input{
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+    border-radius:6px;
+    border:1px solid #ccc;
+    font-size:14px;
+}
+
+.auth-container input:focus{
+    border-color:#4a90e2;
+    outline:none;
+}
+
+/* button */
+
+.auth-container button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:6px;
+    background:#4a90e2;
+    color:white;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.auth-container button:hover{
+    background:#357ABD;
+}
+
+/* links */
+
+.auth-links{
+    margin-top:15px;
+    font-size:13px;
+}
+
+.auth-links a{
+    color:#4a90e2;
+    text-decoration:none;
+}
+
+.auth-links a:hover{
+    text-decoration:underline;
+}
+
+/* messages */
+
+.error{
+    background:#ffe5e5;
+    color:#c0392b;
+    padding:8px;
+    border-radius:6px;
+    margin-top:10px;
+}
+
+.success{
+    background:#e8f8f5;
+    color:#27ae60;
+    padding:8px;
+    border-radius:6px;
+    margin-top:10px;
+}

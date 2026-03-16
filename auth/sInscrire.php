@@ -115,37 +115,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
-    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="../style/auth.css">
     <title>Onduleur - S'inscrire</title>
 </head>
 <body>
-    <img src="../style/images/cereep.jpg" alt="RAAAAAAAAAAAAAAAH" class="logo">
-    <h1 class="title">S'inscrire</h1>
-    <p>Veuillez vous inscrire pour accéder au tableau de bord</p>
 
-    <?php if (isset($_GET['success'])): ?>
-    <script>
-        alert("Demande envoyée, en attente de validation par l'admin.");
-    </script>
-    <?php endif; ?>
+    <div class="auth-container">
+        <img src="../style/images/cereep.jpg" class="auth-logo">
+        <h1>Créer un compte</h1>
+        <p>Accès au tableau de bord UPS</p>
+        <?php if($error): ?>
+            <div class="error"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
 
-    <?php if (isset($_GET['refused'])): ?>
-    <script>
-        alert("Demande refusée par l'admin.");
-    </script>
-    <?php endif; ?>
+        <?php if($success): ?>
+            <div class="success"><?= htmlspecialchars($success) ?></div>
+        <?php endif; ?>
 
+        <p style="font-size:13px;margin-bottom:15px;">
+        Un administrateur devra valider votre compte avant l'accès.
+        </p>
 
-    <h2>Formulaire d'inscription</h2>
-    <p><i>Un email sera envoyé à un admin pour valider votre compte. <br>
-    Ensuite, vous recevrez un email concernant la décision. </i></p>
+        <form method="POST">
+        <input type="text" name="username" placeholder="Utilisateur" required>
+        <input type="password" name="password" placeholder="Mot de passe (min 8 caractères)" required>
+        <input type="email" name="mail" placeholder="Adresse email" required>
+        <button type="submit">Créer le compte</button>
+        </form>
 
-    <form method="POST">
-        <input type="text" name="username" placeholder="Utilisateur" required><br>
-        <input type="password" name="password" placeholder="Mot de Passe" required><br>
-        <input type="email" name="mail" placeholder="Adresse email" required><br>
-        <button type="submit">S'inscrire</button>
-        <br><br><a href="login.php">Déjà un compte? Se connecter</a>
-    </form>
+        <div class="auth-links">
+            <a href="login.php">Déjà un compte ? Se connecter</a>
+        </div>
+    </div>
+
 </body>
 </html>
