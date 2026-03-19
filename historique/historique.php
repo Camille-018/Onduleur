@@ -46,45 +46,103 @@ $historique = $stmt->fetchAll();
     <!-- Form to filter by specific value -->
     <h2>Filtrer par une valeur spécifique</h2>
     <form action="valeurSpecifique.php" method="GET">
-        <div class="filter-row">
-            <select name="colonne[]" required>
-                <option value="id">ID</option>
-                <option value="ups_id">ID de l'onduleur</option>
-                <option value="battery_charge">Charge de la Batterie</option>
-                <option value="battery_runtime">Runtime de la Batterie</option>
-                <option value="input_voltage">Tension d'Entrée</option>
-                <option value="output_voltage">Tension de Sortie</option>
-                <option value="ups_load">Charge de l'Onduleur</option>
-                <option value="ups_status">Status de l'Onduleur</option>
-            </select>
+        <div id="filters">
+            <div class="filter-row">
+                <select name="colonne[]" required>
+                    <option value="id">ID</option>
+                    <option value="ups_id">ID de l'onduleur</option>
+                    <option value="battery_charge">Charge de la Batterie</option>
+                    <option value="battery_runtime">Runtime de la Batterie</option>
+                    <option value="input_voltage">Tension d'Entrée</option>
+                    <option value="output_voltage">Tension de Sortie</option>
+                    <option value="ups_load">Charge de l'Onduleur</option>
+                    <option value="ups_status">Status de l'Onduleur</option>
+                </select>
 
-            <select name="operateur[]">
-                <option value="=">=</option>
-                <option value=">">&gt;</option>
-                <option value="<">&lt;</option>
-                <option value="like">contient</option>
-            </select>
-
-            <input type="text" name="valeur[]" placeholder="valeur">
+                <select name="operateur[]">
+                    <option value="=">=</option>
+                    <option value=">">&gt;</option>
+                    <option value="<">&lt;</option>
+                    <option value="like">contient</option>
+                    <option value="between">entre</option>
+                </select>
+                <input type="text" name="valeur[]" placeholder="valeur">
+            </div>
         </div>
-        <button type="button" onclick="addFilter()">+ Ajouter un Filtre</button>
-        <button type="submit">Filtrer</button>
+
+        <!-- boutons alignés -->
+        <div class="filter-actions">
+            <button type="button" onclick="addFilter()">+ Ajouter</button>
+            <button type="button" onclick="removeLastFilter()">- Retirer</button>
+            <button type="submit">Filtrer</button>
+        </div>
     </form>
 
     <script>
         // JavaScript to add more filter rows
-    function addFilter() {
-        const form = document.querySelector('form');
-        const currentFilters = form.querySelectorAll('.filter-row').length;
-        if (currentFilters >= 5) {
-            alert('Vous pouvez ajouter jusqu\'à 5 filtres seulement.');
-            return;
+        function addFilter() {
+            const container = document.getElementById('filters');
+            const currentFilters = container.querySelectorAll('.filter-row').length;
+
+            if (currentFilters >= 5) {
+                alert("Max 5 filtres.");
+                return;
+            }
+
+            const row = container.querySelector('.filter-row').cloneNode(true);
+            row.querySelectorAll('input').forEach(i => i.value = '');
+            container.appendChild(row);
         }
 
-        const row = document.querySelector('.filter-row').cloneNode(true);
-        row.querySelectorAll('input').forEach(i => i.value = '');
-        form.insertBefore(row, form.children[form.children.length - 2]);
-    }
+        function removeLastFilter() {
+            const container = document.getElementById('filters');
+            const rows = container.querySelectorAll('.filter-row');
+
+            if (rows.length > 1) {
+                rows[rows.length - 1].remove();
+            } else {
+                alert("Min 1 filtre.");
+            }
+        }
+        // for between
+        document.addEventListener("change", function(e) {
+            if (e.target.name === "operateur[]") {
+
+                const row = e.target.closest('.filter-row');
+
+                // Supprimer anciens champs BETWEEN
+                row.querySelectorAll('.between').forEach(el => el.remove());
+
+                const inputNormal = row.querySelector('input[name="valeur[]"]');
+
+                if (e.target.value === "between") {
+
+                    // cacher champ normal
+                    inputNormal.style.display = "none";
+
+                    // input min
+                    const min = document.createElement("input");
+                    min.type = "text";
+                    min.name = "valeur_min[]";
+                    min.placeholder = "min";
+                    min.classList.add("between");
+
+                    // input max
+                    const max = document.createElement("input");
+                    max.type = "text";
+                    max.name = "valeur_max[]";
+                    max.placeholder = "max";
+                    max.classList.add("between");
+
+                    row.appendChild(min);
+                    row.appendChild(max);
+
+                } else {
+                    // remettre champ normal
+                    inputNormal.style.display = "inline";
+                }
+            }
+        });
     </script>
     <br>
     <hr>

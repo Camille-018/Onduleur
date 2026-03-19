@@ -41,6 +41,7 @@ else {
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="stylesheet" href="../style/auth.css">

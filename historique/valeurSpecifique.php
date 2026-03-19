@@ -16,6 +16,8 @@ $offset = ($sheet - 1) * $collects;
 $colonnes   = $_GET['colonne'] ?? [];
 $valeurs    = $_GET['valeur'] ?? [];
 $operateurs = $_GET['operateur'] ?? [];
+$valeurs_min = $_GET['valeur_min'] ?? [];
+$valeurs_max = $_GET['valeur_max'] ?? [];
 
 if (!is_array($colonnes)) $colonnes = [$colonnes];
 if (!is_array($valeurs)) $valeurs = [$valeurs];
@@ -26,18 +28,41 @@ if (!is_array($valeurs)) $valeurs = [$valeurs];
 $where  = [];
 $params = [];
 
+$allowedColumns = [
+    'id','ups_id','battery_charge','battery_runtime',
+    'input_voltage','output_voltage','ups_load','ups_status','timestamp'
+];
+
 foreach ($colonnes as $i => $colonne) {
 
-    $valeur  = $valeurs[$i] ?? '';
-    $op      = $operateurs[$i] ?? '=';
+    if (!in_array($colonne, $allowedColumns)) continue;
 
-    if (!$colonne || $valeur === '') continue;
-    if (in_array($op, ['>','<','='])) {
-        $where[] = "$colonne $op :val$i";
-        $params[":val$i"] = $valeur;
-    } elseif ($op === "like") {
-        $where[] = "$colonne LIKE :val$i";
-        $params[":val$i"] = "%$valeur%";
+    $op = $operateurs[$i] ?? '=';
+    $valeur = $valeurs[$i] ?? '';
+
+    if ($op === 'between') {
+
+        $min = $valeurs_min[$i] ?? null;
+        $max = $valeurs_max[$i] ?? null;
+
+        if ($min !== '' && $max !== '' && $min !== null && $max !== null) {
+            $where[] = "$colonne BETWEEN :min$i AND :max$i";
+            $params[":min$i"] = $min;
+            $params[":max$i"] = $max;
+        }
+
+    } else {
+
+        if ($valeur === '') continue;
+
+        if (in_array($op, ['>','<','='])) {
+            $where[] = "$colonne $op :val$i";
+            $params[":val$i"] = $valeur;
+
+        } elseif ($op === "like") {
+            $where[] = "$colonne LIKE :val$i";
+            $params[":val$i"] = "%$valeur%";
+        }
     }
 }
 
@@ -95,14 +120,30 @@ $historique = $stmt->fetchAll();
 <h3>Filtres appliqués :</h3>
 <ul>
 <?php foreach ($colonnes as $i => $colonneFiltre):
-    $valeurFiltre  = $valeurs[$i] ?? '';
-    $op = $operateurs[$i] ?? '='; ?>
+
+    if (!in_array($colonneFiltre, $allowedColumns)) continue;
+
+    $op = $operateurs[$i] ?? '=';
+
+    $valeurFiltre = $valeurs[$i] ?? '';
+    $min = $valeurs_min[$i] ?? '';
+    $max = $valeurs_max[$i] ?? '';
+?>
     <li>
         <?php
         if ($op === 'like') {
+
             echo htmlspecialchars($colonneFiltre) . " contient " . htmlspecialchars($valeurFiltre);
-        } else {
+
+        } elseif ($op === 'between' && $min !== '' && $max !== '') {
+
+            echo htmlspecialchars($colonneFiltre) . " entre " 
+                . htmlspecialchars($min) . " et " . htmlspecialchars($max);
+
+        } elseif ($valeurFiltre !== '') {
+
             echo htmlspecialchars($colonneFiltre) . " $op " . htmlspecialchars($valeurFiltre);
+
         }
         ?>
     </li>
