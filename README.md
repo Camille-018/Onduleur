@@ -46,44 +46,44 @@ Fonctionnalités principales :
 ## 🗂️ Structure du projet
 _PROJET/
 │
-├── index.php # Dashboard
-├── ups.php # Vue onduleurs
+├── index.php              # Dashboard
+├── ups.php                # Vue onduleurs
 │
-├── _sujetProjet/ # Documents projet
+├── _sujetProjet/          # Documents projet
 │
-├── alerte/ # Gestion alertes
-│ ├── alerte.php
-│ ├── verifierAlerte.php
-│ └── changerSeuils.php
+├── alerte/                # Gestion alertes
+│   ├── alerte.php
+│   ├── verifierAlerte.php
+│   └── changerSeuils.php
 │
-├── auth/ # Authentification
-│ ├── login.php
-│ ├── logout.php
-│ ├── sInscrire.php
-│ ├── forgotPassword.php
-│ └── authCheck.php
+├── auth/                  # Authentification
+│   ├── login.php
+│   ├── logout.php
+│   ├── sInscrire.php
+│   ├── forgotPassword.php
+│   └── authCheck.php
 │
-├── BDD/ # Base de données
-│ ├── script SQL.sql
-│ └── MCD
+├── BDD/                   # Base de données
+│   ├── script SQL.sql
+│   └── MCD
 │
-├── collector/ # Collecte des données UPS
-│ └── auto_collect.php
+├── collector/             # Collecte des données UPS
+│   └── auto_collect.php
 │
-├── config/ # Config et seuils
-│ ├── config.php
-│ └── config_seuils.json
+├── config/                # Config et seuils
+│   ├── config.php
+│   └── config_seuils.json
 │
-├── historique/ # Historique & filtres
-│ ├── historique.php
-│ └── valeurSpecifique.php
+├── historique/            # Historique & filtres
+│   ├── historique.php
+│   └── valeurSpecifique.php
 │
-├── style/ # CSS et navbar
-│ ├── style.css
-│ ├── auth.css
-│ └── navbar.php
+├── style/                 # CSS et navbar
+│   ├── style.css
+│   ├── auth.css
+│   └── navbar.php
 │
-└── PHPMailer/ # Librairie pour envoi mails
+└── PHPMailer/             # Librairie pour envoi mails
 
 
 ---
