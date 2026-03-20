@@ -44,6 +44,7 @@ Fonctionnalités principales :
 ---
 
 ## 🗂️ Structure du projet
+```
 _PROJET/
 │
 ├── index.php              # Dashboard
@@ -84,7 +85,7 @@ _PROJET/
 │   └── navbar.php
 │
 └── PHPMailer/             # Librairie pour envoi mails
-
+```
 
 ---
 
@@ -145,6 +146,6 @@ Tables principales :
 | Étudiant | Rôle |
 |----------|------|
 | Hélène   | Raspberry Pi, collecte de données |
-| Quentin  | API / Interface Web, Dashboard & alertes |
-| Camille  | Site web historique, alertes, gestion utilisateurs |
+| Quentin  | API / Interface Web, Dashboard, gestion utilisateurs  |
+| Camille  | Site web historique, alertes |
 
