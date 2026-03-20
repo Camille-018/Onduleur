@@ -110,7 +110,7 @@ $historique = $stmt->fetchAll();
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="stylesheet" href="../style/style.css">
-    <title>Onduleur - Résultat du Filtre</title>
+    <title>UPS - Résultat du Filtre</title>
 </head>
 <body>
 <h1>Onduleur - Résultat du Filtre</h1>

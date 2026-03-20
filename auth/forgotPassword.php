@@ -10,6 +10,9 @@ require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require __DIR__ . '/../PHPMailer/src/SMTP.php';
 require __DIR__ . '/../PHPMailer/src/Exception.php';
 
+$pdo->exec("DELETE FROM password_resets 
+WHERE expires_at < NOW() OR used_at IS NOT NULL");
+
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

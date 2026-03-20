@@ -231,8 +231,12 @@ tbody tr:nth-child(odd) {
 }
 
 .logo{
-    height:40px;
+    height:60px;
+    width: auto;
     margin-right:15px;
+    background-color: white;
+    padding: 5px;
+    border-radius: 8px;
 }
 
 .nav-right{

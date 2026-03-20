@@ -2,39 +2,29 @@
 //changePassword.php: page to change password after clicking reset link, validate token, update password
 require_once '../config/config.php';
 
-$errors = [];
-$success = "";
-$showForm = true;
-
-// Get token from GET or POST (hidden input)
 $token = $_GET['token'] ?? ($_POST['token'] ?? '');
+if (!$token) die("Lien de réinitialisation invalide.");
 
-if (!$token) {
-    die("Lien de réinitialisation invalide.");
-}
-
-// Find the reset request matching the token (hash)
-$stmt = $pdo->prepare("
-    SELECT * FROM password_resets
-    WHERE used_at IS NULL
-");
-$stmt->execute();
-
+// Cherche uniquement le token correspondant
+$stmt = $pdo->query("SELECT * FROM password_resets WHERE used_at IS NULL ORDER BY created_at DESC");
 $reset = null;
 
-// We compare the provided token with the hashed tokens in the database using password_verify, and also check expiration
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     if (password_verify($token, $row['token_hash'])) {
-        if (strtotime($row['expires_at']) > time()) {
-            $reset = $row;
+        // Vérification expiration
+        if (strtotime($row['expires_at']) < time()) {
+            die("Lien de réinitialisation expiré.");
         }
-        break;
+        $reset = $row;
+        break; // token trouvé et valide
     }
 }
 
 if (!$reset) {
-    die("Lien de réinitialisation invalide ou expiré.");
+    die("Lien de réinitialisation invalide ou déjà utilisé.");
 }
+
+// Ensuite, le reste de ton traitement POST pour changer le mot de passe...
 
 // If form submitted, validate and update password
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
