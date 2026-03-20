@@ -2,6 +2,10 @@
 //changePassword.php: page to change password after clicking reset link, validate token, update password
 require_once '../config/config.php';
 
+$errors = [];
+$success = "";
+$showForm = true;
+
 $token = $_GET['token'] ?? ($_POST['token'] ?? '');
 if (!$token) die("Lien de réinitialisation invalide.");
 
@@ -21,10 +25,11 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 }
 
 if (!$reset) {
-    die("Lien de réinitialisation invalide ou déjà utilisé.");
+    $message = "Lien de réinitialisation invalide ou déjà utilisé.";
+    echo "<script>alert('" . addslashes($message) . "'); window.location.href='login.php';</script>";
+    exit;
 }
 
-// Ensuite, le reste de ton traitement POST pour changer le mot de passe...
 
 // If form submitted, validate and update password
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -69,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="stylesheet" href="../style/auth.css">
-    <title>Onduleur - Changer de mot de passe</title>
+    <title>UPS - Changer de mot de passe</title>
 </head>
 <body>
     <div class="auth-container">
