@@ -1,43 +1,65 @@
 <?php
-//changePassword.php: page to change password after clicking reset link, validate token, update password
 require_once '../config/config.php';
+session_start(); // une seule fois en haut
 
 $errors = [];
 $success = "";
 $showForm = true;
 
+// CSRF token
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrf_token = $_SESSION['csrf_token'];
+
+// Récupération du token de reset
 $token = $_GET['token'] ?? ($_POST['token'] ?? '');
 if (!$token) die("Lien de réinitialisation invalide.");
 
-// Cherche uniquement le token correspondant
+// Supprime les tokens expirés
+$pdo->exec("DELETE FROM password_resets WHERE expires_at < NOW() AND used_at IS NULL");
+
+// Cherche le token correspondant
 $stmt = $pdo->query("SELECT * FROM password_resets WHERE used_at IS NULL ORDER BY created_at DESC");
 $reset = null;
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     if (password_verify($token, $row['token_hash'])) {
-        // Vérification expiration
+        // Vérifie l’expiration
         if (strtotime($row['expires_at']) < time()) {
             die("Lien de réinitialisation expiré.");
         }
+
+        // Vérifie que le compte est actif
+        $stmtUser = $pdo->prepare("SELECT status FROM users WHERE id = :id");
+        $stmtUser->execute([':id' => $row['user_id']]);
+        $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user || $user['status'] !== 'active') {
+            die("Compte inactif ou non valide.");
+        }
+
         $reset = $row;
-        break; // token trouvé et valide
+        break;
     }
 }
 
 if (!$reset) {
     $message = "Lien de réinitialisation invalide ou déjà utilisé.";
-    echo "<script>alert('" . addslashes($message) . "'); window.location.href='login.php';</script>";
+    echo "<script>alert(" . json_encode($message) . "); window.location.href='login.php';</script>";
     exit;
 }
 
-
-// If form submitted, validate and update password
+// Si formulaire soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Vérification CSRF
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        die("Requête invalide (CSRF détecté).");
+    }
 
     $newPass = trim($_POST['new_password']);
     $confirmPass = trim($_POST['confirm_password']);
 
-    // Validation
     if (strlen($newPass) < 6) {
         $errors[] = "Le mot de passe doit contenir au moins 6 caractères.";
     }
@@ -47,21 +69,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-
-        // Update password
-        $hash = password_hash($newPass, PASSWORD_DEFAULT);
-
+        // Change le mot de passe
         $stmt = $pdo->prepare("UPDATE users SET password = :pass WHERE id = :id");
         $stmt->execute([
-            ':pass' => $hash,
+            ':pass' => password_hash($newPass, PASSWORD_DEFAULT),
             ':id' => $reset['user_id']
         ]);
 
-        // Mark reset as used
+        // Marque le token comme utilisé
         $stmt = $pdo->prepare("UPDATE password_resets SET used_at = NOW() WHERE id = :id");
         $stmt->execute([':id' => $reset['id']]);
 
-        $success = "Votre mot de passe a été changé avec succès!";
+        // Déconnexion forcée
+        session_unset();
+        session_destroy();
+
+        $success = "Votre mot de passe a été changé avec succès ! Veuillez vous reconnecter.";
         $showForm = false;
     }
 }
@@ -77,37 +100,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>UPS - Changer de mot de passe</title>
 </head>
 <body>
-    <div class="auth-container">
-        <img src="../style/images/cereep.jpg" class="auth-logo">
-        <h1>Nouveau mot de passe</h1>
-        <p>Choisissez un nouveau mot de passe pour votre compte</p>
+<div class="auth-container">
+    <img src="../style/images/cereep.jpg" class="auth-logo">
+    <h1>Nouveau mot de passe</h1>
+    <p>Choisissez un nouveau mot de passe pour votre compte</p>
 
-        <?php if (!empty($errors)): ?>
+    <?php if (!empty($errors)): ?>
         <div class="error">
             <?php foreach ($errors as $e): ?>
                 <?= htmlspecialchars($e) ?><br>
             <?php endforeach; ?>
         </div>
-        <?php endif; ?>
-        
-        <?php if ($success): ?>
+    <?php endif; ?>
+
+    <?php if ($success): ?>
         <div class="success">
             <?= htmlspecialchars($success) ?>
         </div>
-
         <div class="auth-links">
             <a href="login.php">Retour à la connexion</a>
         </div>
-        <?php endif; ?>
+    <?php endif; ?>
 
-        <?php if ($showForm): ?>
+    <?php if ($showForm): ?>
         <form method="POST">
-            <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
             <input type="password" name="new_password" placeholder="Nouveau mot de passe" required>
             <input type="password" name="confirm_password" placeholder="Confirmer le mot de passe" required>
             <button type="submit">Changer le mot de passe</button>
         </form>
-        <?php endif; ?>
-    </div>
+    <?php endif; ?>
+</div>
 </body>
 </html>
