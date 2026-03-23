@@ -39,7 +39,6 @@ body{
 }
 
 /* inputs */
-
 .auth-container input{
     width:100%;
     padding:10px;
@@ -55,7 +54,6 @@ body{
 }
 
 /* button */
-
 .auth-container button{
     width:100%;
     padding:10px;
@@ -73,7 +71,6 @@ body{
 }
 
 /* links */
-
 .auth-links{
     margin-top:15px;
     font-size:13px;
@@ -89,7 +86,6 @@ body{
 }
 
 /* messages */
-
 .error{
     background:#ffe5e5;
     color:#c0392b;

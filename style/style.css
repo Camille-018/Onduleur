@@ -64,7 +64,7 @@ a:hover:not(.card)  {
     text-align: center;
 }
 
-/* états visuels des cartes */
+/* visual status of cards (alertes) */
 .normal-card {
     border: 2px solid #2ecc71;
     background-color: #e8f8f5;
@@ -204,8 +204,6 @@ tbody tr:nth-child(odd) {
 /* =========================
    HEADER / TOP BAR
 ========================= */
-
-
 .top-bar{
     display:flex;
     justify-content:space-between;
@@ -249,7 +247,6 @@ tbody tr:nth-child(odd) {
     color:white;
 }
 
-/* logout + hover plus clean */
 .logout{
     background: none;
     border: 2px solid #e84118;
@@ -283,7 +280,7 @@ tbody tr:nth-child(odd) {
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #2f3640; /* sombre pour le dropdown */
+  background-color: #2f3640; 
   min-width: 180px;
   box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
   border-radius: 6px;
