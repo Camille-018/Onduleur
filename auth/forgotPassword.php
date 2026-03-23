@@ -10,6 +10,7 @@ require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require __DIR__ . '/../PHPMailer/src/SMTP.php';
 require __DIR__ . '/../PHPMailer/src/Exception.php';
 
+//Delete used or expired tokens
 $pdo->exec("DELETE FROM password_resets 
 WHERE expires_at < NOW() OR used_at IS NOT NULL");
 
@@ -84,7 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $contentHtml = "
                 <p>Bonjour <strong>{$user['username']}</strong>,</p>
                 <p>Un lien de réinitialisation de mot de passe a été demandé pour votre compte.</p>
-                <p style='text-align:center; margin:20px 0;'>
                     <a class='button' href='http://onduleur/auth/changePassword.php?token=$token'>Réinitialiser mon mot de passe</a>
                 </p>
                 <p class='mail-info'>Ce lien expire dans 30 minutes.</p>
@@ -110,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- html: form to request a new password (token) -->
     <meta charset="UTF-8">
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">

@@ -1,6 +1,6 @@
 <?php
 require_once '../config/config.php';
-session_start(); // une seule fois en haut
+session_start();
 
 $errors = [];
 $success = "";
@@ -12,25 +12,25 @@ if (empty($_SESSION['csrf_token'])) {
 }
 $csrf_token = $_SESSION['csrf_token'];
 
-// Récupération du token de reset
+//Retrieving the reset token
 $token = $_GET['token'] ?? ($_POST['token'] ?? '');
 if (!$token) die("Lien de réinitialisation invalide.");
 
-// Supprime les tokens expirés
+// Deletes expired tokens
 $pdo->exec("DELETE FROM password_resets WHERE expires_at < NOW() AND used_at IS NULL");
 
-// Cherche le token correspondant
+// Find the corresponding token
 $stmt = $pdo->query("SELECT * FROM password_resets WHERE used_at IS NULL ORDER BY created_at DESC");
 $reset = null;
 
 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
     if (password_verify($token, $row['token_hash'])) {
-        // Vérifie l’expiration
+        // Check the expiration date
         if (strtotime($row['expires_at']) < time()) {
             die("Lien de réinitialisation expiré.");
         }
 
-        // Vérifie que le compte est actif
+        // Check if the account is active
         $stmtUser = $pdo->prepare("SELECT status FROM users WHERE id = :id");
         $stmtUser->execute([':id' => $row['user_id']]);
         $user = $stmtUser->fetch(PDO::FETCH_ASSOC);
@@ -50,9 +50,9 @@ if (!$reset) {
     exit;
 }
 
-// Si formulaire soumis
+// If form is submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Vérification CSRF
+    // CSRF validation
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         die("Requête invalide (CSRF détecté).");
     }
@@ -69,18 +69,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        // Change le mot de passe
+        // Change password
         $stmt = $pdo->prepare("UPDATE users SET password = :pass WHERE id = :id");
         $stmt->execute([
             ':pass' => password_hash($newPass, PASSWORD_DEFAULT),
             ':id' => $reset['user_id']
         ]);
 
-        // Marque le token comme utilisé
+        //  Mark the token as used
         $stmt = $pdo->prepare("UPDATE password_resets SET used_at = NOW() WHERE id = :id");
         $stmt->execute([':id' => $reset['id']]);
 
-        // Déconnexion forcée
+        // Forced logout
         session_unset();
         session_destroy();
 
@@ -93,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- html: change passpword form -->
     <meta charset="UTF-8">
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">

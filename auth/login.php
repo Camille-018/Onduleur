@@ -41,6 +41,7 @@ else {
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- html: form to login -->
     <meta charset="utf-8">
     <link rel="icon" href="../style/images/cereep32.ico">
     <link rel="stylesheet" href="../style/auth.css">

