@@ -33,16 +33,13 @@ $historique = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
+    <link rel="icon" href="/style/images/cereep32.ico">
     <link rel=stylesheet href="../style/style.css"></link>
     <title>UPS - Historique</title>
 </head>
 <body>
-    <h1 class=title>Historique des Collectes</h1>
-    <br>
-    <hr>
-
+    <h1>Historique des Collectes</h1>
+    <br><hr>
     <!-- Form to filter by specific value -->
     <h2>Filtrer par une valeur spécifique</h2>
     <form action="valeurSpecifique.php" method="GET">
@@ -59,6 +56,7 @@ $historique = $stmt->fetchAll();
                     <option value="ups_status">Status de l'Onduleur</option>
                 </select>
 
+                <!-- drop-down menu for the operator -->
                 <select name="operateur[]">
                     <option value="=">=</option>
                     <option value=">">&gt;</option>
@@ -70,7 +68,7 @@ $historique = $stmt->fetchAll();
             </div>
         </div>
 
-        <!-- boutons alignés -->
+        <!-- Add/Remove/Apply filter -->
         <div class="filter-actions">
             <button type="button" onclick="addFilter()">+ Ajouter</button>
             <button type="button" onclick="removeLastFilter()">- Retirer</button>
@@ -83,62 +81,52 @@ $historique = $stmt->fetchAll();
         function addFilter() {
             const container = document.getElementById('filters');
             const currentFilters = container.querySelectorAll('.filter-row').length;
-
             if (currentFilters >= 5) {
                 alert("Max 5 filtres.");
                 return;
             }
-
             const row = container.querySelector('.filter-row').cloneNode(true);
             row.querySelectorAll('input').forEach(i => i.value = '');
             container.appendChild(row);
         }
 
+        // JavaScript to remove filter 
         function removeLastFilter() {
             const container = document.getElementById('filters');
             const rows = container.querySelectorAll('.filter-row');
-
             if (rows.length > 1) {
                 rows[rows.length - 1].remove();
             } else {
                 alert("Min 1 filtre.");
             }
         }
+
         // for between
         document.addEventListener("change", function(e) {
             if (e.target.name === "operateur[]") {
-
                 const row = e.target.closest('.filter-row');
-
-                // Supprimer anciens champs BETWEEN
+                // Remove old BETWEEN fields
                 row.querySelectorAll('.between').forEach(el => el.remove());
-
                 const inputNormal = row.querySelector('input[name="valeur[]"]');
-
                 if (e.target.value === "between") {
-
-                    // cacher champ normal
+                    //  Hide normal field ("valeur")
                     inputNormal.style.display = "none";
-
                     // input min
                     const min = document.createElement("input");
                     min.type = "text";
                     min.name = "valeur_min[]";
                     min.placeholder = "min";
                     min.classList.add("between");
-
                     // input max
                     const max = document.createElement("input");
                     max.type = "text";
                     max.name = "valeur_max[]";
                     max.placeholder = "max";
                     max.classList.add("between");
-
                     row.appendChild(min);
                     row.appendChild(max);
-
                 } else {
-                    // remettre champ normal
+                    // Show normal field ("valeur")
                     inputNormal.style.display = "inline";
                 }
             }
@@ -147,7 +135,7 @@ $historique = $stmt->fetchAll();
     <br>
     <hr>
 
-<!-- The 100 most recent collects (with a table) -->
+<!-- All collects (with a table) -->
  <h2>Collectes Récentes</h2>
  <p>Voici le tableau avec toutes les collectes enregistrées par l'Onduleur, triées de la plus récente à la plus ancienne.</p>
     <table id="tableauHistorique">

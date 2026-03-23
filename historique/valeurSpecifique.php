@@ -1,5 +1,5 @@
 <?php
-// valeurSpecifique.php : page pour filtrer l'historique selon une ou plusieurs valeurs
+// valeurSpecifique.php : filter collects depending on specific value(s)
 require_once __DIR__ . '/../auth/authCheck.php';
 include __DIR__ . '/../style/navbar.php';   
 
@@ -11,7 +11,7 @@ $sheet = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($sheet - 1) * $collects;
 
 // ----------------------------
-// Récupération des filtres
+// Get filters values
 // ----------------------------
 $colonnes   = $_GET['colonne'] ?? [];
 $valeurs    = $_GET['valeur'] ?? [];
@@ -23,7 +23,7 @@ if (!is_array($colonnes)) $colonnes = [$colonnes];
 if (!is_array($valeurs)) $valeurs = [$valeurs];
 
 // ----------------------------
-// Construction du WHERE
+// Prepare the SQL query
 // ----------------------------
 $where  = [];
 $params = [];
@@ -34,25 +34,18 @@ $allowedColumns = [
 ];
 
 foreach ($colonnes as $i => $colonne) {
-
     if (!in_array($colonne, $allowedColumns)) continue;
-
     $op = $operateurs[$i] ?? '=';
     $valeur = $valeurs[$i] ?? '';
-
     if ($op === 'between') {
-
         $min = $valeurs_min[$i] ?? null;
         $max = $valeurs_max[$i] ?? null;
-
         if ($min !== '' && $max !== '' && $min !== null && $max !== null) {
             $where[] = "$colonne BETWEEN :min$i AND :max$i";
             $params[":min$i"] = $min;
             $params[":max$i"] = $max;
         }
-
     } else {
-
         if ($valeur === '') continue;
 
         if (in_array($op, ['>','<','='])) {
@@ -83,7 +76,7 @@ $sheet = min($sheet, $totalSheet ?: 1);
 $offset = ($sheet - 1) * $collects;
 
 // ----------------------------
-// Requête principale
+// Main Query
 // ----------------------------
 $sql = "SELECT * FROM ups_history";
 if ($where) $sql .= " WHERE " . implode(" AND ", $where);
@@ -91,9 +84,9 @@ $sql .= " ORDER BY timestamp DESC LIMIT :limit OFFSET :offset";
 
 $stmt = $pdo->prepare($sql);
 
-// Bind des paramètres
+// Bind of parameters
 foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v); // MySQL fait le cast automatiquement
+    $stmt->bindValue($k, $v); // cast automatically done by MySQL
 }
 $stmt->bindValue(':limit', $collects, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -115,16 +108,13 @@ $historique = $stmt->fetchAll();
 <body>
 <h1>Onduleur - Résultat du Filtre</h1>
 
-<!-- Affichage des filtres -->
+<!-- display filters -->
 <?php if (!empty($colonnes)): ?>
 <h3>Filtres appliqués :</h3>
 <ul>
 <?php foreach ($colonnes as $i => $colonneFiltre):
-
     if (!in_array($colonneFiltre, $allowedColumns)) continue;
-
     $op = $operateurs[$i] ?? '=';
-
     $valeurFiltre = $valeurs[$i] ?? '';
     $min = $valeurs_min[$i] ?? '';
     $max = $valeurs_max[$i] ?? '';
@@ -132,16 +122,13 @@ $historique = $stmt->fetchAll();
     <li>
         <?php
         if ($op === 'like') {
-
             echo htmlspecialchars($colonneFiltre) . " contient " . htmlspecialchars($valeurFiltre);
 
         } elseif ($op === 'between' && $min !== '' && $max !== '') {
-
             echo htmlspecialchars($colonneFiltre) . " entre " 
                 . htmlspecialchars($min) . " et " . htmlspecialchars($max);
 
         } elseif ($valeurFiltre !== '') {
-
             echo htmlspecialchars($colonneFiltre) . " $op " . htmlspecialchars($valeurFiltre);
 
         }
@@ -151,7 +138,7 @@ $historique = $stmt->fetchAll();
 </ul>
 <?php endif; ?>
 
-<!-- Affichage des résultats -->
+<!-- display results -->
 <?php if (!empty($historique)): ?>
 <table>
     <thead>
