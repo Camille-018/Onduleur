@@ -42,8 +42,7 @@ else {
 <html>
 <head>
     <meta charset="utf-8">
-    <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
+    <link rel="icon" href="../style/images/cereep32.ico">
     <link rel="stylesheet" href="../style/auth.css">
     <title>UPS - S'identifier</title>
 </head>

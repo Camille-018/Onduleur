@@ -101,7 +101,7 @@ $mailUser->Body = mailTemplate($subject, $contentHtml);
 try {
     $mailUser->send();
 } catch (Exception $e) {
-    die("Error sending mail to user: " . $mailUser->ErrorInfo);
+    die("Erreur lors de l'envoi du mail: " . $mailUser->ErrorInfo);
 }
 
 // 3️⃣ popup message and close window (for admin)

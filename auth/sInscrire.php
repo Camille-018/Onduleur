@@ -15,7 +15,7 @@ $error = "";
 
 // success message after redirection from validerInscription
 if (isset($_GET['success'])) {
-    $success = "Request sent, awaiting admin validation.";
+    $success = "Demande envoyée.";
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -93,8 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ";
 
             $mailObj->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid');
-            $mailObj->Body = mailTemplate("Demande de inscription", $contentHtml);
-            $mailObj->Subject = "Demande de inscription - CEREEP - onduleur";
+            $mailObj->Body = mailTemplate("Demande d'inscription", $contentHtml);
+            $mailObj->Subject = "Demande d'inscription - CEREEP - onduleur";
 
             try {
                 $mailObj->send();
@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="stylesheet" href="../style/auth.css">
-    <title>Onduleur - S'inscrire</title>
+    <title>UPS - S'inscrire</title>
 </head>
 <body>
 

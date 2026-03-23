@@ -20,7 +20,7 @@ try {
 
 // for mail sending
 define('MAIL_ENABLED', true);
-
+define('MAIL_CHARSET', 'UTF-8');
 define('MAIL_HOST', 'smtp.gmail.com');
 define('MAIL_PORT', 587);
 define('MAIL_USERNAME', 'ondulateur.alertes@gmail.com');
@@ -35,21 +35,67 @@ define('SIGNATURE_SECRET', 'une_cle_ultra_secrete_a_ne_pas_commit');
 function mailTemplate($title, $contentHtml) {
     $logoCid = 'logo_cid';
     return "
-    <table style='width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse;'>
-        <tr>
-            <td style='text-align:center; padding:20px 0;'>
-                <img src='cid:$logoCid' alt='Company Logo' style='width:150px; max-width:100%; height:auto;'>
-            </td>
-        </tr>
-        <tr>
-            <td style='padding:20px; background:#f9f9f9; border-radius:8px;'>
-                <h2 style='margin-top:0;'>$title</h2>
-                $contentHtml
-                <p style='font-style:italic; color:#555; margin-top:20px;'>
-                    Attenttion: vous devez être sur le réseau de l'entreprise pour accéder au site web.
-                </p>
-            </td>
-        </tr>
-    </table>
+    <html>
+    <head>
+    <meta charset='UTF-8'>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+            color: #1b1f23;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin:0; padding:0;
+        }
+        .mail-container {
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+            border-collapse: collapse;
+            font-family: Arial, sans-serif;
+        }
+        .mail-header { text-align:center; padding:20px 0; }
+        .mail-body {
+            padding:20px;
+            background:#f9f9f9;
+            border-radius:8px;
+        }
+        .mail-body h2 { margin-top:0; }
+        .mail-footer { font-style:italic; color:#555; margin-top:20px; }
+        .mail-info {
+            margin-top:10px;
+            padding:8px 12px;
+            border-radius:6px;
+            font-weight:bold;
+            box-shadow:1px 1px 3px rgba(0,0,0,0.1);
+            background-color:#ff8c42;
+        }
+        a.button {
+            background:#0073e6;
+            color:#fff;
+            text-decoration:none;
+            padding:10px 20px;
+            border-radius:5px;
+            display:inline-block;
+        }
+    </style>
+    </head>
+    <body>
+        <table class='mail-container'>
+            <tr>
+                <td class='mail-header'>
+                    <img src='cid:$logoCid' alt='Company Logo' style='width:150px; max-width:100%; height:auto;'>
+                </td>
+            </tr>
+            <tr>
+                <td class='mail-body'>
+                    <h2>$title</h2>
+                    $contentHtml
+                    <p class='mail-footer'>
+                        Attention: vous devez être sur le réseau de l'entreprise pour accéder au site web.
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>
     ";
 }

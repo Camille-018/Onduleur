@@ -29,11 +29,11 @@ $data = array_reverse($stmt->fetchAll());
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- html: display last values of the battery and the output power for the chosen UPS -->
      <link rel=stylesheet href="/style/style.css"></link>
     <meta charset="utf-8">
     <title><?= htmlspecialchars($ups['device_model']) ?></title>
-    <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
+    <link rel="icon" href="/style/images/cereep32.ico">
     <link rel="stylesheet" href="../css/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -90,7 +90,7 @@ new Chart(document.getElementById('voltageChart'), {
         }]
     },
     options: {
-        plugins: { title: { display: false } }, // titre désactivé
+        plugins: { title: { display: false } }, 
         scales: {
             y: { title: { display: true, text: 'Volts (V)' } },
             x: { title: { display: true, text: 'Temps' } }

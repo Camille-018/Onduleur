@@ -29,17 +29,17 @@ function statusColor($s) {
 }
 ?>
 
+
 <!DOCTYPE html>
+<!-- html: display all UPS cards -->
 <html>
 <head>
     <meta charset="utf-8">
-    <title>UPS</title>
-    <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">
+    <link rel="icon" href="style/images/cereep32.ico" >
     <link rel="stylesheet" href="style/style.css">
+    <title>UPS</title>
 </head>
 <body>
-
 <h1 class="title">📊 Liste des Onduleurs</h1>
 <p>Cliquez sur une carte d'onduleur pour voir les informations détaillées.</p>
 <p><i>Aller aux alertes pour comprendre le sens des statuts (rouge: critique, orange: avertissement, vert: normal)</i></p>

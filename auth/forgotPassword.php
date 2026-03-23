@@ -75,35 +75,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->Password   = MAIL_PASSWORD;
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port       = MAIL_PORT;
+                $mail->CharSet    = MAIL_CHARSET;
 
                 $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
                 $mail->addAddress($user['mail']);
                 $mail->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid');
 
-                $contentHtml= 
-                "<table style='width:100%; max-width:600px; margin:auto; font-family:Arial,sans-serif; border-collapse:collapse;'>
-                    <tr>
-                        <td style='text-align:center; padding:20px 0;'>
-                        <img src='cid:logo_cid' alt='Company Logo' style='width:150px; max-width:100%; height:auto;'>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style='padding:20px; background:#f9f9f9; border-radius:8px;'>
-                        <p>Bonjour <strong>{$user['username']}</strong>,</p>
-                        <p>Un lien de réinitialisation de mot de passe a été demandé pour votre compte.</p>
-                        <p>Cliquez sur le lien ci-dessous pour choisir un nouveau mot de passe:</p>
-                        <p style='text-align:center; margin:20px 0;'>
-                            <a href='http://onduleur/auth/changePassword.php?token=$token' 
-                            style='background:#0073e6; color:#fff; text-decoration:none; padding:10px 20px; border-radius:5px; display:inline-block;'>
-                            Reinitialiser mon mot de passe
-                            </a>
-                        </p>
-                        <p>Ce lien expire dans <strong>30 minutes</strong>.</p>
-                        <p>Si vous n'avez pas demandé de réinitialisation de mot de passe, ignorez cet email.</p>
-                        <p style='font-style:italic; color:#555;'>Attention: vous devez être sur le réseau de l'entreprise pour accéder au site web.</p>
-                        </td>
-                    </tr>
-                </table>";
+                $contentHtml = "
+                <p>Bonjour <strong>{$user['username']}</strong>,</p>
+                <p>Un lien de réinitialisation de mot de passe a été demandé pour votre compte.</p>
+                <p style='text-align:center; margin:20px 0;'>
+                    <a class='button' href='http://onduleur/auth/changePassword.php?token=$token'>Réinitialiser mon mot de passe</a>
+                </p>
+                <p class='mail-info'>Ce lien expire dans 30 minutes.</p>
+                <p>Si vous n'avez pas demandé cette action, ignorez cet email.</p>
+                ";
 
                 $mail->isHTML(true);  
                 $mail->Body = mailTemplate("Requete de réinitialisation de mot de passe", $contentHtml);
