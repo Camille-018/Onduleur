@@ -87,6 +87,7 @@ unset($_SESSION['message_seuils']);
 <body>
     <h1>Modifier les seuils d'alerte</h1>
 
+    <!-- form to change thresholds with current values pre-filled and a message to display after form submission -->
     <h2>Changer les seuils</h2>
     <form method="post">
          <label for="batterieFaible">Batterie faible <i>(% trop bas)</i>:</label>

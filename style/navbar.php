@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../auth/authCheck.php';
 
 
-// Récupérer les UPS pour le menu
+// Get UPS list for menu
 $upsListForMenu = $pdo->query("SELECT id, device_model FROM ups ORDER BY device_model")->fetchAll();
 ?>
 
@@ -40,7 +40,7 @@ $upsListForMenu = $pdo->query("SELECT id, device_model FROM ups ORDER BY device_
 </div>
 
 <script>
-// Auto logout script – ça reste dans navbar.php ou index.php, pas dans authCheck
+// Auto logout script after 10 minutes of inactivity
 const logoutTime = 10 * 60 * 1000;
 let logoutTimer;
 

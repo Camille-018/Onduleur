@@ -40,7 +40,7 @@ $alertes = $stmt->fetchAll();
 <body>
     <h1 class="title">Alertes</h1>
     <hr>
-
+    <!-- explication of alerts and statuses of the UPS -->
     <h2>Explication des statuts des onduleurs</h2>
     <p><i>
     L'onduleur génère automatiquement des alertes de statut basées sur les données qu'il collecte.<br>
@@ -104,6 +104,7 @@ $alertes = $stmt->fetchAll();
     <p class="mail-info"><i>Note: Les seuils pour ces alertes peuvent être modifiés dans la page "Modifier les seuils d'alerte" (seulement pour les administrateurs).</i></p>
     <hr>
 
+    <!-- table of alerts with pagination -->
     <h2>Les Alertes</h2>
     <p>Voici le tableau avec toutes les alertes avec <strong>seuils</strong> et quelques statuts critiques d'onduleur <strong>(BYPASS et OFF)</strong>, triés du plus récent au plus ancien.</p>
     <?php if (!empty($alertes)): ?>
