@@ -72,7 +72,11 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         }
     }
 
-    if ($d['output_voltage'] !== null && $d['output_voltage'] > 0 && $d['output_voltage'] < $seuils['coupure']) {
+    if (
+        !in_array('OL OFF', $statusList) &&
+        $d['output_voltage'] !== null &&
+        $d['output_voltage'] < $seuils['coupure']) 
+    {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'coupure')) {
             $alertes_a_creer[] = [
                 'Type' => 'coupure',

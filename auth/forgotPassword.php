@@ -143,4 +143,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 </body>
+<script src="../style/message.js"></script>
 </html>

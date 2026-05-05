@@ -62,8 +62,9 @@ else {
             <a href="sInscrire.php">Créer un compte</a>
         </div>
         <?php if($error): ?>
-            <div class="error"><?= $error ?></div>
+            <div class="error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
     </div>
 </body>
+<script src="../style/message.js"></script>
 </html>

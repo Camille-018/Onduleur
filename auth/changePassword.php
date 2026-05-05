@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="auth-container">
     <img src="../style/images/cereep.jpg" class="auth-logo">
     <h1>Nouveau mot de passe</h1>
-    <p>Choisissez un nouveau mot de passe pour votre compte</p>
+    <p>Choisissez un nouveau mot de passe.</p>
 
     <?php if (!empty($errors)): ?>
         <div class="error">
@@ -133,4 +133,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 </div>
 </body>
+<script src="../style/message.js"></script>
 </html>

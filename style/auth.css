@@ -101,3 +101,8 @@ body{
     border-radius:6px;
     margin-top:10px;
 }
+
+/* animation fade out */
+.error, .success {
+    transition: opacity 2s ease;
+}
