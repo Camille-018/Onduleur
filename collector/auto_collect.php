@@ -8,6 +8,7 @@ $loopDelay = 2; // seconds
 
 // Table to track last insert time for each UPS to avoid flooding the database
 $lastInsertTime = [];
+$lastValues = [];
 echo "=== AUTO COLLECT STARTED ".date("Y-m-d H:i:s")." ===\n";
 
 while (true) {
@@ -100,7 +101,27 @@ while (true) {
         $upsLoad        = $data['ups.load'] ?? null;
 
         // ===== INSERT =====
-        if ($isCritical || time() - $lastInsertTime[$upsId] >= 60) {
+// ===== CHECK CHANGES =====
+$currentValues = [
+    'battery_charge'  => $batteryCharge,
+    'battery_runtime' => $batteryRuntime,
+    'input_voltage'   => $inputVoltage,
+    'output_voltage'  => $outputVoltage,
+    'ups_load'        => $upsLoad,
+    'status'          => $statusRaw
+];
+
+$hasChanged = !isset($lastValues[$upsId]) || $lastValues[$upsId] != $currentValues;
+
+        // insert if:
+        // - critical state
+        // - value changed
+        // - no change for 1 hour
+        if (
+            $isCritical ||
+            $hasChanged ||
+            time() - $lastInsertTime[$upsId] >= 3600
+        ) {
 
             $stmt = $pdo->prepare("
                 INSERT INTO ups_history
@@ -117,17 +138,20 @@ while (true) {
                 $upsLoad,
                 $statusRaw
             ]);
-            
-            $historyId = $pdo->lastInsertId(); // 🔹 get ID of this collect
+
+            $historyId = $pdo->lastInsertId();
+
             $lastInsertTime[$upsId] = time();
+            $lastValues[$upsId] = $currentValues;
 
             verifierAlertePourCollecte($pdo, $historyId);
 
-            // debug log
             if ($isCritical) {
                 echo date("H:i:s") . " | 🚨 ALERTE UPS $upsId ($statusRaw)\n";
+            } elseif ($hasChanged) {
+                echo date("H:i:s") . " | 🔄 UPS $upsId changement détecté\n";
             } else {
-                echo date("H:i:s") . " | UPS $upsId enregistré\n";
+                echo date("H:i:s") . " | ⏱ UPS $upsId snapshot 1h\n";
             }
         }
     }
