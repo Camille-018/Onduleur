@@ -89,16 +89,15 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         foreach ($alertes_a_creer as $a) {
 
             $stmt = $pdo->prepare("
-                INSERT INTO Alertes (idCollecte, ups_id, Type, Message, heureAlerte)
-                VALUES (:idCollecte, :ups_id, :type, :message, NOW())
+                INSERT INTO Alertes (idCollecte, Type, Message, heureAlerte)
+                VALUES (:idCollecte, :type, :message, NOW())
             ");
 
-            $stmt->execute([
-                ':idCollecte' => $d['id'],
-                ':ups_id'     => $d['ups_id'],
-                ':type'       => $a['Type'],
-                ':message'    => $a['Message']
-            ]);
+        $stmt->execute([
+            ':idCollecte' => $d['id'],
+            ':type'       => $a['Type'],
+            ':message'    => $a['Message']
+        ]);
         }
 
         envoyerMailAlerte(
@@ -119,11 +118,12 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
 function alerteRecenteExiste(PDO $pdo, int $upsId, string $type): bool {
 
     $stmt = $pdo->prepare("
-        SELECT id
-        FROM Alertes
-        WHERE ups_id = :ups_id
-        AND Type = :type
-        AND heureAlerte > NOW() - INTERVAL 5 MINUTE
+        SELECT a.idAlerte
+        FROM Alertes a
+        JOIN ups_history h ON a.idCollecte = h.id
+        WHERE h.ups_id = :ups_id
+        AND a.Type = :type
+        AND a.heureAlerte > NOW() - INTERVAL 5 MINUTE
         LIMIT 1
     ");
 
@@ -201,3 +201,4 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         return "Erreur mail: {$mail->ErrorInfo}";
     }
 }
+
