@@ -54,7 +54,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
     // 2️⃣ CHECK thresholds (SEUILS)
     // =========================================================
 
-    if ($d['battery_charge'] !== null && $d['battery_charge'] < $seuils['batterieFaible']) {
+    if ($d['battery_charge'] < $seuils['batterieFaible']) {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'batterieFaible')) {
             $alertes_a_creer[] = [
                 'Type' => 'batterieFaible',
@@ -63,7 +63,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         }
     }
 
-    if ($d['input_voltage'] !== null && $d['input_voltage'] > $seuils['surcharge']&& $d['input_voltage'] >0 ) {
+    if ($d['input_voltage'] > $seuils['surcharge']&& $d['input_voltage'] >0 ) {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'surcharge')) {
             $alertes_a_creer[] = [
                 'Type' => 'surcharge',
@@ -74,7 +74,6 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
 
     if (
         !in_array('OL OFF', $statusList) &&
-        $d['output_voltage'] !== null &&
         $d['output_voltage'] < $seuils['coupure']) 
     {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'coupure')) {
