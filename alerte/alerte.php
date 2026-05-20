@@ -1,5 +1,5 @@
 <?php
-//alerte.php: web page to display all alerts and explain them, with pagination
+// alerte.php : page web affichant toutes les alertes et les expliquant, avec pagination
 require_once __DIR__ . '/../auth/authCheck.php';
 include __DIR__ . '/../style/navbar.php';
 
@@ -8,7 +8,7 @@ $collects= 15;
 $sheet = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($sheet - 1) * $collects;
 
-// get alerts with pagination
+// récupère les alertes avec pagination
 $stmt = $pdo->prepare("
     SELECT * 
     FROM Alertes 
@@ -40,7 +40,7 @@ $alertes = $stmt->fetchAll();
 <body>
     <h1 class="title">Alertes</h1>
     <hr>
-    <!-- explication of alerts and statuses of the UPS -->
+    <!-- explication des alertes et des statuts de l'UPS -->
     <h2>Explication des statuts des onduleurs</h2>
     <p><i>
     L'onduleur génère automatiquement des alertes de statut basées sur les données qu'il collecte.<br>
@@ -57,7 +57,7 @@ $alertes = $stmt->fetchAll();
             </p>
         </div>
 
-        <!-- WARNING -->
+        <!-- AVERTISSEMENT -->
         <div class="card warning-card">
             <h3>Statut d'Attention</h3>
             <p>L'onduleur est en cours d'exploitation mais une attention peut être nécessaire.</p>
@@ -69,7 +69,7 @@ $alertes = $stmt->fetchAll();
             </p>
         </div>
 
-        <!-- CRITICAL -->
+        <!-- CRITIQUE -->
         <div class="card critical-card">
             <h3>Statut Critique</h3>
             <p> Action immédiate requise. Risque de coupure ou de perte d'alimentation.</p>
@@ -104,7 +104,7 @@ $alertes = $stmt->fetchAll();
     <p class="mail-info"><i>Note: Les seuils pour ces alertes peuvent être modifiés dans la page "Modifier les seuils d'alerte" (seulement pour les administrateurs).</i></p>
     <hr>
 
-    <!-- table of alerts with pagination -->
+    <!-- tableau des alertes avec pagination -->
     <h2>Les Alertes</h2>
     <p>Voici le tableau avec toutes les alertes avec <strong>seuils</strong> et quelques statuts critiques d'onduleur <strong>(BYPASS et OFF)</strong>, triés du plus récent au plus ancien.</p>
     <?php if (!empty($alertes)): ?>
@@ -131,27 +131,27 @@ $alertes = $stmt->fetchAll();
         </tbody>
     </table>
     <div class="pagination">
-        <!-- first -->
+        <!-- première page -->
         <?php if ($sheet > 1): ?>
             <a href="?page=1#tableauAlerte">&laquo;&laquo;</a>
         <?php endif; ?>
 
-        <!-- previous -->
+        <!-- page précédente -->
         <?php if ($sheet > 1): ?>
             <a href="?page=<?= $sheet - 1 ?>#tableauAlerte">&laquo;</a>
         <?php endif; ?>
 
-        <!-- current -->
+        <!-- page courante -->
         <span class="current-page">
             Page <?= $sheet ?> / <?= $totalSheet ?>
         </span>
 
-        <!-- next -->
+        <!-- page suivante -->
         <?php if ($sheet < $totalSheet): ?>
             <a href="?page=<?= $sheet + 1 ?>#tableauAlerte">&raquo;</a>
         <?php endif; ?>
 
-        <!-- last -->
+        <!-- dernière page -->
         <?php if ($sheet < $totalSheet): ?>
             <a href="?page=<?= $totalSheet ?>#tableauAlerte">&raquo;&raquo;</a>
         <?php endif; ?>

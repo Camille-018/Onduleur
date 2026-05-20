@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../auth/authCheck.php';
 
 
-// Get UPS list for menu
+// Récupère la liste des onduleurs pour le menu
 $upsListForMenu = $pdo->query("SELECT id, device_model FROM ups ORDER BY device_model")->fetchAll();
 ?>
 
@@ -40,7 +40,7 @@ $upsListForMenu = $pdo->query("SELECT id, device_model FROM ups ORDER BY device_
 </div>
 
 <script>
-// Auto logout script after 10 minutes of inactivity
+// Script de déconnexion automatique après 10 minutes d'inactivité
 const logoutTime = 10 * 60 * 1000;
 let logoutTimer;
 

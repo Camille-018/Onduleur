@@ -1,9 +1,9 @@
 <?php
-//ups.php: details page for a single UPS, showing graphs of battery level and output voltage over time
+// ups.php : page de détails pour un onduleur, affichant des graphiques de niveau de batterie et de tension de sortie
 require_once __DIR__ . '/auth/authCheck.php';
 include __DIR__ . '/style/navbar.php';   
 
-// Get UPS ID from query parameter
+// Récupère l'ID de l'onduleur depuis le paramètre de requête
 $id = (int)($_GET['id'] ?? 0);
 
 $stmt = $pdo->prepare("SELECT * FROM ups WHERE id = ?");
@@ -14,7 +14,7 @@ if (!$ups) {
     die("Onduleur non trouvé");
 }
 
-#retrieve last 50 entries for this UPS
+// récupère les 50 dernières entrées pour cet onduleur
 $stmt = $pdo->prepare("
     SELECT *
     FROM ups_history
@@ -29,7 +29,7 @@ $data = array_reverse($stmt->fetchAll());
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- html: display last values of the battery and the output power for the chosen UPS -->
+    <!-- html : afficher les dernières valeurs de batterie et de puissance de sortie pour l'onduleur choisi -->
      <link rel=stylesheet href="/style/style.css"></link>
     <meta charset="utf-8">
     <title><?= htmlspecialchars($ups['device_model']) ?></title>
@@ -50,7 +50,7 @@ const labels  = <?= json_encode(array_column($data,'timestamp')) ?>;
 const battery = <?= json_encode(array_column($data,'battery_charge')) ?>;
 const voltage = <?= json_encode(array_column($data,'output_voltage')) ?>;
 
-// Graphic configuration - Battery
+// Configuration graphique - Batterie
 new Chart(document.getElementById('batteryChart'), {
     type: 'line',
     data: {
@@ -63,7 +63,7 @@ new Chart(document.getElementById('batteryChart'), {
     },
     options: {
         plugins: {
-            title: { display: false } // we delete the default title (already in h2)
+            title: { display: false } // supprime le titre par défaut (déjà affiché dans le h2)
         },
         scales: {
             y: {
@@ -78,7 +78,7 @@ new Chart(document.getElementById('batteryChart'), {
     }
 });
 
-// Graphics configuration - Voltage
+// Configuration graphique - Tension
 new Chart(document.getElementById('voltageChart'), {
     type: 'line',
     data: {

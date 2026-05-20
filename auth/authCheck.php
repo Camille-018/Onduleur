@@ -1,5 +1,5 @@
 <?php
-// authCheck.php: logout if the person is inactive on the website more than 10 mins + or the the person conencted has an invalid account (i.e: someone got removed from database)
+// authCheck.php : déconnexion si l'utilisateur est inactif sur le site depuis plus de 10 minutes ou si le compte connecté est invalide (par exemple, suppression dans la BDD)
 session_start();
 
 $timeout = 600; // 10 minutes

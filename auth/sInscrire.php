@@ -1,7 +1,7 @@
 <?php
-// sInscrire.php: sign up page, insert user with pending status, send mail to admin for validation
+// sInscrire.php : page d'inscription, insère l'utilisateur avec un statut en attente, envoie un mail à l'admin pour validation
 
-//PHP Mailer is used to send mails
+// PHPMailer est utilisé pour envoyer les mails
 require_once '../config/config.php';
 require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
@@ -13,7 +13,7 @@ use PHPMailer\PHPMailer\Exception;
 $success = "";
 $error = "";
 
-// success message after redirection from validerInscription
+// message de succès après redirection depuis validerInscription
 if (isset($_GET['success'])) {
     $success = "Demande envoyée.";
 }
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mail     = trim($_POST['mail']);
     $password = $_POST['password'];
 
-    // basic validation
+    // validation basique
     if (strlen($username) < 3 || strlen($username) > 50) {
         $error = "L'Utilisateur Invalide (3 < user < 50)";
     } elseif (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
@@ -33,18 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Mot de passe trop court (<8).";
     } else {
 
-        // 1️⃣ Check if username or mail alr exists
+        // 1️⃣ vérifie si le nom d'utilisateur ou l'email existe déjà
         $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR mail = ?");
         $stmt->execute([$username, $mail]);
         if ($stmt->fetch()) {
             echo '<script>alert("Utilisateur ou email déjà existant.");</script>';
             exit;
         } else {
-            // 2️⃣ Everything ok → hash password
+            // 2️⃣ tout est ok → hache le mot de passe
             $role = 'user';
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            // 3️⃣ insert in database with pending status
+            // 3️⃣ insère en base avec le statut en attente
             $stmt = $pdo->prepare("
                 INSERT INTO users (username, password, mail, role, status)
                 VALUES (?, ?, ?, ?, 'pending')
@@ -52,15 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$username, $passwordHash, $mail, $role]);
             $userId = $pdo->lastInsertId();
 
-            // signatures for validation links
-            #### onduleur: local (onduleur = UPS in french)
+            // signatures pour les liens de validation
+            #### onduleur : local (onduleur = UPS en français)
             $signature = hash_hmac('sha256', $userId, SIGNATURE_SECRET);
             $lienAccept = "http://onduleur/auth/validerInscription.php?action=accept&id=$userId&sig=$signature";
             $lienRefuse = "http://onduleur/auth/validerInscription.php?action=refuse&id=$userId&sig=$signature";
             $lienAcceptAdmin = "http://onduleur/auth/validerInscription.php?action=acceptAdmin&id=$userId&sig=$signature";
 
 
-            // 4️⃣ Send mail to 1 admin
+            // 4️⃣ envoie le mail à un admin
             $mailObj = new PHPMailer(true);
             $mailObj->isSMTP();
             $mailObj->Host = MAIL_HOST;
@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mailObj->Port = MAIL_PORT;
 
             $mailObj->setFrom(MAIL_FROM, MAIL_FROM_NAME);
-####################### change mail there -> allow new account ####################### 
+####################### changer l'email ici → autoriser le nouveau compte ####################### 
             $mailObj->addAddress("erzasu45.008@gmail.com");
 ######################################################################################
             $mailObj->isHTML(true);
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             try {
                 $mailObj->send();
-                // redirect with success message (to avoid resending form on refresh)
+                // redirige avec un message de succès (pour éviter le renvoi du formulaire au rafraîchissement)
                 header("Location: sInscrire.php?success=1");
                 exit;
             } catch (Exception $e) {
@@ -112,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- html: Login form -->
+    <!-- html : formulaire d'inscription -->
     <meta charset="UTF-8">
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">

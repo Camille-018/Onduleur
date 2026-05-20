@@ -1,7 +1,7 @@
 <?php
-// validerInscription.php: Page to validate/refuse registration, accessed via email link
+// validerInscription.php : page pour valider/refuser une inscription, accessible via le lien email
 
-//PHP Mailer is used to send mails
+// PHPMailer est utilisé pour envoyer les mails
 require_once '../config/config.php';
 require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
@@ -9,7 +9,7 @@ require_once __DIR__ . '/../PHPMailer/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// get parameters
+// récupère les paramètres
 $action = $_GET['action'] ?? null;
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 if (!$id) die("Invalid ID.");
@@ -19,13 +19,13 @@ if (!$action || !$id || !$sig) {
     die("Requete invalide.");
 }
 
-// check signature (hash)
+// vérifie la signature (hash)
 $expectedSig = hash_hmac('sha256', $id, SIGNATURE_SECRET);
 if (!hash_equals($expectedSig, $sig)) {
     die("Signature invalide.");
 }
 
-// get the user
+// récupère l'utilisateur
 $stmt = $pdo->prepare("
     SELECT * FROM users
     WHERE id = ?
@@ -38,7 +38,7 @@ if (!$user) {
     die("Compte déjà traité ou n'existe pas.");
 }
 
-// decide action (accept/refuse) and update database
+// décide de l'action (accepter/refuser) et met à jour la base
 if ($action === 'accept') {
     $stmt = $pdo->prepare("UPDATE users SET status='active' WHERE id=?");
     $stmt->execute([$user['id']]);
@@ -81,7 +81,7 @@ if ($action === 'accept') {
     die("Action inconnue.");
 }
 
-// 2️⃣ send mail to user about the decision
+// 2️⃣ envoie un mail à l'utilisateur concernant la décision
 $mailUser = new PHPMailer(true);
 $mailUser->isSMTP();
 $mailUser->Host = MAIL_HOST;
@@ -92,8 +92,8 @@ $mailUser->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 $mailUser->Port = MAIL_PORT;
 
 $mailUser->setFrom(MAIL_FROM, MAIL_FROM_NAME);
-$mailUser->addAddress($user['mail']); // mail of user
-$mailUser->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid'); // logo inline
+$mailUser->addAddress($user['mail']); // adresse email de l'utilisateur
+$mailUser->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid'); // logo en ligne
 $mailUser->isHTML(true);
 $mailUser->Subject = $subject;
 $mailUser->Body = mailTemplate($subject, $contentHtml);
@@ -104,7 +104,7 @@ try {
     die("Erreur lors de l'envoi du mail: " . $mailUser->ErrorInfo);
 }
 
-// 3️⃣ popup message and close window (for admin)
+// 3️⃣ affiche une alerte puis ferme la fenêtre (pour l'admin)
 $message = ($action === 'refuse') 
     ? "Demande refusée." 
     : ($action === 'acceptAdmin' ? "Compte activé en tant qu'admin" : "Compte activé avec succès");

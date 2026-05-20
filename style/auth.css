@@ -1,5 +1,5 @@
 /* =========================
-   AUTH PAGE
+   PAGE AUTHENTIFICATION
 ========================= */
 
 body{
@@ -12,7 +12,7 @@ body{
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* container */
+/* conteneur */
 .auth-container{
     background:white;
     padding:35px;
@@ -28,7 +28,7 @@ body{
     margin-bottom:10px;
 }
 
-/* titles */
+/* titres */
 .auth-container h1{
     margin-bottom:5px;
 }
@@ -38,7 +38,7 @@ body{
     font-size:14px;
 }
 
-/* inputs */
+/* champs */
 .auth-container input{
     width:100%;
     padding:10px;
@@ -53,7 +53,7 @@ body{
     outline:none;
 }
 
-/* button */
+/* bouton */
 .auth-container button{
     width:100%;
     padding:10px;
@@ -70,7 +70,7 @@ body{
     background:#357ABD;
 }
 
-/* links */
+/* liens */
 .auth-links{
     margin-top:15px;
     font-size:13px;
@@ -102,7 +102,7 @@ body{
     margin-top:10px;
 }
 
-/* animation fade out */
+/* animation fondu */
 .error, .success {
     transition: opacity 2s ease;
 }

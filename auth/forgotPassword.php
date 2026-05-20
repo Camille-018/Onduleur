@@ -1,7 +1,7 @@
 <?php
-//forgotPassword.php: page to request password reset, check user exists, create token, send mail with reset link
+// forgotPassword.php : page pour demander la réinitialisation de mot de passe, vérifier que l'utilisateur existe, créer le token et envoyer le mail de réinitialisation
 
-//Php Mailer is used to send mails
+// PHPMailer est utilisé pour envoyer les mails
 require_once '../config/config.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -10,7 +10,7 @@ require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require __DIR__ . '/../PHPMailer/src/SMTP.php';
 require __DIR__ . '/../PHPMailer/src/Exception.php';
 
-//Delete used or expired tokens
+// supprime les tokens utilisés ou expirés
 $pdo->exec("DELETE FROM password_resets 
 WHERE expires_at < NOW() OR used_at IS NOT NULL");
 
@@ -19,13 +19,13 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userInput = trim($_POST['username_or_email']);
 
-    // 1️⃣ Check if user exists by username or email
+    // 1️⃣ vérifie si l'utilisateur existe par nom ou email
     $stmt = $pdo->prepare("SELECT id, username, mail FROM users WHERE username = :u OR mail = :u");
     $stmt->execute([':u' => $userInput]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        // 2️⃣ Check if a reset was already requested in the last 5 minutes
+        // 2️⃣ vérifie si une réinitialisation a déjà été demandée dans les 5 dernières minutes
         $stmt = $pdo->prepare("
             SELECT created_at 
             FROM password_resets
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':id' => $user['id']]);
         $lastReset = $stmt->fetch();
 
-        date_default_timezone_set('Europe/Paris'); // UTC+1 (Database)
+        date_default_timezone_set('Europe/Paris'); // UTC+1 (base de données)
         if ($lastReset) {
             $diff = time() - strtotime($lastReset['created_at']);
             if ($diff < 300) { // 5 minutes
@@ -45,17 +45,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // 3️⃣ If no recent reset, create token, store in DB and send mail
+        // 3️⃣ si pas de demande récente, crée le token, l'enregistre en BDD et envoie le mail
         if (empty($errors)) {
             $token = bin2hex(random_bytes(32));
             $tokenHash = password_hash($token, PASSWORD_DEFAULT);
             $expires = date('Y-m-d H:i:s', strtotime('+30 minutes'));
 
-            // Delete any existing resets for this user
+            // supprime les anciennes demandes de réinitialisation pour cet utilisateur
             $stmt = $pdo->prepare("DELETE FROM password_resets WHERE user_id = :id");
             $stmt->execute([':id' => $user['id']]);
 
-            // Create new reset entry
+            // crée une nouvelle entrée de réinitialisation
             $stmt = $pdo->prepare("
                 INSERT INTO password_resets (user_id, token_hash, expires_at)
                 VALUES (:user_id, :token_hash, :expires_at)
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':expires_at' => $expires
             ]);
 
-            // 4️⃣ Send reset email
+            // 4️⃣ envoie l'email de réinitialisation
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- html: form to request a new password (token) -->
+    <!-- html : formulaire pour demander un nouveau mot de passe (token) -->
     <meta charset="UTF-8">
     <link rel="icon" href="/style/images/cereep32.ico" type="image/x-icon">
     <link rel="shortcut icon" href="/style/images/cereep32.ico" type="image/x-icon">

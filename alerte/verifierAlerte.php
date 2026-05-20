@@ -1,7 +1,7 @@
 <?php
-//verifierAlerte.php : check alerts for a collect and insert into Alertes table if needed, then send mail to admins
+// verifierAlerte.php : vérifie les alertes pour une collecte, insère dans la table Alertes si nécessaire, puis envoie un mail aux admins
 
-//PHP Mailer is used to send mails
+// PHPMailer est utilisé pour envoyer les mails
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -11,24 +11,24 @@ require __DIR__ . '/../PHPMailer/src/Exception.php';
 require_once __DIR__ . '/../config/config.php';
 
 /**
- * Check alerts for a collect 
- * Called by collecter.php after each collect
+ * Vérifie les alertes pour une collecte
+ * Appelé par collecter.php après chaque collecte
  */
 function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
 
-    // ===== Get collect =====
+    // ===== Récupère la collecte =====
     $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE id = ?");
     $stmt->execute([$collectId]);
     $d = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$d) return;
 
-    // ===== Load thresholds =====
+    // ===== Charge les seuils =====
     $seuils = json_decode(file_get_contents(__DIR__ . '/../config/config_seuils.json'), true);
     $alertes_a_creer = [];
 
     // =========================================================
-    // 1️⃣ CHECK STATUS UPS (OFF / BYPASS only)
+    // 1️⃣ VÉRIFICATION DU STATUT DE L'UPS (OFF / BYPASS seulement)
     // =========================================================
     $statusList = explode(' ', $d['ups_status']);
 
@@ -51,7 +51,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
     }
 
     // =========================================================
-    // 2️⃣ CHECK thresholds (SEUILS)
+    // 2️⃣ VÉRIFICATION DES SEUILS (SEUILS)
     // =========================================================
 
     if ($d['battery_charge'] < $seuils['batterieFaible']) {
@@ -85,7 +85,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
     }
 
     // =========================================================
-    // 3️⃣ INSERT ALERTS + MAIL
+    // 3️⃣ INSERTION DES ALERTES + MAIL
     // =========================================================
     if (!empty($alertes_a_creer)) {
 
@@ -116,7 +116,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
 
 
 /**
- * Avoid spam: check if an alert of the same type for the same UPS has been created in the last 5 minutes
+ * Evite les spams : vérifie si une alerte du même type pour le même UPS a été créée dans les 5 dernières minutes
  */
 function alerteRecenteExiste(PDO $pdo, int $upsId, string $type): bool {
 
@@ -140,7 +140,7 @@ function alerteRecenteExiste(PDO $pdo, int $upsId, string $type): bool {
 
 
 /**
- * Get admins emails from database
+ * Récupère les adresses email des admins depuis la base de données
  */
 function getMailsAdmins(PDO $pdo) {
     $stmt = $pdo->prepare("
@@ -156,7 +156,7 @@ function getMailsAdmins(PDO $pdo) {
 
 
 /**
- * Send alert email to admins
+ * Envoie un email d'alerte aux admins
  */
 function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $pdo) {
 

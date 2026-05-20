@@ -1,5 +1,5 @@
 <?php
-// valeurSpecifique.php : filter collects depending on specific value(s)
+// valeurSpecifique.php : filtre les collectes selon une ou plusieurs valeurs spécifiques
 require_once __DIR__ . '/../auth/authCheck.php';
 include __DIR__ . '/../style/navbar.php';   
 
@@ -11,7 +11,7 @@ $sheet = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($sheet - 1) * $collects;
 
 // ----------------------------
-// Get filters values
+// récupère les valeurs des filtres
 // ----------------------------
 $colonnes   = $_GET['colonne'] ?? [];
 $valeurs    = $_GET['valeur'] ?? [];
@@ -23,7 +23,7 @@ if (!is_array($colonnes)) $colonnes = [$colonnes];
 if (!is_array($valeurs)) $valeurs = [$valeurs];
 
 // ----------------------------
-// Prepare the SQL query
+// prépare la requête SQL
 // ----------------------------
 $where  = [];
 $params = [];
@@ -76,7 +76,7 @@ $sheet = min($sheet, $totalSheet ?: 1);
 $offset = ($sheet - 1) * $collects;
 
 // ----------------------------
-// Main Query
+// requête principale
 // ----------------------------
 $sql = "SELECT * FROM ups_history";
 if ($where) $sql .= " WHERE " . implode(" AND ", $where);
@@ -84,9 +84,9 @@ $sql .= " ORDER BY timestamp DESC LIMIT :limit OFFSET :offset";
 
 $stmt = $pdo->prepare($sql);
 
-// Bind of parameters
+// liaison des paramètres
 foreach ($params as $k => $v) {
-    $stmt->bindValue($k, $v); // cast automatically done by MySQL
+    $stmt->bindValue($k, $v); // conversion automatique gérée par MySQL
 }
 $stmt->bindValue(':limit', $collects, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -108,7 +108,7 @@ $historique = $stmt->fetchAll();
 <body>
 <h1>Onduleur - Résultat du Filtre</h1>
 
-<!-- display filters -->
+<!-- affiche les filtres -->
 <?php if (!empty($colonnes)): ?>
 <h3>Filtres appliqués :</h3>
 <ul>
@@ -138,7 +138,7 @@ $historique = $stmt->fetchAll();
 </ul>
 <?php endif; ?>
 
-<!-- display results -->
+<!-- affiche les résultats -->
 <?php if (!empty($historique)): ?>
 <table>
     <thead>

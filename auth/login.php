@@ -1,15 +1,15 @@
 <?php
-// login.php: Login page, check credentials, set session
+// login.php : page de connexion, vérifie les identifiants et initialise la session
 session_start();
 require_once "../config/config.php";
 
-// show success message after password reset request
+// affiche un message de succès après la demande de réinitialisation de mot de passe
 $error = "";
 if (isset($_GET['reset'])) {
     echo "<script>alert('Si le compte existe, un email de réinitialisation a été envoyé.');</script>";
 }
 
-// verify if user and password are correct
+// vérifie si l'utilisateur et le mot de passe sont corrects
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = $_POST["username"] ?? "";
     $password = $_POST["password"] ?? "";
@@ -41,7 +41,7 @@ else {
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- html: form to login -->
+    <!-- html : formulaire de connexion -->
     <meta charset="utf-8">
     <link rel="icon" href="../style/images/cereep32.ico">
     <link rel="stylesheet" href="../style/auth.css">

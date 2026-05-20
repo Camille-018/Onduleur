@@ -1,14 +1,14 @@
 <?php
-// historique.php - web page to display the history of collects from the UPS
+// historique.php : page web affichant l'historique des collectes de l'UPS
 require_once __DIR__ . '/../auth/authCheck.php';
 include __DIR__ . '/../style/navbar.php';   
 
-// pagination (15 collects per page)
+// pagination (15 collectes par page)
 $collects = 15;
 $sheet = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
 $offset = ($sheet - 1) * $collects;
 
-// get the collects for the current page
+// récupère les collectes pour la page courante
 $stmt = $pdo->prepare("
     SELECT * 
     FROM ups_history 
@@ -19,7 +19,7 @@ $stmt->bindValue(':limit', $collects, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 
-// Get total collects for pagination
+// récupère le nombre total de collectes pour la pagination
 $totalStmt = $pdo->query("SELECT COUNT(*) FROM ups_history");
 $total = $totalStmt->fetchColumn();
 $totalSheet = ceil($total / $collects);
@@ -40,7 +40,7 @@ $historique = $stmt->fetchAll();
 <body>
     <h1>Historique des Collectes</h1>
     <br><hr>
-    <!-- Form to filter by specific value -->
+    <!-- Formulaire de filtre par valeur spécifique -->
     <h2>Filtrer par une valeur spécifique</h2>
     <form action="valeurSpecifique.php" method="GET">
         <div id="filters">
@@ -56,7 +56,7 @@ $historique = $stmt->fetchAll();
                     <option value="ups_status">Status de l'Onduleur</option>
                 </select>
 
-                <!-- drop-down menu for the operator -->
+                <!-- menu déroulant pour l'opérateur -->
                 <select name="operateur[]">
                     <option value="=">=</option>
                     <option value=">">&gt;</option>
@@ -68,7 +68,7 @@ $historique = $stmt->fetchAll();
             </div>
         </div>
 
-        <!-- Add/Remove/Apply filter -->
+        <!-- Ajouter/Supprimer/Appliquer le filtre -->
         <div class="filter-actions">
             <button type="button" onclick="addFilter()">+ Ajouter</button>
             <button type="button" onclick="removeLastFilter()">- Retirer</button>
@@ -77,7 +77,7 @@ $historique = $stmt->fetchAll();
     </form>
 
     <script>
-        // JavaScript to add more filter rows
+        // JavaScript pour ajouter des lignes de filtre
         function addFilter() {
             const container = document.getElementById('filters');
             const currentFilters = container.querySelectorAll('.filter-row').length;
@@ -90,7 +90,7 @@ $historique = $stmt->fetchAll();
             container.appendChild(row);
         }
 
-        // JavaScript to remove filter 
+        // JavaScript pour supprimer un filtre
         function removeLastFilter() {
             const container = document.getElementById('filters');
             const rows = container.querySelectorAll('.filter-row');
@@ -101,23 +101,23 @@ $historique = $stmt->fetchAll();
             }
         }
 
-        // for between
+        // pour l'opérateur between
         document.addEventListener("change", function(e) {
             if (e.target.name === "operateur[]") {
                 const row = e.target.closest('.filter-row');
-                // Remove old BETWEEN fields
+                // supprime les anciens champs BETWEEN
                 row.querySelectorAll('.between').forEach(el => el.remove());
                 const inputNormal = row.querySelector('input[name="valeur[]"]');
                 if (e.target.value === "between") {
-                    //  Hide normal field ("valeur")
+                    // masque le champ normal ("valeur")
                     inputNormal.style.display = "none";
-                    // input min
+                    // champ min
                     const min = document.createElement("input");
                     min.type = "text";
                     min.name = "valeur_min[]";
                     min.placeholder = "min";
                     min.classList.add("between");
-                    // input max
+                    // champ max
                     const max = document.createElement("input");
                     max.type = "text";
                     max.name = "valeur_max[]";
@@ -126,7 +126,7 @@ $historique = $stmt->fetchAll();
                     row.appendChild(min);
                     row.appendChild(max);
                 } else {
-                    // Show normal field ("valeur")
+                    // affiche le champ normal ("valeur")
                     inputNormal.style.display = "inline";
                 }
             }
@@ -135,7 +135,7 @@ $historique = $stmt->fetchAll();
     <br>
     <hr>
 
-<!-- All collects (with a table) -->
+<!-- Toutes les collectes (avec tableau) -->
  <h2>Collectes Récentes</h2>
  <p>Voici le tableau avec toutes les collectes enregistrées par l'Onduleur, triées de la plus récente à la plus ancienne.</p>
     <table id="tableauHistorique">
@@ -169,27 +169,27 @@ $historique = $stmt->fetchAll();
         </tbody>
     </table>
     <div class="pagination">
-        <!-- first page -->
+        <!-- première page -->
         <?php if ($sheet > 1): ?>
             <a href="?page=1#tableauHistorique">&laquo;&laquo;</a>
         <?php endif; ?>
 
-        <!-- previous page -->
+        <!-- page précédente -->
         <?php if ($sheet > 1): ?>
             <a href="?page=<?= $sheet - 1 ?>#tableauHistorique">&laquo;</a>
         <?php endif; ?>
 
-        <!-- current page -->
+        <!-- page courante -->
         <span class="current-page">
             Page <?= $sheet ?> / <?= $totalSheet ?>
         </span>
 
-        <!-- next page-->
+        <!-- page suivante -->
         <?php if ($sheet < $totalSheet): ?>
             <a href="?page=<?= $sheet + 1 ?>#tableauHistorique">&raquo;</a>
         <?php endif; ?>
 
-        <!-- last page-->
+        <!-- dernière page -->
         <?php if ($sheet < $totalSheet): ?>
             <a href="?page=<?= $totalSheet ?>#tableauHistorique">&raquo;&raquo;</a>
         <?php endif; ?>

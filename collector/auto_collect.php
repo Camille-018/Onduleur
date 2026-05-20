@@ -1,19 +1,19 @@
 <?php
-//auto_collect.php : collect automatically UPS data every 2 seconds, insert into database, and check for alerts
+// auto_collect.php : collecte automatiquement les données UPS toutes les 2 secondes, les insère en base et vérifie les alertes
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../alerte/verifieralerte.php';
 
 $API_BASE = "http://192.168.66.20:5000/api/ups";
-$loopDelay = 2; // seconds
+$loopDelay = 2; // secondes
 
-// Table to track last insert time for each UPS to avoid flooding the database
+// Tableau pour suivre le dernier horaire d'insertion de chaque UPS afin d'éviter de saturer la base
 $lastInsertTime = [];
 $lastValues = [];
 echo "=== AUTO COLLECT STARTED ".date("Y-m-d H:i:s")." ===\n";
 
 while (true) {
 
-    // ===== UPS LIST =====
+    // ===== LISTE DES UPS =====
     $json = @file_get_contents($API_BASE);
     if (!$json) {
         echo date("H:i:s") . " | API injoignable\n";
@@ -30,7 +30,7 @@ while (true) {
 
     foreach ($api['ups'] as $upsName) {
 
-        // ===== UPS DETAILS =====
+        // ===== DÉTAILS DE L'UPS =====
         $detailJson = @file_get_contents("$API_BASE/$upsName");
         if (!$detailJson) {
             echo date("H:i:s") . " | $upsName injoignable\n";
@@ -43,7 +43,7 @@ while (true) {
             continue;
         }
 
-        // ===== STATUS =====
+        // ===== STATUT =====
         $statusRaw = $data['ups.status'] ?? 'UNKNOWN';
         $statusList = explode(' ', $statusRaw);
 
@@ -72,7 +72,7 @@ while (true) {
         $ups = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$ups) {
-            // 🔹 New UPS detected → automatic insertion
+            // 🔹 Nouvel UPS détecté → insertion automatique
             $stmt = $pdo->prepare("
                 INSERT INTO ups (device_serial, device_model)
                 VALUES (?, ?)
@@ -93,15 +93,15 @@ while (true) {
             $lastInsertTime[$upsId] = 0;
         }
 
-        // ===== DATA =====
+        // ===== DONNÉES =====
         $batteryCharge   = $data['battery.charge'] ?? null;
         $batteryRuntime = $data['battery.runtime'] ?? null;
         $inputVoltage   = $data['input.voltage'] ?? null;
         $outputVoltage  = $data['output.voltage'] ?? null;
         $upsLoad        = $data['ups.load'] ?? null;
 
-        // ===== INSERT =====
-// ===== CHECK CHANGES =====
+        // ===== INSERTION =====
+// ===== VÉRIFICATION DES CHANGEMENTS =====
 $currentValues = [
     'battery_charge'  => $batteryCharge,
     'battery_runtime' => $batteryRuntime,
@@ -113,10 +113,10 @@ $currentValues = [
 
 $hasChanged = !isset($lastValues[$upsId]) || $lastValues[$upsId] != $currentValues;
 
-        // insert if:
-        // - critical state
-        // - value changed
-        // - no change for 1 hour
+        // insertion si :
+        // - état critique
+        // - valeur modifiée
+        // - aucune modification depuis 1 heure
         if (
             $isCritical ||
             $hasChanged ||
