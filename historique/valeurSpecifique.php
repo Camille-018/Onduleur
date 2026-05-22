@@ -107,7 +107,8 @@ $historique = $stmt->fetchAll();
 </head>
 <body>
 <h1>Onduleur - Résultat du Filtre</h1>
-
+<a href="historique.php">⬅ Retour à l’historique</a>
+    
 <!-- display filters -->
 <?php if (!empty($colonnes)): ?>
 <h3>Filtres appliqués :</h3>
