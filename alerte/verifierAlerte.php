@@ -1,7 +1,7 @@
 <?php
-//verifierAlerte.php : check alerts for a collect and insert into Alertes table if needed, then send mail to admins
+// verifierAlerte.php: checks for alerts for a collection, inserts them into the Alerts table if necessary, then sends an email to the admins
 
-//PHP Mailer is used to send mails
+// PHPMailer is used to send emails
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -11,12 +11,12 @@ require __DIR__ . '/../PHPMailer/src/Exception.php';
 require_once __DIR__ . '/../config/config.php';
 
 /**
- * Check alerts for a collect 
- * Called by collecter.php after each collect
+ * Checks for alerts related to a collection
+ * Called by auto_collect.php after each collection (in /collector)
  */
 function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
 
-    // ===== Get collect =====
+    // ===== Retrieve the collect =====
     $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE id = ?");
     $stmt->execute([$collectId]);
     $d = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,7 +28,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
     $alertes_a_creer = [];
 
     // =========================================================
-    // 1️⃣ CHECK STATUS UPS (OFF / BYPASS only)
+    // 1️⃣ CHECK THE UPS STATUS (OFF / BYPASS only)
     // =========================================================
     $statusList = explode(' ', $d['ups_status']);
 
@@ -39,6 +39,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
                 'Message' => "Onduleur éteint (OFF)"
             ];
         }
+        return; // If the UPS is off, the other alerts are not checked
     }
 
     if (in_array('BYPASS', $statusList)) {
@@ -51,7 +52,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
     }
 
     // =========================================================
-    // 2️⃣ CHECK thresholds (SEUILS)
+    // 2️⃣ THRESHOLD CHECK (THRESHOLDS)
     // =========================================================
 
     if ($d['battery_charge'] < $seuils['batterieFaible']) {
@@ -72,9 +73,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         }
     }
 
-    if (
-        !in_array('OL OFF', $statusList) &&
-        $d['output_voltage'] < $seuils['coupure']) 
+    if ($d['output_voltage'] < $seuils['coupure']) 
     {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'coupure')) {
             $alertes_a_creer[] = [
@@ -85,7 +84,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
     }
 
     // =========================================================
-    // 3️⃣ INSERT ALERTS + MAIL
+    // 3️⃣ ADDING ALERTS + EMAIL
     // =========================================================
     if (!empty($alertes_a_creer)) {
 
@@ -140,7 +139,7 @@ function alerteRecenteExiste(PDO $pdo, int $upsId, string $type): bool {
 
 
 /**
- * Get admins emails from database
+ * Retrieve the admins' email addresses from the database
  */
 function getMailsAdmins(PDO $pdo) {
     $stmt = $pdo->prepare("
@@ -156,7 +155,7 @@ function getMailsAdmins(PDO $pdo) {
 
 
 /**
- * Send alert email to admins
+ * Send an alert email to the admins
  */
 function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $pdo) {
 
@@ -204,4 +203,3 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         return "Erreur mail: {$mail->ErrorInfo}";
     }
 }
-
