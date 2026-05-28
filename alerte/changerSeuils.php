@@ -1,14 +1,14 @@
-<!-- changerSeuils.php: admin only
-1) check if the user is admin
-2) form to change the thresholds
-3) compare old and new thresholds to display a message of what has changed
-4) save the new thresholds in a json file (config/config_seuils.json)--> 
+<!-- changerSeuils.php: for admins only
+1) Check that the user is an admin
+2) Display the threshold editing form
+3) Compare the old and new thresholds to display a message about the changes
+4) Save the new thresholds to the JSON file (config/config_seuils.json)--> 
 
 <?php
 require_once __DIR__ . '/../auth/authCheck.php';
 include __DIR__ . '/../style/navbar.php';
 
-// 1 - check if the user is admin
+// 1 - check if the user is an admin
 if ($_SESSION['role'] !== 'admin') {
     echo "<script>
             alert('Accès refusé : seuls les admins peuvent changer les seuils.');
@@ -17,29 +17,33 @@ if ($_SESSION['role'] !== 'admin') {
     exit;
 }
 
-// 2 - form to change the thresholds
+// 2 - Threshold modification form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    //  thresholds perviously saved in json file (or default values if file doesn't exist)
+    // thresholds previously saved in the JSON file (or default values if the file does not exist)
     $anciensSeuils = file_exists('../config/config_seuils.json')
         ? json_decode(file_get_contents('../config/config_seuils.json'), true)
-        : [
-            'batterieFaible' => 15,
-            'surcharge' => 5.0,
-            'coupure' => 0.5
-        ];
+        : null;
 
-    // new thresholds from form
+    if (!is_array($anciensSeuils)) {
+        $anciensSeuils = [
+            'batterieFaible' => 15,
+            'surcharge' => 240,
+            'coupure' => 0
+        ];
+    }
+
+    // new thresholds from the form
     $nouveauxSeuils = [
         'batterieFaible' => floatval($_POST['batterieFaible']),
         'surcharge'      => floatval($_POST['surcharge']),
         'coupure'        => floatval($_POST['coupure'])
     ];
 
-    // save new thresholds in json file
+    //  Save the new thresholds to the JSON file
     file_put_contents('../config/config_seuils.json', json_encode($nouveauxSeuils));
 
-    // compare old and new thresholds to display a message of what has changed
+    // compare the old and new thresholds to view the details of the changes
     $changements = [];
     foreach ($nouveauxSeuils as $cle => $valeur) {
         if ($anciensSeuils[$cle] != $valeur) {
@@ -47,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // message to display 
+    // message to display
     if ($changements) {
         $_SESSION['message_seuils'] = "<u>Seuils modifiés :</u><br>" . implode('<br>', $changements);
     } else {
@@ -57,9 +61,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// load current thresholds to display in form
+// loads the current thresholds and displays them in the form
 if (file_exists('../config/config_seuils.json')) {
     $seuils = json_decode(file_get_contents('../config/config_seuils.json'), true);
+    if (!is_array($seuils)) {
+        $seuils = [
+            'batterieFaible' => 15,
+            'surcharge'      => 240,
+            'coupure'        => 0
+        ];
+    }
 } else {
     $seuils = [
         'batterieFaible' => 15,
@@ -68,7 +79,7 @@ if (file_exists('../config/config_seuils.json')) {
     ];
 }
 
-// message to display after form submission
+// message to display after the form is submitted
 $message = $_SESSION['message_seuils'] ?? '';
 unset($_SESSION['message_seuils']);
 ?>
@@ -87,7 +98,7 @@ unset($_SESSION['message_seuils']);
 <body>
     <h1>Modifier les seuils d'alerte</h1>
 
-    <!-- form to change thresholds with current values pre-filled and a message to display after form submission -->
+     <!-- Form for editing thresholds with current values pre-filled and a message displayed after submission -->
     <h2>Changer les seuils</h2>
     <form method="post">
          <label for="batterieFaible">Batterie faible <i>(% trop bas)</i>:</label>
