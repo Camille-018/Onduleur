@@ -3,12 +3,20 @@
 require_once __DIR__ . '/../auth/authCheck.php';
 include __DIR__ . '/../style/navbar.php';   
 
-// pagination (15 collectes par page)
+// pagination
 $collects = 15;
 $sheet = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+// total d'abord
+$totalStmt = $pdo->query("SELECT COUNT(*) FROM ups_history");
+$total = $totalStmt->fetchColumn();
+$totalSheet = ceil($total / $collects);
+
+// correction page hors limite
+$sheet = min($sheet, $totalSheet ?: 1);
 $offset = ($sheet - 1) * $collects;
 
-// récupère les collectes pour la page courante
+// requête principale
 $stmt = $pdo->prepare("
     SELECT * 
     FROM ups_history 
@@ -18,13 +26,6 @@ $stmt = $pdo->prepare("
 $stmt->bindValue(':limit', $collects, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
-
-// récupère le nombre total de collectes pour la pagination
-$totalStmt = $pdo->query("SELECT COUNT(*) FROM ups_history");
-$total = $totalStmt->fetchColumn();
-$totalSheet = ceil($total / $collects);
-$final = min($sheet, $totalSheet ?: 1);
-
 $historique = $stmt->fetchAll();
 ?>
 
@@ -166,6 +167,11 @@ $historique = $stmt->fetchAll();
                 <td><?= $row['timestamp'] ?></td>
             </tr>
             <?php endforeach; ?>
+            <?php if (empty($historique)): ?>
+                <tr>
+                    <td colspan="9" style="text-align:center;">Aucune donnée disponible.</td>
+                </tr>
+            <?php endif; ?>
         </tbody>
     </table>
     <div class="pagination">

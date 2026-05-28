@@ -23,11 +23,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // seuils précédemment enregistrés dans le fichier JSON (ou valeurs par défaut si le fichier n'existe pas)
     $anciensSeuils = file_exists('../config/config_seuils.json')
         ? json_decode(file_get_contents('../config/config_seuils.json'), true)
-        : [
+        : null;
+
+    if (!is_array($anciensSeuils)) {
+        $anciensSeuils = [
             'batterieFaible' => 15,
-            'surcharge' => 5.0,
-            'coupure' => 0.5
+            'surcharge' => 240,
+            'coupure' => 0
         ];
+    }
 
     // nouveaux seuils depuis le formulaire
     $nouveauxSeuils = [
@@ -60,6 +64,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // charge les seuils actuels pour les afficher dans le formulaire
 if (file_exists('../config/config_seuils.json')) {
     $seuils = json_decode(file_get_contents('../config/config_seuils.json'), true);
+    if (!is_array($seuils)) {
+        $seuils = [
+            'batterieFaible' => 15,
+            'surcharge'      => 240,
+            'coupure'        => 0
+        ];
+    }
 } else {
     $seuils = [
         'batterieFaible' => 15,

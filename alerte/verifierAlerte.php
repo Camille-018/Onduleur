@@ -39,6 +39,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
                 'Message' => "Onduleur éteint (OFF)"
             ];
         }
+        return; // Si l'onduleur est éteint, on ne vérifie pas les autres alertes
     }
 
     if (in_array('BYPASS', $statusList)) {
@@ -72,9 +73,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
         }
     }
 
-    if (
-        !in_array('OL OFF', $statusList) &&
-        $d['output_voltage'] < $seuils['coupure']) 
+    if ($d['output_voltage'] < $seuils['coupure']) 
     {
         if (!alerteRecenteExiste($pdo, $d['ups_id'], 'coupure')) {
             $alertes_a_creer[] = [
