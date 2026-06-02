@@ -313,3 +313,118 @@ tbody tr:nth-child(odd) {
     display: flex;
     gap: 10px;
 }
+.order-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+.order-label {
+    font-weight: bold;
+}
+.order-select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+.management-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+.management-table thead {
+    background: #f0f4f8;
+}
+.management-table th,
+.management-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+.management-table tr:hover {
+    background: #f9f9f9;
+}
+.status-active {
+    color: #27ae60;
+    font-weight: bold;
+}
+.status-pending {
+    color: #f39c12;
+    font-weight: bold;
+}
+.status-refused {
+    color: #c0392b;
+    font-weight: bold;
+}
+.role-admin {
+    color: #c0392b;
+}
+.role-user {
+    color: #2980b9;
+}
+.edit-form {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.edit-form select {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.edit-form button {
+    background: #27ae60;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.edit-form button:hover {
+    background: #229954;
+}
+.action-group {
+    display: flex;
+    gap: 8px;
+}
+.inline-form {
+    display: inline;
+}
+.action-button {
+    background: #c0392b;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+.action-button:hover {
+    opacity: 0.95;
+}
+.manager-label {
+    display: inline-block;
+    background: #f39c12;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.manager-actions {
+    color: #7d6608;
+    font-weight: bold;
+}
+.success {
+    background: #e8f8f5;
+    color: #27ae60;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+.section-title {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #4a90e2;
+}

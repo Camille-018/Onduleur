@@ -71,8 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mailObj->Port = MAIL_PORT;
 
             $mailObj->setFrom(MAIL_FROM, MAIL_FROM_NAME);
-####################### changer l'email ici → autoriser le nouveau compte ####################### 
-            $mailObj->addAddress("erzasu45.008@gmail.com");
+####################### aller dans config/config.php ################################# 
+            $mailObj->addAddress(GESTIONNAIRE_EMAIL);
 ######################################################################################
             $mailObj->isHTML(true);
             $contentHtml = "

@@ -35,11 +35,12 @@ Fonctionnalités principales :
 - Types : surcharge, batterie faible, coupure, OFF, Bypass  
 
 ### 4. Gestion des utilisateurs
-- Rôles : `admin`, `technicien`, `guest`  
+- Rôles : `admin`, `user`  
 - Status : `pending`, `active`, `refused`  
 - Authentification sécurisée  
 - MDP oublié : token limité dans le temps, vérification `used_at` et `expires_at`  
-- Auto logout après 10 minutes d’inactivité  
+- Auto logout après 10 minutes d'inactivité  
+- Page de gestion (`gerant/gestion.php`) : réservée au gestionnaire pour valider/refuser inscriptions et modifier rôles
 
 ---
 
@@ -62,7 +63,11 @@ _PROJET/
 │   ├── logout.php
 │   ├── sInscrire.php
 │   ├── forgotPassword.php
+│   ├── validerInscription.php
 │   └── authCheck.php
+│
+├── gerant/                # Gestion des utilisateurs
+│   └── gestion.php        # Validation inscriptions, modification rôles
 │
 ├── BDD/                   # Base de données
 │   ├── script SQL.sql
@@ -116,7 +121,7 @@ Tables principales :
 ## 🚨 Alertes et emails
 
 - Alertes définies par seuils (`config/config_seuils.json`)  
-- Emails envoyés aux admins et techniciens  
+- Emails envoyés aux admins uniquement  
 - PHPMailer avec logo intégré  
 - Vérification anti-doublons : un seul mail par collecte  
 
@@ -146,6 +151,6 @@ Tables principales :
 | Étudiant | Rôle |
 |----------|------|
 | Hélène   | Raspberry Pi, collecte de données |
-| Quentin  | API / Interface Web, Dashboard, gestion utilisateurs  |
-| Camille  | Site web historique, alertes |
+| Quentin  | API / Interface Web, Dashboard, gestion multi-onduleurs  |
+| Camille  | Site web: historique, alertes, authentification |
 
