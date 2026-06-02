@@ -1,5 +1,5 @@
 /* =========================
-   RÉINITIALISATION & BASE
+   RESET & BASE
 ========================= */
 * {
     box-sizing: border-box;
@@ -32,7 +32,7 @@ a:hover:not(.card)  {
 
 
 /* =========================
-   GRILLE / MISE EN PAGE
+   GRID / LAYOUT
 ========================= */
 .grid {
     display: grid;
@@ -42,7 +42,7 @@ a:hover:not(.card)  {
 }
 
 /* =========================
-   CARTES
+   CARDS
 ========================= */
 .card {
     background: #fff;
@@ -64,7 +64,7 @@ a:hover:not(.card)  {
     text-align: center;
 }
 
-/* statut visuel des cartes (alertes) */
+/* Visual status of cards (alerts) */
 .normal-card {
     border: 2px solid #2ecc71;
     background-color: #e8f8f5;
@@ -81,7 +81,7 @@ a:hover:not(.card)  {
 }
 
 /* =========================
-   TABLEAUX
+   TABLES
 ========================= */
 table {
     border: 2px solid #1b1f23;
@@ -116,7 +116,7 @@ tbody tr:nth-child(odd) {
 }
 
 /* =========================
-   BADGES DE STATUT
+   STATUS BADGES
 ========================= */
 .status {
     padding: 6px 12px;
@@ -136,7 +136,7 @@ tbody tr:nth-child(odd) {
 .grey   { background-color: #7f8c8d; }
 
 /* =========================
-   MESSAGE D'INFO
+   INFO MESSAGE
 ========================= */
 .mail-info {
     margin-top: 10px;
@@ -149,7 +149,7 @@ tbody tr:nth-child(odd) {
 }
 
 /* =========================
-   FORMULAIRE DE CONNEXION
+   LOGIN FORM
 ========================= */
 .login form {
     width: 300px;
@@ -202,7 +202,7 @@ tbody tr:nth-child(odd) {
 }
 
 /* =========================
-   EN-TÊTE / BARRE HAUTE
+   HEADER / TOP BAR
 ========================= */
 .top-bar{
     display:flex;
@@ -263,7 +263,7 @@ tbody tr:nth-child(odd) {
     color: #ffffff !important;
 }
 
-/* menu déroulant */
+/* Dropdown menu */
 .dropdown {
   position: relative;
   display: inline-block;
@@ -307,7 +307,7 @@ tbody tr:nth-child(odd) {
   color: #00a8ff;
 }
 
-/* filtre */
+/* Filter */
 .filter-actions {
     margin-top: 10px;
     display: flex;
