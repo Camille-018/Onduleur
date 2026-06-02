@@ -3,10 +3,12 @@
 require_once __DIR__ . '/../auth/authCheck.php';
 include __DIR__ . '/../style/navbar.php';
 
-// Verify that the user is the manager
-if ($_SESSION['mail'] !== GESTIONNAIRE_EMAIL) {
+// Verify that the user is the manager or an admin
+$sessionMail = strtolower(trim($_SESSION['mail'] ?? ''));
+$managerMail = strtolower(trim(GESTIONNAIRE_EMAIL));
+if ($sessionMail !== $managerMail && ($_SESSION['role'] ?? '') !== 'admin') {
     echo "<script>
-            alert('Accès refusé : seuls les gestionnaires peuvent accéder à cette page.');
+            alert('Accès refusé : seuls les gestionnaires ou admins peuvent accéder à cette page.');
             window.location.href = '../index.php';
           </script>";
     exit;
@@ -166,6 +168,7 @@ unset($_SESSION['message']);
 </head>
 <body>
     <h1 class="title">Gestion des Utilisateurs</h1>
+    <p class="note">Note: Pensez à cliquer sur "Mettre à jour" les informations des utilisateurs pour les enregistrer.</p>
     <hr>
 
     <?php if ($message): ?>
