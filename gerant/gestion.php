@@ -1,38 +1,40 @@
 <?php
-// management.php: user management page reserved for the manager
+// gestion.php : page de gestion des utilisateurs réservée au gestionnaire
 require_once __DIR__ . '/../auth/authCheck.php';
 include __DIR__ . '/../style/navbar.php';
 
-// Verify that the user is the manager
-if ($_SESSION['mail'] !== GESTIONNAIRE_EMAIL) {
+// Vérifie que l'utilisateur est le gestionnaire ou un admin
+$sessionMail = strtolower(trim($_SESSION['mail'] ?? ''));
+$managerMail = strtolower(trim(GESTIONNAIRE_EMAIL));
+if ($sessionMail !== $managerMail && ($_SESSION['role'] ?? '') !== 'admin') {
     echo "<script>
-            alert('Accès refusé : seuls les gestionnaires peuvent accéder à cette page.');
+            alert('Accès refusé : seuls les gestionnaires ou admins peuvent accéder à cette page.');
             window.location.href = '../index.php';
           </script>";
     exit;
 }
 
-// Process role and status modifications
+// Traite les modifications de rôle et de statut
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = (int)$_POST['user_id'] ?? 0;
     $action = $_POST['action'] ?? '';
 
     if ($action === 'refuse') {
-        // Mark the user as refused
+        // Marque l'utilisateur comme refusé
         $stmt = $pdo->prepare("UPDATE users SET status = 'refused' WHERE id = :id");
         $stmt->execute([':id' => $userId]);
         $_SESSION['message'] = "Utilisateur marqué comme refusé.";
         header('Location: gestion.php?order=' . urlencode($_GET['order'] ?? 'default'));
         exit;
     } elseif ($action === 'reactivate') {
-        // Reactivate the user (set to pending)
+        // Réactive l'utilisateur (passe en attente)
         $stmt = $pdo->prepare("UPDATE users SET status = 'pending' WHERE id = :id");
         $stmt->execute([':id' => $userId]);
         $_SESSION['message'] = "Utilisateur réactivé.";
         header('Location: gestion.php?order=' . urlencode($_GET['order'] ?? 'default'));
         exit;
     } else {
-        // Modify the role and status
+        // Modifie le rôle et le statut
         $newRole = $_POST['new_role'] ?? '';
         $newStatus = $_POST['new_status'] ?? '';
 
@@ -50,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Retrieve order and pagination parameters
+// Récupère les paramètres d'ordre et de pagination
 $order = $_GET['order'] ?? 'default';
 $validOrders = ['default', 'refused', 'pending', 'admin', 'user'];
 if (!in_array($order, $validOrders, true)) {
@@ -63,15 +65,15 @@ $pendingPage = isset($_GET['pending_page']) ? max(1, (int)$_GET['pending_page'])
 $adminPage = isset($_GET['admin_page']) ? max(1, (int)$_GET['admin_page']) : 1;
 $userPage = isset($_GET['user_page']) ? max(1, (int)$_GET['user_page']) : 1;
 
-// Count refused users
+// Compte les utilisateurs refusés
 $refusedCountStmt = $pdo->query("SELECT COUNT(*) FROM users WHERE status = 'refused'");
 $refusedCount = $refusedCountStmt->fetchColumn();
 
-// Count pending users
+// Compte les utilisateurs en attente
 $pendingCountStmt = $pdo->query("SELECT COUNT(*) FROM users WHERE status = 'pending'");
 $pendingCount = $pendingCountStmt->fetchColumn();
 
-// Count administrators and users
+// Compte les administrateurs et les utilisateurs actifs
 $adminsCountStmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'admin' AND status NOT IN ('pending', 'refused')");
 $adminsCount = $adminsCountStmt->fetchColumn();
 $usersCountStmt = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 'user' AND status NOT IN ('pending', 'refused')");
@@ -92,7 +94,7 @@ $pendingOffset = ($pendingPage - 1) * $itemsPerPage;
 $adminOffset = ($adminPage - 1) * $itemsPerPage;
 $userOffset = ($userPage - 1) * $itemsPerPage;
 
-// Retrieve refused users
+// Récupère les utilisateurs refusés
 $refusedStmt = $pdo->prepare("
     SELECT * FROM users 
     WHERE status = 'refused'
@@ -104,7 +106,7 @@ $refusedStmt->bindValue(':offset', $refusedOffset, PDO::PARAM_INT);
 $refusedStmt->execute();
 $refuseds = $refusedStmt->fetchAll();
 
-// Retrieve pending users
+// Récupère les utilisateurs en attente
 $pendingStmt = $pdo->prepare("
     SELECT * FROM users 
     WHERE status = 'pending'
@@ -116,7 +118,7 @@ $pendingStmt->bindValue(':offset', $pendingOffset, PDO::PARAM_INT);
 $pendingStmt->execute();
 $pendings = $pendingStmt->fetchAll();
 
-// Retrieve administrators
+// Récupère les administrateurs
 $adminsStmt = $pdo->prepare("
     SELECT * FROM users 
     WHERE role = 'admin' AND status NOT IN ('pending', 'refused')
@@ -128,7 +130,7 @@ $adminsStmt->bindValue(':offset', $adminOffset, PDO::PARAM_INT);
 $adminsStmt->execute();
 $admins = $adminsStmt->fetchAll();
 
-// Retrieve users
+// Récupère les utilisateurs
 $usersStmt = $pdo->prepare("
     SELECT * FROM users 
     WHERE role = 'user' AND status NOT IN ('pending', 'refused')
@@ -149,7 +151,7 @@ $sectionOrders = [
 ];
 $sectionOrder = $sectionOrders[$order];
 
-// Session message
+// Message de session
 $message = $_SESSION['message'] ?? '';
 unset($_SESSION['message']);
 ?>
@@ -166,6 +168,7 @@ unset($_SESSION['message']);
 </head>
 <body>
     <h1 class="title">Gestion des Utilisateurs</h1>
+    <p class="note">Note: Pensez à cliquer sur "Mettre à jour" les informations des utilisateurs pour les enregistrer.</p>
     <hr>
 
     <?php if ($message): ?>

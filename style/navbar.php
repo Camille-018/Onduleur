@@ -8,7 +8,7 @@ $upsListForMenu = $pdo->query("SELECT id, device_model FROM ups ORDER BY device_
 
 <div class="top-bar">
   <div class="nav-left">
-    <a href="https://www.ens.psl.eu/en/laboratoire/centre-de-recherche-en-ecologie-experimentale-et-predictive-cereep-ums-3194" target="_blank" title="Site du CEREEP">
+    <a href="https://www.cereep.ens.psl.eu/" target="_blank" title="Site du CEREEP">
     <img src="/style/images/cereep.jpg" class="logo" alt="CEREEP">
 </a>
 
@@ -31,8 +31,9 @@ $upsListForMenu = $pdo->query("SELECT id, device_model FROM ups ORDER BY device_
     </div>
 
     <a href="/historique/historique.php">Historique</a>
-
-    <?php if (isset($_SESSION['mail']) && $_SESSION['mail'] === GESTIONNAIRE_EMAIL): ?>
+    <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
+      <a href="/gerant/gestion.php">Gestion</a>
+    <?php elseif (strtolower(trim($_SESSION['mail'] ?? '')) === strtolower(trim(GESTIONNAIRE_EMAIL))) : ?>
       <a href="/gerant/gestion.php">Gestion</a>
     <?php endif; ?>
   </div>
