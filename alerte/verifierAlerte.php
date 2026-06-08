@@ -1,7 +1,7 @@
 <?php
-// verifierAlerte.php: checks for alerts for a collection, inserts them into the Alerts table if necessary, then sends an email to the admins
+// verifierAlerte.php : vérifie les alertes pour une collecte, insère dans la table Alertes si nécessaire, puis envoie un mail aux admins
 
-// PHPMailer is used to send emails
+// PHPMailer est utilisé pour envoyer les mails
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -11,24 +11,24 @@ require __DIR__ . '/../PHPMailer/src/Exception.php';
 require_once __DIR__ . '/../config/config.php';
 
 /**
- * Checks for alerts related to a collection
- * Called by auto_collect.php after each collection (in /collector)
+ * Vérifie les alertes pour une collecte
+ * Appelé par collecter.php après chaque collecte
  */
 function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
 
-    // ===== Retrieve the collect =====
+    // ===== Récupère la collecte =====
     $stmt = $pdo->prepare("SELECT * FROM ups_history WHERE id = ?");
     $stmt->execute([$collectId]);
     $d = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$d) return;
 
-    // ===== Load thresholds =====
+    // ===== Charge les seuils =====
     $seuils = json_decode(file_get_contents(__DIR__ . '/../config/config_seuils.json'), true);
     $alertes_a_creer = [];
 
     // =========================================================
-    // 1️⃣ CHECK THE UPS STATUS (OFF / BYPASS only)
+    // 1️⃣ VÉRIFICATION DU STATUT DE L'UPS (OFF / BYPASS seulement)
     // =========================================================
     $statusList = explode(' ', $d['ups_status']);
 
@@ -39,7 +39,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
                 'Message' => "Onduleur éteint (OFF)"
             ];
         }
-        return; // If the UPS is off, the other alerts are not checked
+        return; // Si l'onduleur est éteint, on ne vérifie pas les autres alertes
     }
 
     if (in_array('BYPASS', $statusList)) {
@@ -52,7 +52,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
     }
 
     // =========================================================
-    // 2️⃣ THRESHOLD CHECK (THRESHOLDS)
+    // 2️⃣ VÉRIFICATION DES SEUILS (SEUILS)
     // =========================================================
 
     if ($d['battery_charge'] < $seuils['batterieFaible']) {
@@ -84,7 +84,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
     }
 
     // =========================================================
-    // 3️⃣ ADDING ALERTS + EMAIL
+    // 3️⃣ INSERTION DES ALERTES + MAIL
     // =========================================================
     if (!empty($alertes_a_creer)) {
 
@@ -115,7 +115,7 @@ function verifierAlertePourCollecte(PDO $pdo, int $collectId) {
 
 
 /**
- * Avoid spam: check if an alert of the same type for the same UPS has been created in the last 5 minutes
+ * Evite les spams : vérifie si une alerte du même type pour le même UPS a été créée dans les 5 dernières minutes
  */
 function alerteRecenteExiste(PDO $pdo, int $upsId, string $type): bool {
 
@@ -139,7 +139,7 @@ function alerteRecenteExiste(PDO $pdo, int $upsId, string $type): bool {
 
 
 /**
- * Retrieve the admins' email addresses from the database
+ * Récupère les adresses email des admins depuis la base de données
  */
 function getMailsAdmins(PDO $pdo) {
     $stmt = $pdo->prepare("
@@ -155,7 +155,7 @@ function getMailsAdmins(PDO $pdo) {
 
 
 /**
- * Send an alert email to the admins
+ * Envoie un email d'alerte aux admins
  */
 function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $pdo) {
 
@@ -183,6 +183,8 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         $mail->Password   = MAIL_PASSWORD;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = MAIL_PORT;
+        $mail->CharSet = MAIL_CHARSET;
+        $mail->Encoding = MAIL_ENCODING;
 
         $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
         $mail->isHTML(true);
@@ -203,3 +205,4 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         return "Erreur mail: {$mail->ErrorInfo}";
     }
 }
+

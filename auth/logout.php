@@ -1,5 +1,5 @@
 <?php
-// logout.php: destroy the session (session is started on every web page to check if the user is connected)
+// logout.php : détruit la session (la session est démarrée sur chaque page web pour vérifier que l'utilisateur est connecté)
 session_start();
 session_destroy();
 header("Location: login.php");
