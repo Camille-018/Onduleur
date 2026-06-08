@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR mail = ?");
         $stmt->execute([$username, $mail]);
         if ($stmt->fetch()) {
-            echo '<script>alert("Username or email already exists.");</script>';
+            header("Location: sInscrire.php?error=exists");
             exit;
         } else {
             // 2️⃣ All OK → hash the password
@@ -69,9 +69,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $mailObj->Password = MAIL_PASSWORD;
             $mailObj->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mailObj->Port = MAIL_PORT;
+            $mailObj->CharSet = MAIL_CHARSET;
+            $mailObj->Encoding = MAIL_ENCODING;
 
             $mailObj->setFrom(MAIL_FROM, MAIL_FROM_NAME);
-####################### Go to config/config.php ##################################
+####################### Go to config/config.php/L36 ##################################
             $mailObj->addAddress(GESTIONNAIRE_EMAIL);
 ######################################################################################
             $mailObj->isHTML(true);
@@ -94,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $mailObj->addEmbeddedImage(__DIR__ . '/../style/images/cereep.jpg', 'logo_cid');
             $mailObj->Body = mailTemplate("Registration Request", $contentHtml);
-            $mailObj->Subject = "Registration Request - CEREEP - UPS";
+            $mailObj->Subject = "Demande d'inscription - CEREEP - UPS";
 
             try {
                 $mailObj->send();
@@ -119,6 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../style/auth.css">
     <title>UPS - S'inscrire</title>
 </head>
+<!-- pop up d'erreur si utilisateur ou email existe déjà -->
+<?php if (isset($_GET['error']) && $_GET['error'] === 'exists'): ?>
+    <script>
+        alert("Utilisateur ou email déjà utilisé.");
+    </script>
+<?php endif; ?>
 <body>
 
     <div class="auth-container">

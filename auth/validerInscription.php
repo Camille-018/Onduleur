@@ -90,6 +90,8 @@ $mailUser->Username = MAIL_USERNAME;
 $mailUser->Password = MAIL_PASSWORD;
 $mailUser->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 $mailUser->Port = MAIL_PORT;
+$mailUser->CharSet = MAIL_CHARSET;
+$mailUser->Encoding = MAIL_ENCODING;
 
 $mailUser->setFrom(MAIL_FROM, MAIL_FROM_NAME);
 $mailUser->addAddress($user['mail']); // User email address

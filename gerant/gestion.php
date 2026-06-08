@@ -3,12 +3,12 @@
 require_once __DIR__ . '/../auth/authCheck.php';
 include __DIR__ . '/../style/navbar.php';
 
-// Vérifie que l'utilisateur est le gestionnaire ou un admin
+// Vérifie que l'utilisateur est le gestionnaire (mail défini dans GESTIONNAIRE_EMAIL - config.php)
 $sessionMail = strtolower(trim($_SESSION['mail'] ?? ''));
 $managerMail = strtolower(trim(GESTIONNAIRE_EMAIL));
-if ($sessionMail !== $managerMail && ($_SESSION['role'] ?? '') !== 'admin') {
+if ($sessionMail !== $managerMail) {
     echo "<script>
-            alert('Accès refusé : seuls les gestionnaires ou admins peuvent accéder à cette page.');
+            alert('Accès refusé : seuls les gestionnaires peuvent accéder à cette page.');
             window.location.href = '../index.php';
           </script>";
     exit;

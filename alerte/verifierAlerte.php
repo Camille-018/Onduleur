@@ -183,6 +183,8 @@ function envoyerMailAlerte($type, $messageAlerte, $id, $recorded_at, $ups_id, $p
         $mail->Password   = MAIL_PASSWORD;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = MAIL_PORT;
+        $mail->CharSet = MAIL_CHARSET;
+        $mail->Encoding = MAIL_ENCODING;
 
         $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
         $mail->isHTML(true);
