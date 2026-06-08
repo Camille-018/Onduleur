@@ -1,7 +1,7 @@
 <?php
-// signup.php: registration page, inserts user with pending status, sends email to manager for validation
+// sInscrire.php : page d'inscription qui crée un utilisateur en attente et envoie un e-mail au gestionnaire pour validation
 
-// PHPMailer is used to send emails
+// PHPMailer est utilisé pour envoyer les e-mails
 require_once '../config/config.php';
 require_once __DIR__ . '/../PHPMailer/src/PHPMailer.php';
 require_once __DIR__ . '/../PHPMailer/src/SMTP.php';
@@ -33,18 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Mot de passe trop court (<8).";
     } else {
 
-        // 1️⃣ Check if username or email already exists
+        // 1️⃣ Vérifie si le nom d'utilisateur ou l'e-mail existe déjà
         $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ? OR mail = ?");
         $stmt->execute([$username, $mail]);
         if ($stmt->fetch()) {
             header("Location: sInscrire.php?error=exists");
             exit;
         } else {
-            // 2️⃣ All OK → hash the password
+            // 2️⃣ Tout est valide → hache le mot de passe
             $role = 'user';
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            // 3️⃣ Insert into database with pending status
+            // 3️⃣ Insère l'utilisateur en base avec le statut en attente
             $stmt = $pdo->prepare("
                 INSERT INTO users (username, password, mail, role, status)
                 VALUES (?, ?, ?, ?, 'pending')
@@ -52,15 +52,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$username, $passwordHash, $mail, $role]);
             $userId = $pdo->lastInsertId();
 
-            // Signatures for validation links
-            // UPS: local (onduleur = UPS in French)
+            // Génération des signatures pour les liens de validation
+            // UPS : local (onduleur = UPS en français)
             $signature = hash_hmac('sha256', $userId, SIGNATURE_SECRET);
             $lienAccept = "http://onduleur/auth/validerInscription.php?action=accept&id=$userId&sig=$signature";
             $lienRefuse = "http://onduleur/auth/validerInscription.php?action=refuse&id=$userId&sig=$signature";
             $lienAcceptAdmin = "http://onduleur/auth/validerInscription.php?action=acceptAdmin&id=$userId&sig=$signature";
 
 
-            // 4️⃣ Send email to manager
+            // 4️⃣ Envoie l'e-mail au gestionnaire
             $mailObj = new PHPMailer(true);
             $mailObj->isSMTP();
             $mailObj->Host = MAIL_HOST;
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             try {
                 $mailObj->send();
-                // Redirect with success message (to avoid form resubmission on refresh)
+                // Redirige avec un message de succès (pour éviter la resoumission du formulaire au rafraîchissement)
                 header("Location: sInscrire.php?success=1");
                 exit;
             } catch (Exception $e) {
