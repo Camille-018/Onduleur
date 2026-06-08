@@ -26,7 +26,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$user || $user['status'] !== 'active') {
     session_destroy();
-    header('Location: /auth/login.php');
+    header('Location: /auth/login.php?reason=inactive');
     exit;
 }
 

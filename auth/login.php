@@ -36,8 +36,16 @@ else {
     $error = "utilisateur ou mot de passe incorrect.";
     }
 }
-?>
+if (isset($_GET['reason'])) {
+    if ($_GET['reason'] === 'timeout') {
+        $error = "Session expirée. Reconnecte-toi.";
+    }
 
+    if ($_GET['reason'] === 'inactive') {
+        $error = "Compte désactivé ou supprimé.";
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
